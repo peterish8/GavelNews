@@ -675,7 +675,7 @@ body {
   background: var(--app-border);
 }
 
-/* Click-to-speak active paragraph (from Gavelogy use-note-tts) */
+/* Click-to-speak regions */
 .story-tts-root p,
 .story-tts-root li,
 .story-tts-root h2,
@@ -687,10 +687,20 @@ body {
 
 .story-tts-root p:hover,
 .story-tts-root li:hover {
-  background: color-mix(in srgb, var(--brand-soft) 70%, transparent);
+  background: color-mix(in srgb, var(--brand-soft) 55%, transparent);
 }
 
+/* Soft paragraph context while a session is active in that block */
 .story-tts-root .speaking {
-  background: color-mix(in srgb, var(--brand-soft) 100%, transparent);
-  box-shadow: inset 3px 0 0 var(--brand);
+  background: color-mix(in srgb, #fef9c3 45%, transparent);
+  box-shadow: inset 3px 0 0 #fde68a;
+}
+
+/*
+ * Word-by-word highlight — CSS Custom Highlight API (no DOM mutation).
+ * Name must match HIGHLIGHT_NAME in StoryReader.tsx ("gavel-tts-word").
+ */
+::highlight(gavel-tts-word) {
+  background-color: #fef08a;
+  color: inherit;
 }

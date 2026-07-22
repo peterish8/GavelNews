@@ -1,15 +1,16 @@
 "use client";
 
 /**
- * Story TTS shell — adapted from Gavelogy:
- * - JudgmentReaderPill (play / pause / speed / scrub / lang)
- * - use-note-tts (click paragraph → read from there)
- * - lib/tts-manager.ts
+ * Unified story TTS:
+ * - One controller for click-anywhere, play/pause, scrubber
+ * - Progress = position in full article text
+ * - Word-by-word pastel yellow highlight while speaking
  *
- * Single file to avoid flaky multi-chunk webpack loads.
+ * Adapted from Gavelogy JudgmentReaderPill + use-note-tts + tts-manager.
  */
 
 import {
+  memo,
   useCallback,
   useEffect,
   useRef,
@@ -33,232 +34,309 @@ const LANGS = [
   { code: "hi-IN", label: "HI-IN" },
 ] as const;
 
-// ── Click paragraph → speak ─────────────────────────────────────────
+const HIGHLIGHT_NAME = "gavel-tts-word";
+const WPM = 150; // used for duration estimate when boundary events are sparse
 
-function useStoryTTS(articleRef: RefObject<HTMLElement | null>) {
-  useEffect(() => {
-    const container = articleRef.current;
-    if (!container) return;
+// ── DOM text helpers (read-only — never split/wrap text nodes) ───────
 
-    function handleClick(e: MouseEvent) {
-      const target = e.target as HTMLElement;
-      if (target.closest("a, button, input, [data-no-tts]")) return;
-
-      const block = target.closest("p, li, h1, h2, h3") as HTMLElement | null;
-      if (!block || !container!.contains(block)) return;
-
-      const fullText = block.innerText?.trim();
-      if (!fullText) return;
-
-      if (block.classList.contains("speaking")) {
-        stopTTS("story");
-        block.classList.remove("speaking");
-        return;
-      }
-
-      document
-        .querySelectorAll(".speaking")
-        .forEach((el) => el.classList.remove("speaking"));
-      block.classList.add("speaking");
-
-      let clickCharOffset = 0;
-      try {
-        const doc = document as Document & {
-          caretRangeFromPoint?: (x: number, y: number) => Range | null;
-        };
-        const cr = doc.caretRangeFromPoint?.(e.clientX, e.clientY);
-        if (cr && block.contains(cr.startContainer)) {
-          const r = document.createRange();
-          r.setStart(block, 0);
-          r.setEnd(cr.startContainer, cr.startOffset);
-          clickCharOffset = r.toString().length;
-        }
-      } catch {
-        /* ignore */
-      }
-
-      const sentences = fullText.split(/(?<=[.!?])\s+/).filter(Boolean);
-      let charCount = 0;
-      let startIdx = 0;
-      for (let i = 0; i < sentences.length; i++) {
-        charCount += sentences[i].length + 1;
-        if (charCount > clickCharOffset) {
-          startIdx = i;
-          break;
-        }
-      }
-
-      const textToRead = sentences.slice(startIdx).join(" ") || fullText;
-      const utterance = new SpeechSynthesisUtterance(textToRead);
-      utterance.lang = "en-IN";
-      utterance.rate = 0.95;
-      utterance.onend = () => block.classList.remove("speaking");
-      utterance.onerror = () => block.classList.remove("speaking");
-      startTTS("story", utterance);
-    }
-
-    container.addEventListener("click", handleClick);
-    return () => {
-      container.removeEventListener("click", handleClick);
-      stopTTS("story");
-      document
-        .querySelectorAll(".speaking")
-        .forEach((el) => el.classList.remove("speaking"));
-    };
-  }, [articleRef]);
+/** Full article text from text nodes only (stable for offsets + TTS). */
+function getArticleText(root: HTMLElement): string {
+  return root.textContent ?? "";
 }
 
-// ── Pill ────────────────────────────────────────────────────────────
+/** Build a Range over [start, start+length) in root's textContent stream. */
+function rangeFromTextContentOffsets(
+  root: HTMLElement,
+  start: number,
+  length: number,
+): Range | null {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  let pos = 0;
+  let startNode: Text | null = null;
+  let startOff = 0;
+  let endNode: Text | null = null;
+  let endOff = 0;
+  const end = Math.max(start + 1, start + Math.max(1, length));
+
+  let node = walker.nextNode() as Text | null;
+  while (node) {
+    // Skip empty text nodes
+    if (!node.data) {
+      node = walker.nextNode() as Text | null;
+      continue;
+    }
+    const len = node.data.length;
+    if (!startNode && pos + len > start) {
+      startNode = node;
+      startOff = start - pos;
+    }
+    if (startNode && pos + len >= end) {
+      endNode = node;
+      endOff = end - pos;
+      break;
+    }
+    pos += len;
+    node = walker.nextNode() as Text | null;
+  }
+
+  if (!startNode) return null;
+  if (!endNode) {
+    endNode = startNode;
+    endOff = startNode.data.length;
+  }
+
+  // Clamp within the same text node when possible so we never cross tags mid-word
+  if (startNode === endNode) {
+    startOff = Math.max(0, Math.min(startOff, startNode.data.length));
+    endOff = Math.max(startOff, Math.min(endOff, startNode.data.length));
+  } else {
+    // Prefer highlighting only within the start text node to avoid layout breaks
+    endNode = startNode;
+    // Extend to end of word inside this text node only
+    let i = startOff;
+    while (i < startNode.data.length && !/\s/.test(startNode.data[i]!)) i++;
+    endOff = Math.max(startOff + 1, i);
+    startOff = Math.max(0, Math.min(startOff, startNode.data.length));
+  }
+
+  try {
+    const range = document.createRange();
+    range.setStart(startNode, startOff);
+    range.setEnd(endNode, endOff);
+    return range;
+  } catch {
+    return null;
+  }
+}
+
+/** Map click position → character offset in root.textContent. */
+function clickToTextOffset(
+  root: HTMLElement,
+  clientX: number,
+  clientY: number,
+): number {
+  try {
+    const doc = document as Document & {
+      caretRangeFromPoint?: (x: number, y: number) => Range | null;
+      caretPositionFromPoint?: (
+        x: number,
+        y: number,
+      ) => { offsetNode: Node; offset: number } | null;
+    };
+
+    let node: Node | null = null;
+    let offset = 0;
+
+    if (doc.caretRangeFromPoint) {
+      const cr = doc.caretRangeFromPoint(clientX, clientY);
+      if (cr) {
+        node = cr.startContainer;
+        offset = cr.startOffset;
+      }
+    } else if (doc.caretPositionFromPoint) {
+      const cp = doc.caretPositionFromPoint(clientX, clientY);
+      if (cp) {
+        node = cp.offsetNode;
+        offset = cp.offset;
+      }
+    }
+
+    if (!node || !root.contains(node)) return 0;
+
+    const r = document.createRange();
+    r.selectNodeContents(root);
+    r.setEnd(node, offset);
+    return r.toString().length;
+  } catch {
+    return 0;
+  }
+}
+
+/**
+ * Word highlight WITHOUT mutating the DOM (no mark tags, no word splits).
+ * Uses the CSS Custom Highlight API when available.
+ */
+function clearWordHighlight(_root: HTMLElement | null) {
+  try {
+    const CSSH = (
+      window as unknown as {
+        CSS?: { highlights?: { delete: (n: string) => void } };
+      }
+    ).CSS;
+    CSSH?.highlights?.delete(HIGHLIGHT_NAME);
+  } catch {
+    /* ignore */
+  }
+}
+
+function highlightWordAtOffset(
+  root: HTMLElement,
+  absStart: number,
+  wordLen: number,
+) {
+  clearWordHighlight(root);
+
+  const full = root.textContent ?? "";
+  if (!full || absStart < 0 || absStart >= full.length) return;
+
+  // Snap to full word bounds in textContent (never half a glyph mid-word UI)
+  let start = absStart;
+  while (start > 0 && !/\s/.test(full[start - 1]!)) start--;
+  let end = start;
+  while (end < full.length && !/\s/.test(full[end]!)) end++;
+  if (end <= start) {
+    end = Math.min(full.length, start + Math.max(1, wordLen));
+  }
+
+  const range = rangeFromTextContentOffsets(root, start, end - start);
+  if (!range || range.collapsed) return;
+
+  // Non-destructive highlight
+  try {
+    const win = window as unknown as {
+      Highlight?: new (...ranges: Range[]) => unknown;
+      CSS?: { highlights?: { set: (n: string, h: unknown) => void } };
+    };
+    if (win.Highlight && win.CSS?.highlights) {
+      const highlight = new win.Highlight(range);
+      win.CSS.highlights.set(HIGHLIGHT_NAME, highlight);
+    }
+  } catch {
+    /* no custom highlight support — paragraph .speaking is enough */
+  }
+
+  // Soft scroll without changing layout
+  try {
+    const rect = range.getBoundingClientRect();
+    if (rect.top < 80 || rect.bottom > window.innerHeight - 120) {
+      const node = range.startContainer.parentElement;
+      node?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+  } catch {
+    /* ignore */
+  }
+}
+
+/** One-time repair if older sessions left <mark> wrappers that split words. */
+function repairBrokenMarks(root: HTMLElement) {
+  root.querySelectorAll("mark.tts-word-highlight, mark").forEach((el) => {
+    if (!(el instanceof HTMLElement)) return;
+    if (
+      !el.classList.contains("tts-word-highlight") &&
+      el.tagName !== "MARK"
+    ) {
+      return;
+    }
+    // Only unwrap our TTS marks
+    if (
+      el.classList.contains("tts-word-highlight") ||
+      el.getAttribute("data-tts-mark") === "1"
+    ) {
+      const parent = el.parentNode;
+      if (!parent) return;
+      while (el.firstChild) parent.insertBefore(el.firstChild, el);
+      parent.removeChild(el);
+      parent.normalize();
+    }
+  });
+  // Also unwrap any leftover empty marks from failed TTS
+  root.querySelectorAll("mark.tts-word-highlight").forEach((el) => {
+    const parent = el.parentNode;
+    if (!parent) return;
+    while (el.firstChild) parent.insertBefore(el.firstChild, el);
+    parent.removeChild(el);
+    parent.normalize();
+  });
+}
+
+function snapToWordStart(text: string, offset: number): number {
+  if (offset <= 0) return 0;
+  if (offset >= text.length) return text.length;
+  // If mid-word, jump back to start of word
+  let i = offset;
+  if (/\S/.test(text[i] ?? "") && /\S/.test(text[i - 1] ?? "")) {
+    while (i > 0 && /\S/.test(text[i - 1] ?? "")) i--;
+  } else {
+    while (i < text.length && /\s/.test(text[i] ?? "")) i++;
+  }
+  return i;
+}
+
+function snapToSentenceStart(text: string, offset: number): number {
+  if (offset <= 0) return 0;
+  // Prefer sentence boundary before offset
+  const before = text.slice(0, offset);
+  const m = before.match(/[.!?]["']?\s+(?=[A-Z0-9])/g);
+  if (!m) return snapToWordStart(text, offset);
+  let last = 0;
+  let idx = 0;
+  const re = /[.!?]["']?\s+(?=[A-Z0-9])/g;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(before)) !== null) {
+    last = match.index + match[0].length;
+    idx = last;
+  }
+  return idx > 0 ? idx : snapToWordStart(text, offset);
+}
+
+function estimateDurationMs(charCount: number, rate: number): number {
+  const words = Math.max(1, charCount / 5);
+  return Math.round((words / WPM) * 60_000 / rate);
+}
+
+// ── Controller types ────────────────────────────────────────────────
+
+type TtsApi = {
+  playFrom: (plainOffset: number) => void;
+  play: () => void;
+  pauseResume: () => void;
+  stop: () => void;
+  seekPct: (pct: number) => void;
+  getFullText: () => string;
+};
+
+// ── Pill UI ─────────────────────────────────────────────────────────
 
 function NewsReaderPill({
-  getContent,
   title,
+  isPlaying,
+  isPaused,
+  progress,
+  elapsedMs,
+  durationMs,
+  speedIdx,
+  langIdx,
+  onPlay,
+  onPauseResume,
+  onStop,
+  onSeekPct,
+  onSpeed,
+  onLang,
 }: {
-  getContent: () => string;
   title?: string;
+  isPlaying: boolean;
+  isPaused: boolean;
+  progress: number;
+  elapsedMs: number;
+  durationMs: number;
+  speedIdx: number;
+  langIdx: number;
+  onPlay: () => void;
+  onPauseResume: () => void;
+  onStop: () => void;
+  onSeekPct: (pct: number) => void;
+  onSpeed: (idx: number) => void;
+  onLang: () => void;
 }) {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const [speedIdx, setSpeedIdx] = useState(1);
-  const [langIdx, setLangIdx] = useState(0);
-  const [progress, setProgress] = useState(0);
-  const [elapsedMs, setElapsedMs] = useState(0);
   const [showMenu, setShowMenu] = useState(false);
   const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
   const [isScrubbing, setIsScrubbing] = useState(false);
   const [scrubValue, setScrubValue] = useState(0);
   const [mounted, setMounted] = useState(false);
 
-  const rafRef = useRef<number | null>(null);
-  const startAtRef = useRef(0);
-  const pausedAtMsRef = useRef(0);
-  const durationMsRef = useRef(0);
-  const fullTextRef = useRef("");
+  useEffect(() => setMounted(true), []);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    return subscribeTTS((source) => {
-      if (source !== "story" && source !== null) {
-        stopRaf();
-        setIsPlaying(false);
-        setIsPaused(false);
-        setProgress(0);
-        setElapsedMs(0);
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      stopTTS("story");
-      stopRaf();
-    };
-  }, []);
-
-  function startRaf() {
-    function tick() {
-      const elapsed = pausedAtMsRef.current + (Date.now() - startAtRef.current);
-      const pct =
-        durationMsRef.current > 0
-          ? Math.min(100, (elapsed / durationMsRef.current) * 100)
-          : 0;
-      setProgress(pct);
-      setElapsedMs(elapsed);
-      rafRef.current = requestAnimationFrame(tick);
-    }
-    rafRef.current = requestAnimationFrame(tick);
-  }
-
-  function stopRaf() {
-    if (rafRef.current !== null) {
-      cancelAnimationFrame(rafRef.current);
-      rafRef.current = null;
-    }
-  }
-
-  const speakFrom = useCallback(
-    (text: string, fromPct = 0) => {
-      if (!text.trim() || typeof window === "undefined" || !window.speechSynthesis) {
-        return;
-      }
-
-      let sliceStart = Math.floor((fromPct / 100) * text.length);
-      if (sliceStart > 0) {
-        const space = text.indexOf(" ", sliceStart);
-        sliceStart = space === -1 ? sliceStart : space + 1;
-      }
-      const spoken = text.slice(sliceStart).trim() || text;
-      fullTextRef.current = text;
-
-      const wordCount = spoken.trim().split(/\s+/).length;
-      durationMsRef.current = Math.round(
-        ((wordCount / 130) * 60_000) / SPEEDS[speedIdx],
-      );
-      pausedAtMsRef.current = 0;
-      startAtRef.current = Date.now();
-      setProgress(fromPct);
-      setElapsedMs(Math.round((fromPct / 100) * (durationMsRef.current || 1)));
-
-      const utterance = new SpeechSynthesisUtterance(spoken);
-      utterance.lang = LANGS[langIdx].code;
-      utterance.rate = SPEEDS[speedIdx];
-      utterance.onstart = () => {
-        startAtRef.current = Date.now();
-        setIsPlaying(true);
-        setIsPaused(false);
-        startRaf();
-      };
-      utterance.onend = () => {
-        stopRaf();
-        setIsPlaying(false);
-        setIsPaused(false);
-        setProgress(0);
-        setElapsedMs(0);
-        pausedAtMsRef.current = 0;
-      };
-      utterance.onerror = () => {
-        stopRaf();
-        setIsPlaying(false);
-        setIsPaused(false);
-        setProgress(0);
-        setElapsedMs(0);
-      };
-
-      startTTS("story", utterance);
-    },
-    [langIdx, speedIdx],
-  );
-
-  const handlePlay = useCallback(() => {
-    speakFrom(getContent(), 0);
-  }, [getContent, speakFrom]);
-
-  const handlePauseResume = useCallback(() => {
-    if (isPaused) {
-      startAtRef.current = Date.now();
-      resumeTTS();
-      setIsPaused(false);
-      startRaf();
-      return;
-    }
-    pausedAtMsRef.current += Date.now() - startAtRef.current;
-    stopRaf();
-    pauseTTS();
-    setIsPaused(true);
-  }, [isPaused]);
-
-  const handleStop = useCallback(() => {
-    stopTTS("story");
-    stopRaf();
-    setIsPlaying(false);
-    setIsPaused(false);
-    setProgress(0);
-    setElapsedMs(0);
-    pausedAtMsRef.current = 0;
-  }, []);
+  const displayProgress = isScrubbing ? scrubValue : progress;
 
   function formatTime(ms: number) {
     const total = Math.max(0, Math.floor(ms / 1000));
@@ -267,68 +345,64 @@ function NewsReaderPill({
     return `${m}:${s.toString().padStart(2, "0")}`;
   }
 
-  const displayProgress = isScrubbing ? scrubValue : progress;
+  if (!mounted) return null;
 
-  const menu =
-    mounted && showMenu
-      ? createPortal(
-          <>
-            <div
-              className="fixed inset-0 z-[9998]"
-              onClick={() => setShowMenu(false)}
-            />
-            <div
-              className="gav-dropdown gav-dropdown--portal fixed min-w-[170px]"
-              style={{
-                top: menuPos.top,
-                left: menuPos.left,
-                transform: "translateX(-50%)",
-              }}
-            >
-              <div className="gav-dropdown-label">Speed</div>
-              {SPEEDS.map((speed, i) => (
+  const menu = showMenu
+    ? createPortal(
+        <>
+          <div
+            className="fixed inset-0 z-[9998]"
+            onClick={() => setShowMenu(false)}
+          />
+          <div
+            className="gav-dropdown gav-dropdown--portal fixed min-w-[170px]"
+            style={{
+              top: menuPos.top,
+              left: menuPos.left,
+              transform: "translateX(-50%)",
+            }}
+          >
+            <div className="gav-dropdown-label">Speed</div>
+            {SPEEDS.map((speed, i) => (
+              <button
+                key={speed}
+                type="button"
+                className={
+                  "gav-dropdown-item justify-between px-3 py-2" +
+                  (speedIdx === i ? " gav-dropdown-item--active" : "")
+                }
+                onClick={() => {
+                  onSpeed(i);
+                  setShowMenu(false);
+                }}
+              >
+                <span>{speed}x</span>
+              </button>
+            ))}
+            {isPlaying && (
+              <>
+                <div className="gav-dropdown-divider" />
                 <button
-                  key={speed}
                   type="button"
-                  className={
-                    "gav-dropdown-item justify-between px-3 py-2" +
-                    (speedIdx === i ? " gav-dropdown-item--active" : "")
-                  }
+                  className="gav-dropdown-item px-3 py-2 text-[var(--gv-danger,#A11D2E)]"
                   onClick={() => {
-                    setSpeedIdx(i);
+                    onStop();
                     setShowMenu(false);
                   }}
                 >
-                  <span>{speed}x</span>
+                  Stop reading
                 </button>
-              ))}
-              {isPlaying && (
-                <>
-                  <div className="gav-dropdown-divider" />
-                  <button
-                    type="button"
-                    className="gav-dropdown-item px-3 py-2 text-[var(--gv-danger,#A11D2E)]"
-                    onClick={() => {
-                      handleStop();
-                      setShowMenu(false);
-                    }}
-                  >
-                    Stop reading
-                  </button>
-                </>
-              )}
-            </div>
-          </>,
-          document.body,
-        )
-      : null;
-
-  // Portal the whole pill to body so overflow:hidden shell never clips it
-  if (!mounted) return null;
+              </>
+            )}
+          </div>
+        </>,
+        document.body,
+      )
+    : null;
 
   return createPortal(
     <div className="pointer-events-none fixed inset-x-0 bottom-4 z-[60] flex justify-center px-4 md:bottom-6">
-      <div className="gav-reader-bar pointer-events-auto shadow-lg">
+      <div className="gav-reader-bar pointer-events-auto">
         <div className="flex min-w-0 flex-1 items-center gap-2 md:gap-3">
           <div className="hidden min-w-0 max-w-[9rem] flex-col sm:flex">
             <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-ink-3">
@@ -344,10 +418,7 @@ function NewsReaderPill({
           <button
             type="button"
             data-no-tts
-            onClick={() => {
-              handleStop();
-              setLangIdx((i) => (i + 1) % LANGS.length);
-            }}
+            onClick={onLang}
             className="rounded-full border border-brand-border bg-brand-soft px-2.5 py-1 text-[11px] font-semibold tracking-wide text-brand hover:bg-brand hover:text-[var(--on-accent)]"
             title="Language"
           >
@@ -357,7 +428,7 @@ function NewsReaderPill({
           <button
             type="button"
             data-no-tts
-            onClick={isPlaying ? handlePauseResume : handlePlay}
+            onClick={isPlaying ? onPauseResume : onPlay}
             className="rounded-full bg-brand p-2.5 text-[var(--on-accent)] shadow-sm hover:bg-brand-hover active:scale-95"
             aria-label={isPlaying && !isPaused ? "Pause" : "Play"}
           >
@@ -374,7 +445,7 @@ function NewsReaderPill({
 
           <div
             data-no-tts
-            className="group relative hidden h-3 w-[140px] cursor-pointer touch-none select-none items-center md:flex lg:w-[180px]"
+            className="group relative hidden h-3 w-[140px] cursor-pointer touch-none select-none items-center md:flex lg:w-[200px]"
             onPointerDown={(e) => {
               e.preventDefault();
               const rect = e.currentTarget.getBoundingClientRect();
@@ -399,8 +470,7 @@ function NewsReaderPill({
               if (!isScrubbing) return;
               setIsScrubbing(false);
               e.currentTarget.releasePointerCapture(e.pointerId);
-              const text = fullTextRef.current || getContent();
-              speakFrom(text, scrubValue);
+              onSeekPct(scrubValue);
             }}
             onPointerCancel={(e) => {
               setIsScrubbing(false);
@@ -432,6 +502,10 @@ function NewsReaderPill({
 
           <span className="hidden text-sm font-medium tabular-nums text-ink-3 md:inline">
             {formatTime(elapsedMs)}
+            <span className="text-ink-3/60">
+              {" "}
+              / {formatTime(durationMs)}
+            </span>
           </span>
 
           <button
@@ -452,7 +526,7 @@ function NewsReaderPill({
         </div>
 
         <p className="hidden shrink-0 text-[11px] text-ink-3 xl:block">
-          Click a paragraph to start there
+          Click text · scrub · play — one session
         </p>
       </div>
       {menu}
@@ -461,7 +535,22 @@ function NewsReaderPill({
   );
 }
 
-// ── Public export ───────────────────────────────────────────────────
+// Memoized so pill progress state updates don't wipe word <mark> nodes
+const StableArticle = memo(function StableArticle({
+  innerRef,
+  children,
+}: {
+  innerRef: RefObject<HTMLDivElement | null>;
+  children: ReactNode;
+}) {
+  return (
+    <div ref={innerRef} className="story-tts-root" data-tts-root>
+      {children}
+    </div>
+  );
+});
+
+// ── Public StoryReader ──────────────────────────────────────────────
 
 export function StoryReader({
   title,
@@ -471,18 +560,403 @@ export function StoryReader({
   children: ReactNode;
 }) {
   const articleRef = useRef<HTMLDivElement>(null);
-  useStoryTTS(articleRef);
 
-  const getContent = useCallback(() => {
-    return articleRef.current?.innerText?.trim() ?? "";
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [elapsedMs, setElapsedMs] = useState(0);
+  const [durationMs, setDurationMs] = useState(0);
+  const [speedIdx, setSpeedIdx] = useState(1);
+  const [langIdx, setLangIdx] = useState(0);
+
+  // Mutable session (refs so event handlers always see latest)
+  const fullTextRef = useRef("");
+  const startOffsetRef = useRef(0); // plain offset where current utterance began
+  const cursorPlainRef = useRef(0); // current plain offset (word being spoken)
+  const rateRef = useRef<number>(SPEEDS[1]);
+  const langRef = useRef<string>(LANGS[0].code);
+  const totalDurationRef = useRef(0);
+  const sessionStartMsRef = useRef(0); // Date.now when utterance started
+  const pausedAccumMsRef = useRef(0);
+  const rafRef = useRef<number | null>(null);
+  const playingRef = useRef(false);
+
+  useEffect(() => {
+    rateRef.current = SPEEDS[speedIdx];
+  }, [speedIdx]);
+  useEffect(() => {
+    langRef.current = LANGS[langIdx].code;
+  }, [langIdx]);
+
+  const stopRaf = useCallback(() => {
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+  }, []);
+
+  const syncProgressFromCursor = useCallback(() => {
+    const full = fullTextRef.current;
+    const len = Math.max(1, full.length);
+    const cur = cursorPlainRef.current;
+    const pct = Math.min(100, (cur / len) * 100);
+    setProgress(pct);
+    // Elapsed based on character position through full article
+    const total = totalDurationRef.current || estimateDurationMs(len, rateRef.current);
+    setDurationMs(total);
+    setElapsedMs(Math.round((cur / len) * total));
+  }, []);
+
+  const clearHighlight = useCallback(() => {
+    clearWordHighlight(articleRef.current);
+    articleRef.current
+      ?.querySelectorAll(".speaking")
+      .forEach((el) => el.classList.remove("speaking"));
+  }, []);
+
+  // Repair any old DOM-splitting marks from previous TTS version
+  useEffect(() => {
+    if (articleRef.current) repairBrokenMarks(articleRef.current);
+  }, []);
+
+  const finishSession = useCallback(() => {
+    stopRaf();
+    playingRef.current = false;
+    setIsPlaying(false);
+    setIsPaused(false);
+    setProgress(0);
+    setElapsedMs(0);
+    cursorPlainRef.current = 0;
+    startOffsetRef.current = 0;
+    clearHighlight();
+  }, [clearHighlight, stopRaf]);
+
+  const speakFromOffset = useCallback(
+    (plainOffset: number) => {
+      const root = articleRef.current;
+      if (!root || typeof window === "undefined" || !window.speechSynthesis) return;
+
+      // Never leave old mark wrappers around
+      repairBrokenMarks(root);
+
+      const full = getArticleText(root);
+      if (!full.trim()) return;
+
+      fullTextRef.current = full;
+      const start = snapToWordStart(
+        full,
+        Math.max(0, Math.min(full.length, plainOffset)),
+      );
+      startOffsetRef.current = start;
+      cursorPlainRef.current = start;
+
+      const remaining = full.slice(start);
+      if (!remaining.trim()) {
+        finishSession();
+        return;
+      }
+
+      totalDurationRef.current = estimateDurationMs(full.length, rateRef.current);
+      setDurationMs(totalDurationRef.current);
+      syncProgressFromCursor();
+
+      // Highlight first word immediately (CSS highlight only — no DOM split)
+      const firstWord = remaining.match(/^\S+/)?.[0] ?? remaining.slice(0, 1);
+      highlightWordAtOffset(root, start, firstWord.length);
+
+      // Soft paragraph context class only (no text mutation)
+      root.querySelectorAll(".speaking").forEach((el) => el.classList.remove("speaking"));
+      try {
+        const range = rangeFromTextContentOffsets(root, start, 1);
+        const block = range?.startContainer.parentElement?.closest(
+          "p, li, h1, h2, h3, section",
+        );
+        block?.classList.add("speaking");
+      } catch {
+        /* ignore */
+      }
+
+      const utterance = new SpeechSynthesisUtterance(remaining);
+      utterance.lang = langRef.current;
+      utterance.rate = rateRef.current;
+
+      utterance.onboundary = (e: SpeechSynthesisEvent) => {
+        // charIndex is relative to `remaining`
+        if (e.name !== "word" && e.name !== "sentence") return;
+        const abs = startOffsetRef.current + (e.charIndex ?? 0);
+        cursorPlainRef.current = abs;
+        const len =
+          e.charLength && e.charLength > 0
+            ? e.charLength
+            : (full.slice(abs).match(/^\S+/)?.[0].length ?? 1);
+        if (articleRef.current) {
+          highlightWordAtOffset(articleRef.current, abs, len);
+        }
+        syncProgressFromCursor();
+      };
+
+      utterance.onstart = () => {
+        playingRef.current = true;
+        setIsPlaying(true);
+        setIsPaused(false);
+        sessionStartMsRef.current = Date.now();
+        pausedAccumMsRef.current = 0;
+        // progress RAF started below after startTTS — set flag for outer helper
+      };
+
+      utterance.onend = () => {
+        finishSession();
+      };
+
+      utterance.onerror = () => {
+        finishSession();
+      };
+
+      startTTS("story", utterance);
+      setIsPlaying(true);
+      setIsPaused(false);
+      // Start smooth scrubber RAF (boundaries also update cursor)
+      playingRef.current = true;
+      sessionStartMsRef.current = Date.now();
+      pausedAccumMsRef.current = 0;
+      stopRaf();
+      const tick = () => {
+        if (!playingRef.current) return;
+        const fullLen = Math.max(1, fullTextRef.current.length);
+        const start = startOffsetRef.current;
+        const elapsedWall =
+          pausedAccumMsRef.current + (Date.now() - sessionStartMsRef.current);
+        const remainChars = fullLen - start;
+        const remainDur = estimateDurationMs(remainChars, rateRef.current);
+        const frac = remainDur > 0 ? Math.min(1, elapsedWall / remainDur) : 0;
+        const estimatedCursor = start + Math.floor(frac * remainChars);
+        if (estimatedCursor > cursorPlainRef.current) {
+          cursorPlainRef.current = estimatedCursor;
+          syncProgressFromCursor();
+        }
+        rafRef.current = requestAnimationFrame(tick);
+      };
+      rafRef.current = requestAnimationFrame(tick);
+    },
+    [finishSession, stopRaf, syncProgressFromCursor],
+  );
+
+  const playFrom = useCallback(
+    (plainOffset: number) => {
+      stopTTS("story");
+      stopRaf();
+      speakFromOffset(plainOffset);
+    },
+    [speakFromOffset, stopRaf],
+  );
+
+  const startProgressRaf = useCallback(() => {
+    stopRaf();
+    const tick = () => {
+      if (!playingRef.current) return;
+      const fullLen = Math.max(1, fullTextRef.current.length);
+      const start = startOffsetRef.current;
+      const elapsedWall =
+        pausedAccumMsRef.current + (Date.now() - sessionStartMsRef.current);
+      const remainChars = fullLen - start;
+      const remainDur = estimateDurationMs(remainChars, rateRef.current);
+      const frac = remainDur > 0 ? Math.min(1, elapsedWall / remainDur) : 0;
+      const estimatedCursor = start + Math.floor(frac * remainChars);
+      if (estimatedCursor > cursorPlainRef.current) {
+        cursorPlainRef.current = estimatedCursor;
+        syncProgressFromCursor();
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+  }, [stopRaf, syncProgressFromCursor]);
+
+  const play = useCallback(() => {
+    if (isPaused && isPlaying) {
+      resumeTTS();
+      sessionStartMsRef.current = Date.now();
+      setIsPaused(false);
+      playingRef.current = true;
+      startProgressRaf();
+      return;
+    }
+    // Resume from last cursor if mid-article, else from start
+    const offset =
+      cursorPlainRef.current > 0 &&
+      cursorPlainRef.current < fullTextRef.current.length
+        ? cursorPlainRef.current
+        : 0;
+    playFrom(offset);
+  }, [isPaused, isPlaying, playFrom, startProgressRaf]);
+
+  const pauseResume = useCallback(() => {
+    if (!isPlaying) {
+      play();
+      return;
+    }
+    if (isPaused) {
+      resumeTTS();
+      sessionStartMsRef.current = Date.now();
+      setIsPaused(false);
+      playingRef.current = true;
+      startProgressRaf();
+      return;
+    }
+    pausedAccumMsRef.current += Date.now() - sessionStartMsRef.current;
+    pauseTTS();
+    setIsPaused(true);
+    playingRef.current = false;
+    stopRaf();
+  }, [isPaused, isPlaying, play, startProgressRaf, stopRaf]);
+
+  const stop = useCallback(() => {
+    stopTTS("story");
+    finishSession();
+  }, [finishSession]);
+
+  const seekPct = useCallback(
+    (pct: number) => {
+      const full =
+        fullTextRef.current ||
+        (articleRef.current ? getArticleText(articleRef.current) : "");
+      if (!full) return;
+      fullTextRef.current = full;
+      const offset = snapToWordStart(
+        full,
+        Math.floor((Math.max(0, Math.min(100, pct)) / 100) * full.length),
+      );
+      playFrom(offset);
+    },
+    [playFrom],
+  );
+
+  // External stop from another TTS source
+  useEffect(() => {
+    return subscribeTTS((source) => {
+      if (source !== "story" && source !== null) {
+        finishSession();
+      }
+    });
+  }, [finishSession]);
+
+  const isPausedRef = useRef(false);
+  useEffect(() => {
+    isPausedRef.current = isPaused;
+  }, [isPaused]);
+
+  // Click anywhere in article → unified session from that point
+  useEffect(() => {
+    const root = articleRef.current;
+    if (!root) return;
+
+    function onClick(e: MouseEvent) {
+      const target = e.target as HTMLElement;
+      if (target.closest("a, button, input, [data-no-tts]")) return;
+
+      const block = target.closest("p, li, h1, h2, h3") as HTMLElement | null;
+      if (!block || !root!.contains(block)) return;
+
+      // Second click on the active speaking paragraph = pause/resume
+      if (playingRef.current && block.classList.contains("speaking")) {
+        if (isPausedRef.current) {
+          resumeTTS();
+          sessionStartMsRef.current = Date.now();
+          isPausedRef.current = false;
+          setIsPaused(false);
+          playingRef.current = true;
+          startProgressRaf();
+        } else {
+          pausedAccumMsRef.current += Date.now() - sessionStartMsRef.current;
+          pauseTTS();
+          isPausedRef.current = true;
+          setIsPaused(true);
+          playingRef.current = false;
+          stopRaf();
+        }
+        return;
+      }
+
+      const full = getArticleText(root!);
+      fullTextRef.current = full;
+
+      let localOffset = clickToTextOffset(root!, e.clientX, e.clientY);
+      // If click mapping failed, fall back to start of the clicked block
+      if (localOffset <= 0) {
+        try {
+          const r = document.createRange();
+          r.selectNodeContents(root!);
+          r.setEndBefore(block);
+          localOffset = r.toString().length;
+        } catch {
+          localOffset = 0;
+        }
+      }
+
+      // Natural start at sentence; highlight still walks word-by-word
+      const start = snapToSentenceStart(full, localOffset);
+      playFrom(start);
+    }
+
+    root.addEventListener("click", onClick);
+    return () => {
+      root.removeEventListener("click", onClick);
+      stopTTS("story");
+      clearHighlight();
+      stopRaf();
+    };
+  }, [playFrom, clearHighlight, stopRaf, startProgressRaf]);
+
+  // Refresh full text length on mount for duration display
+  useEffect(() => {
+    const t = window.setTimeout(() => {
+      if (articleRef.current) {
+        repairBrokenMarks(articleRef.current);
+        const full = getArticleText(articleRef.current);
+        fullTextRef.current = full;
+        const d = estimateDurationMs(full.length, rateRef.current);
+        totalDurationRef.current = d;
+        setDurationMs(d);
+      }
+    }, 100);
+    return () => clearTimeout(t);
   }, []);
 
   return (
     <>
-      <div ref={articleRef} className="story-tts-root" data-tts-root>
-        {children}
-      </div>
-      <NewsReaderPill getContent={getContent} title={title} />
+      <StableArticle innerRef={articleRef}>{children}</StableArticle>
+      <NewsReaderPill
+        title={title}
+        isPlaying={isPlaying}
+        isPaused={isPaused}
+        progress={progress}
+        elapsedMs={elapsedMs}
+        durationMs={durationMs}
+        speedIdx={speedIdx}
+        langIdx={langIdx}
+        onPlay={play}
+        onPauseResume={pauseResume}
+        onStop={stop}
+        onSeekPct={seekPct}
+        onSpeed={(i) => {
+          setSpeedIdx(i);
+          rateRef.current = SPEEDS[i];
+          // If currently playing, restart from cursor at new speed
+          if (playingRef.current || isPlaying) {
+            playFrom(cursorPlainRef.current);
+          }
+        }}
+        onLang={() => {
+          setLangIdx((i) => {
+            const next = (i + 1) % LANGS.length;
+            langRef.current = LANGS[next].code;
+            if (playingRef.current || isPlaying) {
+              // restart at cursor with new lang after state updates
+              queueMicrotask(() => playFrom(cursorPlainRef.current));
+            }
+            return next;
+          });
+        }}
+      />
     </>
   );
 }
