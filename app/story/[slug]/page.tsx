@@ -224,8 +224,8 @@ export default async function StoryPage({ params }: PageProps) {
 
         {showSidebar && (
           <aside className="space-y-6">
-            {story.pyqKeyword && <PYQSidebar keyword={story.pyqKeyword} />}
             <RelatedStories stories={related} />
+            {story.pyqKeyword && <PYQSidebar keyword={story.pyqKeyword} />}
           </aside>
         )}
       </div>
