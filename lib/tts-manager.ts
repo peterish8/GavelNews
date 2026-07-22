@@ -1,14 +1,13 @@
-// Copied from Gavelogy_trail: src/lib/tts-manager.ts
-// Singleton TTS coordinator — only one speech stream at a time.
+// Singleton browser TTS coordinator (from Gavelogy tts-manager).
 
-type TTSSource = "pdf" | "notes" | "story";
+export type TTSSource = "pdf" | "notes" | "story";
 type Listener = (source: TTSSource | null) => void;
 
-let _active: TTSSource | null = null;
-const _listeners = new Set<Listener>();
+let active: TTSSource | null = null;
+const listeners = new Set<Listener>();
 
 function notify() {
-  _listeners.forEach((fn) => fn(_active));
+  for (const fn of listeners) fn(active);
 }
 
 export function startTTS(
@@ -16,38 +15,41 @@ export function startTTS(
   utterance: SpeechSynthesisUtterance,
 ): void {
   if (typeof window === "undefined" || !window.speechSynthesis) return;
+
   window.speechSynthesis.cancel();
-  _active = source;
+  active = source;
   notify();
 
-  const origEnd = utterance.onend;
-  const origErr = utterance.onerror;
-  utterance.onend = (e) => {
-    if (_active === source) {
-      _active = null;
+  const prevEnd = utterance.onend;
+  const prevErr = utterance.onerror;
+
+  utterance.onend = function (this: SpeechSynthesisUtterance, e: SpeechSynthesisEvent) {
+    if (active === source) {
+      active = null;
       notify();
     }
-    if (typeof origEnd === "function") {
-      (origEnd as EventListener).call(utterance, e);
-    }
+    if (typeof prevEnd === "function") prevEnd.call(this, e);
   };
-  utterance.onerror = (e) => {
-    if (_active === source) {
-      _active = null;
+
+  utterance.onerror = function (
+    this: SpeechSynthesisUtterance,
+    e: SpeechSynthesisErrorEvent,
+  ) {
+    if (active === source) {
+      active = null;
       notify();
     }
-    if (typeof origErr === "function") {
-      (origErr as EventListener).call(utterance, e);
-    }
+    if (typeof prevErr === "function") prevErr.call(this, e);
   };
+
   window.speechSynthesis.speak(utterance);
 }
 
 export function stopTTS(source?: TTSSource): void {
   if (typeof window === "undefined" || !window.speechSynthesis) return;
-  if (!source || _active === source) {
+  if (!source || active === source) {
     window.speechSynthesis.cancel();
-    _active = null;
+    active = null;
     notify();
   }
 }
@@ -63,12 +65,12 @@ export function resumeTTS(): void {
 }
 
 export function getActiveSource(): TTSSource | null {
-  return _active;
+  return active;
 }
 
 export function subscribeTTS(fn: Listener): () => void {
-  _listeners.add(fn);
+  listeners.add(fn);
   return () => {
-    _listeners.delete(fn);
+    listeners.delete(fn);
   };
 }
