@@ -85,18 +85,28 @@ export const mockDataSource: DataSource = {
       candidates = candidates.filter((s) => s.examTags.includes(opts.exam!));
     }
     if (!q) return candidates;
+
+    // Match across full catalog fields (title → body → tags), not archive-only.
+    const tokens = q.split(/\s+/).filter(Boolean);
     return candidates.filter((s) => {
       const haystack = [
         s.title,
         s.summary ?? "",
         s.whatHappened,
         s.background,
+        s.whatCourtHeld ?? "",
         s.whyItMatters,
+        s.pyqKeyword ?? "",
+        s.category,
+        s.slug,
+        ...s.examTags,
         ...s.keyPoints.map((k) => k.text),
+        ...s.sources.map((src) => src.name),
       ]
         .join(" ")
         .toLowerCase();
-      return haystack.includes(q);
+      // All tokens must match (AND) so multi-word queries stay precise.
+      return tokens.every((t) => haystack.includes(t));
     });
   },
 

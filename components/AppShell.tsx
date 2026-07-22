@@ -30,6 +30,7 @@ export function AppShell({
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [ready, setReady] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const pathname = usePathname() ?? "/";
 
   useEffect(() => {
@@ -47,11 +48,15 @@ export function AppShell({
   }, [pathname]);
 
   useEffect(() => {
+    // Let floating UI (TTS bar) know the mobile drawer is open so it can
+    // yield stacking / hide itself instead of sitting on top of the nav.
+    document.documentElement.dataset.mobileNav = mobileOpen ? "open" : "closed";
     if (!mobileOpen) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = prev;
+      document.documentElement.dataset.mobileNav = "closed";
     };
   }, [mobileOpen]);
 
@@ -69,6 +74,8 @@ export function AppShell({
 
   // One control: outside only when desktop sidebar is closed
   const showOutsideToggle = collapsed;
+
+  const readNav = NAV_ITEMS.filter((item) => item.section === "read");
 
   return (
     <div
@@ -92,12 +99,12 @@ export function AppShell({
         data-sidebar-collapsed={collapsed ? "true" : "false"}
         className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden"
       >
-        <header className="relative flex shrink-0 items-center gap-2 border-b border-border-app bg-[color-mix(in_srgb,var(--bg)_94%,transparent)] px-3 py-1.5 backdrop-blur-xl sm:px-4">
-          {/* Mobile: open when drawer closed */}
+        <header className="relative flex shrink-0 items-center gap-2 border-b border-border-app bg-[color-mix(in_srgb,var(--bg)_94%,transparent)] px-2.5 py-1.5 backdrop-blur-xl sm:px-4">
+          {/* Mobile: open drawer */}
           <button
             type="button"
             onClick={() => setMobileOpen(true)}
-            className="icon-btn inline-flex size-7 shrink-0 items-center justify-center rounded-lg border border-border-app bg-elevated text-ink lg:hidden"
+            className="icon-btn inline-flex size-8 shrink-0 items-center justify-center rounded-lg border border-border-app bg-elevated text-ink lg:hidden"
             aria-label="Open navigation"
             title="Open navigation"
           >
@@ -117,33 +124,87 @@ export function AppShell({
             </button>
           )}
 
-          {/* Nameplate — absolutely centered against the full header width so
-              NavSearch expanding/collapsing on the right never shifts it */}
+          {/* Brand — inline on mobile (no absolute collision), centered on lg+ */}
           <Link
             href="/"
-            className="link-press absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-0.5"
+            className="link-press flex min-w-0 flex-1 flex-col items-start gap-0 leading-none lg:absolute lg:left-1/2 lg:top-1/2 lg:flex-none lg:-translate-x-1/2 lg:-translate-y-1/2 lg:items-center lg:gap-0.5"
           >
-            <span className="font-serif text-lg font-bold tracking-tight text-ink sm:text-xl">
+            <span className="truncate font-serif text-base font-bold tracking-tight text-ink sm:text-lg lg:text-xl">
               Gavel News
             </span>
-            <span className="font-mono text-[9px] font-medium uppercase tracking-[0.14em] text-ink-3">
+            <span className="hidden font-mono text-[9px] font-medium uppercase tracking-[0.14em] text-ink-3 sm:block">
               Daily Legal Brief
             </span>
           </Link>
 
-          <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
-            {/* Primary links in the top bar (Calendar → /archive) */}
+          {/* ── Mobile: one compact control pill ───────────────────── */}
+          <div
+            className="flex shrink-0 items-center rounded-full border border-border-app bg-elevated/90 p-0.5 shadow-sm md:hidden"
+            role="group"
+            aria-label="Quick actions"
+          >
+            {readNav
+              .filter((item) => item.href !== "/search")
+              .map((item) => {
+                const active = item.match(pathname);
+                const short =
+                  item.label === "Calendar"
+                    ? "Cal"
+                    : item.label === "Today"
+                      ? "Today"
+                      : item.label;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`pressable rounded-full px-2 py-1 text-[10px] font-semibold transition-colors ${
+                      active
+                        ? "bg-brand text-[var(--on-accent,#fff)] shadow-sm"
+                        : "text-ink-2 hover:bg-brand-soft hover:text-brand"
+                    }`}
+                  >
+                    {short}
+                  </Link>
+                );
+              })}
+            <span
+              className="mx-0.5 h-3.5 w-px shrink-0 bg-border-app"
+              aria-hidden
+            />
+            <NavSearch
+              compact
+              open={mobileSearchOpen}
+              onOpenChange={setMobileSearchOpen}
+            />
+            {!signedIn && (
+              <>
+                <span
+                  className="mx-0.5 h-3.5 w-px shrink-0 bg-border-app"
+                  aria-hidden
+                />
+                <Link
+                  href={signInHref(pathname)}
+                  className="rounded-full bg-brand px-2 py-1 text-[10px] font-semibold text-[var(--on-accent)]"
+                >
+                  Sign
+                </Link>
+              </>
+            )}
+          </div>
+
+          {/* ── Desktop / tablet: expanded chrome ──────────────────── */}
+          <div className="ml-auto hidden shrink-0 items-center gap-2 md:flex">
             <nav
               className="flex items-center rounded-full border border-border-app bg-elevated/80 p-0.5"
               aria-label="Primary"
             >
-              {NAV_ITEMS.filter((item) => item.section === "read").map((item) => {
+              {readNav.map((item) => {
                 const active = item.match(pathname);
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`pressable rounded-full px-2 py-1 text-[11px] font-semibold transition-colors sm:px-3 sm:text-[12px] ${
+                    className={`pressable rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors sm:px-3 sm:text-[12px] ${
                       active
                         ? "bg-brand text-[var(--on-accent,#fff)] shadow-sm"
                         : "text-ink-2 hover:bg-brand-soft hover:text-brand"
@@ -167,7 +228,8 @@ export function AppShell({
         </header>
 
         <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain">
-          <main className="min-h-full">{children}</main>
+          {/* No min-h-full — that left a huge empty band between page content and footer */}
+          <main>{children}</main>
           <Footer />
         </div>
       </div>

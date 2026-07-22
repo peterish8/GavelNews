@@ -2,8 +2,8 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="mt-auto border-t border-border-app bg-[color-mix(in_srgb,var(--elevated,#fff)_70%,transparent)]">
-      <div className="mx-auto grid max-w-6xl gap-8 px-5 py-10 sm:grid-cols-2 lg:grid-cols-4 md:py-12">
+    <footer className="border-t border-border-app bg-[color-mix(in_srgb,var(--elevated,#fff)_70%,transparent)]">
+      <div className="mx-auto grid max-w-6xl gap-6 px-5 py-8 sm:grid-cols-2 lg:grid-cols-4 md:py-9">
         <div className="sm:col-span-2 lg:col-span-1">
           <p className="font-ui text-sm font-bold tracking-tight text-ink">
             Gavel News

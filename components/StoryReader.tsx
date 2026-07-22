@@ -483,7 +483,7 @@ function NewsReaderPill({
 
   return createPortal(
     <div
-      className="pointer-events-none fixed inset-x-0 bottom-4 z-[60] flex justify-center px-3 md:bottom-5"
+      className="gav-tts-dock pointer-events-none fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 flex justify-center px-2 sm:bottom-4 sm:px-3 md:bottom-5"
       role="group"
       aria-label={`Listen to ${title ?? "this story"}`}
     >
@@ -492,7 +492,7 @@ function NewsReaderPill({
           type="button"
           data-no-tts
           onClick={isPlaying ? onPauseResume : onPlay}
-          className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-brand text-[var(--on-accent)] shadow-sm hover:bg-brand-hover active:scale-95"
+          className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand text-[var(--on-accent)] shadow-sm hover:bg-brand-hover active:scale-95 sm:h-8 sm:w-8"
           aria-label={isPlaying && !isPaused ? "Pause" : "Play"}
         >
           {isPlaying && !isPaused ? (
@@ -506,89 +506,83 @@ function NewsReaderPill({
           )}
         </button>
 
-        <div
-          data-no-tts
-          className="group relative hidden h-5 w-[110px] cursor-pointer touch-none select-none items-center sm:flex lg:w-[160px]"
-          onPointerDown={(e) => {
-            e.preventDefault();
-            const rect = e.currentTarget.getBoundingClientRect();
-            const v = Math.max(
-              0,
-              Math.min(100, ((e.clientX - rect.left) / rect.width) * 100),
-            );
-            setScrubValue(v);
-            setIsScrubbing(true);
-            e.currentTarget.setPointerCapture(e.pointerId);
-          }}
-          onPointerMove={(e) => {
-            if (!isScrubbing) return;
-            const rect = e.currentTarget.getBoundingClientRect();
-            const v = Math.max(
-              0,
-              Math.min(100, ((e.clientX - rect.left) / rect.width) * 100),
-            );
-            setScrubValue(v);
-          }}
-          onPointerUp={(e) => {
-            if (!isScrubbing) return;
-            setIsScrubbing(false);
-            e.currentTarget.releasePointerCapture(e.pointerId);
-            onSeekPct(scrubValue);
-          }}
-          onPointerCancel={(e) => {
-            setIsScrubbing(false);
-            try {
-              e.currentTarget.releasePointerCapture(e.pointerId);
-            } catch {
-              /* ignore */
-            }
-          }}
-        >
-          {/* Round 2: track was a 4px line inside a 12px hit box (small touch
-              target), and the thumb was fully invisible (opacity-0) except
-              on hover/while-scrubbing — on touch devices (no real ":hover")
-              that meant there was NEVER a visible handle at rest, just a
-              bare line, which reads as "not proper"/broken rather than as a
-              draggable control. Fixed: taller hit box (h-5), slightly
-              thicker track for visibility, and a thumb that's always at
-              least partially visible so its presence as a draggable handle
-              is discoverable without a mouse hover. */}
-          <div className="absolute inset-x-0 h-1.5 rounded-full bg-border-app" />
+        {/* Scrubber + time — always visible (incl. mobile). Grows to fill bar. */}
+        <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-2.5">
           <div
-            className="absolute left-0 h-1.5 rounded-full bg-brand"
-            style={{ width: `${displayProgress}%` }}
-          />
-          <div
-            className={
-              "absolute z-10 h-3 w-3 rounded-full border-2 border-brand bg-elevated shadow transition-opacity " +
-              (isScrubbing
-                ? "opacity-100"
-                : "opacity-70 group-hover:opacity-100")
-            }
-            style={{
-              // `left:0%/100%` + translateX(-50%) centers the thumb exactly
-              // on the track's own edge, pushing half its width past the
-              // track's bounding box and into the flex gap next to the
-              // adjacent play button / time label. clamp() keeps the whole
-              // circle inside the track at both extremes.
-              left: `clamp(6px, ${displayProgress}%, calc(100% - 6px))`,
-              transform: "translateX(-50%)",
+            data-no-tts
+            className="group relative h-8 min-w-0 flex-1 cursor-pointer touch-none select-none sm:h-5 sm:max-w-[160px] sm:flex-none sm:w-[110px] lg:w-[160px]"
+            onPointerDown={(e) => {
+              e.preventDefault();
+              const rect = e.currentTarget.getBoundingClientRect();
+              const v = Math.max(
+                0,
+                Math.min(100, ((e.clientX - rect.left) / rect.width) * 100),
+              );
+              setScrubValue(v);
+              setIsScrubbing(true);
+              e.currentTarget.setPointerCapture(e.pointerId);
             }}
-          />
+            onPointerMove={(e) => {
+              if (!isScrubbing) return;
+              const rect = e.currentTarget.getBoundingClientRect();
+              const v = Math.max(
+                0,
+                Math.min(100, ((e.clientX - rect.left) / rect.width) * 100),
+              );
+              setScrubValue(v);
+            }}
+            onPointerUp={(e) => {
+              if (!isScrubbing) return;
+              setIsScrubbing(false);
+              e.currentTarget.releasePointerCapture(e.pointerId);
+              onSeekPct(scrubValue);
+            }}
+            onPointerCancel={(e) => {
+              setIsScrubbing(false);
+              try {
+                e.currentTarget.releasePointerCapture(e.pointerId);
+              } catch {
+                /* ignore */
+              }
+            }}
+          >
+            {/* Track + thumb centered in tall touch target (mobile-first). */}
+            <div className="absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-border-app" />
+            <div
+              className="absolute left-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-brand"
+              style={{ width: `${displayProgress}%` }}
+            />
+            <div
+              className={
+                "absolute top-1/2 z-10 h-3.5 w-3.5 rounded-full border-2 border-brand bg-elevated shadow transition-opacity sm:h-3 sm:w-3 " +
+                (isScrubbing
+                  ? "opacity-100"
+                  : "opacity-90 group-hover:opacity-100")
+              }
+              style={{
+                left: `clamp(7px, ${displayProgress}%, calc(100% - 7px))`,
+                transform: "translate(-50%, -50%)",
+              }}
+            />
+          </div>
+
+          <span className="shrink-0 text-[10px] font-medium tabular-nums text-ink-3 sm:text-[11px]">
+            {formatTime(elapsedMs)}
+            <span className="text-ink-3/60">
+              <span className="sm:hidden">/</span>
+              <span className="hidden sm:inline"> / </span>
+              {formatTime(durationMs)}
+            </span>
+          </span>
         </div>
 
-        <span className="hidden shrink-0 text-[11px] font-medium tabular-nums text-ink-3 sm:inline">
-          {formatTime(elapsedMs)}
-          <span className="text-ink-3/60"> / {formatTime(durationMs)}</span>
-        </span>
-
-        <div className="h-4 w-px shrink-0 bg-border-app" />
+        <div className="h-4 w-px shrink-0 bg-border-app" aria-hidden />
 
         <button
           type="button"
           data-no-tts
           onClick={onLang}
-          className="shrink-0 rounded-full px-2 py-0.5 font-mono text-[10px] font-semibold tracking-wide text-brand hover:bg-brand-soft"
+          className="shrink-0 rounded-full px-1.5 py-1 font-mono text-[10px] font-semibold tracking-wide text-brand hover:bg-brand-soft sm:px-2 sm:py-0.5"
           title="Language"
         >
           {LANGS[langIdx].label}
@@ -597,12 +591,15 @@ function NewsReaderPill({
         <button
           type="button"
           data-no-tts
-          className="shrink-0 rounded-full px-2 py-0.5 font-mono text-[10px] font-semibold text-ink-2 hover:bg-brand-soft hover:text-brand"
+          className="shrink-0 rounded-full px-1.5 py-1 font-mono text-[10px] font-semibold text-ink-2 hover:bg-brand-soft hover:text-brand sm:px-2 sm:py-0.5"
           onClick={(e) => {
             const rect = e.currentTarget.getBoundingClientRect();
             setMenuPos({
               top: rect.top - 200,
-              left: rect.left + rect.width / 2,
+              left: Math.min(
+                rect.left + rect.width / 2,
+                window.innerWidth - 100,
+              ),
             });
             setShowMenu((v) => !v);
           }}

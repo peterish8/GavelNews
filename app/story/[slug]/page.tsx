@@ -62,7 +62,7 @@ export default async function StoryPage({ params }: PageProps) {
     (Boolean(story.pyqKeyword) || related.length > 0);
 
   return (
-    <article className="relative mx-auto max-w-5xl px-5 py-10 pb-28 md:py-14 md:pb-32">
+    <article className="relative mx-auto max-w-5xl px-5 py-8 pb-20 md:py-10 md:pb-20">
       <nav className="mb-6 flex items-center gap-1.5 text-xs text-ink-3">
         <Link href="/" className="transition-colors hover:text-ink">
           Today
@@ -78,8 +78,8 @@ export default async function StoryPage({ params }: PageProps) {
         <span className="text-ink-2">{meta.label}</span>
       </nav>
 
-      <header className="mb-8 md:mb-10">
-        <div className="mb-4 flex flex-wrap items-center gap-2 text-xs">
+      <header className="mb-4 md:mb-5">
+        <div className="mb-3 flex flex-wrap items-center gap-2 text-xs">
           <span className="rounded-full border border-brand-border bg-brand-soft px-2.5 py-0.5 font-medium text-brand">
             {meta.label}
           </span>
@@ -104,7 +104,7 @@ export default async function StoryPage({ params }: PageProps) {
           <span className="text-ink-3">{formatDate(story.editionDate)}</span>
         </div>
 
-        <h1 className="mb-4 font-serif text-3xl font-bold tracking-tight text-ink md:text-4xl md:leading-[1.15]">
+        <h1 className="mb-3 font-serif text-3xl font-bold tracking-tight text-ink md:text-4xl md:leading-[1.15]">
           {story.title}
         </h1>
 
@@ -112,14 +112,11 @@ export default async function StoryPage({ params }: PageProps) {
           <p className="text-lg leading-relaxed text-ink-2">{story.summary}</p>
         )}
 
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
           {user.signedIn ? (
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <FavoriteButton storyId={story.id} />
               <CompleteButton storyId={story.id} />
-              <span className="ml-1 text-xs text-ink-3">
-                Signed in as {user.email}
-              </span>
             </div>
           ) : (
             <SignInGate
@@ -223,9 +220,16 @@ export default async function StoryPage({ params }: PageProps) {
         </StoryReader>
 
         {showSidebar && (
-          <aside className="space-y-6">
-            <RelatedStories stories={related} />
-            {story.pyqKeyword && <PYQSidebar keyword={story.pyqKeyword} />}
+          <aside className="flex flex-col gap-6">
+            {/* Mobile: PYQ first, related at end. Desktop: related then PYQ. */}
+            {story.pyqKeyword && (
+              <div className="order-1 md:order-2">
+                <PYQSidebar keyword={story.pyqKeyword} />
+              </div>
+            )}
+            <div className="order-2 md:order-1">
+              <RelatedStories stories={related} />
+            </div>
           </aside>
         )}
       </div>

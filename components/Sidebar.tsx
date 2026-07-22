@@ -37,28 +37,35 @@ export function Sidebar({
 
   return (
     <>
-      {/* Mobile backdrop */}
+      {/* Mobile backdrop — above TTS (z-40), below drawer */}
       <div
-        className={`fixed inset-0 z-40 bg-ink/40 backdrop-blur-[2px] transition-opacity lg:hidden ${
-          mobileOpen ? "opacity-100" : "pointer-events-none opacity-0"
-        }`}
+        className={[
+          "fixed inset-0 z-[70] bg-ink/45 backdrop-blur-[3px] lg:hidden",
+          "transition-[opacity,visibility] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
+          mobileOpen
+            ? "visible opacity-100"
+            : "pointer-events-none invisible opacity-0",
+        ].join(" ")}
         aria-hidden={!mobileOpen}
         onClick={onMobileClose}
       />
 
       <aside
         data-collapsed={collapsed ? "true" : "false"}
+        data-mobile-open={mobileOpen ? "true" : "false"}
         className={[
-          "flex h-dvh max-h-dvh shrink-0 flex-col overflow-hidden border-r border-border-app",
+          "mobile-nav-drawer flex h-dvh max-h-dvh shrink-0 flex-col overflow-hidden border-r border-border-app",
           "bg-[color-mix(in_srgb,var(--bg)_94%,#fff)] dark:bg-[color-mix(in_srgb,var(--bg)_98%,#000)]",
-          // Simple open/close — just width (and slide on mobile)
-          "transition-[width,transform] duration-200 ease-out",
-          // mobile drawer
-          "fixed inset-y-0 left-0 z-50 w-[16.5rem] shadow-xl",
-          mobileOpen ? "translate-x-0" : "-translate-x-full",
+          // Mobile: smooth slide-in. Desktop: width collapse only.
+          "fixed inset-y-0 left-0 z-[80] w-[min(16.5rem,88vw)] shadow-2xl will-change-transform",
+          "transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
+          mobileOpen
+            ? "translate-x-0"
+            : "-translate-x-full pointer-events-none lg:pointer-events-auto",
           // desktop: open = full width, closed = 0 (opener moves to top bar)
-          "lg:static lg:z-0 lg:translate-x-0 lg:shadow-none",
-          collapsed ? "lg:w-0 lg:border-r-0" : "lg:w-[16.5rem]",
+          "lg:static lg:z-0 lg:w-[16.5rem] lg:translate-x-0 lg:shadow-none lg:will-change-auto",
+          "lg:transition-[width] lg:duration-200 lg:ease-out",
+          collapsed ? "lg:w-0 lg:border-r-0 lg:pointer-events-none" : "lg:w-[16.5rem]",
         ].join(" ")}
         aria-label="Main navigation"
         aria-hidden={collapsed ? true : undefined}

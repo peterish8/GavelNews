@@ -29,9 +29,9 @@ export function SearchInput({ value, onChange, onSubmit }: SearchInputProps) {
         onChange={(e) => onChange(e.target.value)}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
-        placeholder="Search the archive…"
+        placeholder="Search all stories…"
         className="flex-1 bg-transparent text-[15px] text-ink placeholder:text-ink-3 focus:outline-none"
-        aria-label="Search the archive"
+        aria-label="Search all stories"
       />
       {value && (
         <button
