@@ -4,28 +4,50 @@ interface PYQSidebarProps {
 
 // Phase 1: static illustrative PYQs based on keyword.
 // Phase 5+ can wire this to the engine's `search_pyqs` MCP tool via API.
+const CLAT_YEAR_RE = /\(CLAT (\d{4})\)/;
+
 export function PYQSidebar({ keyword }: PYQSidebarProps) {
   const questions = getIllustrativePYQs(keyword);
   return (
-    <div className="surface-hero p-5">
-      <div className="mb-3 flex items-center gap-2">
-        <span className="inline-flex size-7 items-center justify-center rounded-full bg-brand text-[var(--on-accent)]">
+    <div className="surface-hero p-6">
+      <div className="mb-4 flex items-start gap-3">
+        <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-brand text-[var(--on-accent)]">
           <PyqIcon />
         </span>
-        <h3 className="font-ui text-xs font-semibold uppercase tracking-wider text-brand">
-          Past CLAT questions
-        </h3>
+        <div className="min-w-0">
+          <h3 className="font-ui text-sm font-semibold uppercase tracking-wider text-brand">
+            Past CLAT questions
+          </h3>
+          <p className="mt-0.5 truncate text-xs text-ink-3">
+            On &quot;{keyword}&quot;
+          </p>
+        </div>
       </div>
-      <p className="mb-3 text-xs text-ink-3">On &quot;{keyword}&quot;</p>
-      <ol className="space-y-2.5 text-sm">
-        {questions.map((q, i) => (
-          <li key={i} className="rounded-lg bg-elevated/70 p-3 leading-snug text-ink-2">
-            <span className="mr-1 font-semibold text-ink">{i + 1}.</span>
-            {q}
-          </li>
-        ))}
+      <ol className="space-y-3">
+        {questions.map((q, i) => {
+          const match = q.match(CLAT_YEAR_RE);
+          const text = match ? q.replace(CLAT_YEAR_RE, "").trim() : q;
+          return (
+            <li
+              key={i}
+              className="rounded-xl border border-border-app/70 bg-elevated/70 p-3.5 transition-colors hover:border-brand-border hover:bg-brand-soft/60"
+            >
+              <div className="mb-1.5 flex items-center justify-between gap-2">
+                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-brand-soft text-[11px] font-bold text-brand">
+                  {i + 1}
+                </span>
+                {match && (
+                  <span className="shrink-0 rounded-full bg-elevated-muted px-2 py-0.5 font-mono text-[10px] font-semibold text-ink-3">
+                    CLAT {match[1]}
+                  </span>
+                )}
+              </div>
+              <p className="text-[13.5px] leading-relaxed text-ink-2">{text}</p>
+            </li>
+          );
+        })}
       </ol>
-      <p className="mt-3 text-[10px] text-ink-3">
+      <p className="mt-4 border-t border-border-app/60 pt-3 text-[10px] leading-relaxed text-ink-3">
         Illustrative only — questions shown are constructed for illustration. Real
         PYQ lookup ships when the engine&apos;s <code>search_pyqs</code> tool is
         wired to this site (post-v1).
@@ -36,7 +58,7 @@ export function PYQSidebar({ keyword }: PYQSidebarProps) {
 
 function PyqIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
       <path
         d="M12 17v.01M12 8a2 2 0 0 1 2 2c0 1.5-2 2-2 4M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"
         stroke="currentColor"

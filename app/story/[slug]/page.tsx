@@ -138,7 +138,7 @@ export default async function StoryPage({ params }: PageProps) {
       <div
         className={
           showSidebar
-            ? "grid gap-10 md:grid-cols-[1fr_280px] md:gap-12"
+            ? "grid gap-10 md:grid-cols-[1fr_360px] md:gap-12"
             : "grid gap-10"
         }
       >
