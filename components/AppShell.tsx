@@ -88,7 +88,10 @@ export function AppShell({
         onToggleCollapsed={toggleCollapsed}
       />
 
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+      <div
+        data-sidebar-collapsed={collapsed ? "true" : "false"}
+        className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden"
+      >
         <header className="relative flex shrink-0 items-center gap-2 border-b border-border-app bg-[color-mix(in_srgb,var(--bg)_94%,transparent)] px-3 py-1.5 backdrop-blur-xl sm:px-4">
           {/* Mobile: open when drawer closed */}
           <button

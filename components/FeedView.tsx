@@ -71,7 +71,7 @@ export function FeedView({
   const dateLabel = editionDate ?? stories[0]?.editionDate;
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-6 md:py-9">
+    <div className="content-shell mx-auto max-w-6xl px-5 py-6 md:py-9">
       {/* Edition masthead */}
       <header className="mb-5 grid gap-6 border-b border-border-app pb-5 md:mb-6 md:grid-cols-[1.4fr_auto] md:items-end md:gap-10 md:pb-6">
         <div>

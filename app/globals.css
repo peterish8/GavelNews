@@ -699,3 +699,11 @@ body {
   background-color: #fef08a;
   color: inherit;
 }
+
+/* When the sidebar is collapsed, let wide-viewport pages use the freed-up
+   horizontal space instead of staying pinned to the same content width. */
+@media (min-width: 1024px) {
+  [data-sidebar-collapsed="true"] .content-shell {
+    max-width: 88rem;
+  }
+}
