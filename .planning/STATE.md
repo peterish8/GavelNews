@@ -64,6 +64,7 @@ None yet.
 |---|-------------|------|--------|-----------|
 | 260722-ur8 | Rewrite CLAUDE.md to be concise per best practices and create AGENTS.md | 2026-07-22 | b2e6eb9 | [260722-ur8-rewrite-claude-md-to-be-concise-per-best](./quick/260722-ur8-rewrite-claude-md-to-be-concise-per-best/) |
 | 260722-w8i | Reduce excessive vertical whitespace in homepage hero section (app/page.tsx) | 2026-07-22 | 41242d7 | [260722-w8i-reduce-excessive-vertical-whitespace-in-](./quick/260722-w8i-reduce-excessive-vertical-whitespace-in-/) |
+| 260722-wcu | Merge AppShell top header utility row and masthead row into one compact row | 2026-07-22 | 0597d8c | [260722-wcu-merge-appshell-top-header-utility-row-an](./quick/260722-wcu-merge-appshell-top-header-utility-row-an/) |
 
 ## Deferred Items
 
@@ -79,4 +80,4 @@ Last session: 2026-07-22
 Stopped at: ROADMAP.md and STATE.md created; REQUIREMENTS.md traceability confirmed
 Resume file: None
 
-Last activity: 2026-07-22 - Completed quick task 260722-w8i: Reduce excessive vertical whitespace in homepage hero section (app/page.tsx)
+Last activity: 2026-07-22 - Completed quick task 260722-wcu: Merge AppShell top header utility row and masthead row into one compact row
