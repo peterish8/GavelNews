@@ -22,8 +22,7 @@ import { createPortal } from "react-dom";
 import {
   startTTS,
   stopTTS,
-  pauseTTS,
-  resumeTTS,
+  isSynthLive,
   subscribeTTS,
 } from "@/lib/tts-manager";
 
@@ -658,6 +657,12 @@ export function StoryReader({
   const pausedAccumMsRef = useRef(0);
   const rafRef = useRef<number | null>(null);
   const playingRef = useRef(false);
+  /** Soft-pause (audio cancelled, session kept for resume). */
+  const pausedRef = useRef(false);
+  /** Mirrors React isPlaying for click handlers (no stale closures). */
+  const isPlayingRef = useRef(false);
+  /** Last time we saw real speech activity (boundary or synth live). */
+  const lastSpeechActivityRef = useRef(0);
   // The paragraph/block currently being spoken — updated on every word
   // boundary so click-to-pause always targets the block the cursor is
   // actually in (no CSS styling attached; bookkeeping only).
@@ -727,6 +732,8 @@ export function StoryReader({
     sessionIdRef.current += 1;
     stopRaf();
     playingRef.current = false;
+    pausedRef.current = false;
+    isPlayingRef.current = false;
     setIsPlaying(false);
     setIsPaused(false);
     setProgress(0);
@@ -737,26 +744,40 @@ export function StoryReader({
     clearHighlight();
   }, [clearHighlight, stopRaf]);
 
-  // Single source of truth for the "estimate cursor position from wall clock,
-  // between boundary events" progress loop — used both when a new utterance
-  // starts and when resuming a paused one. (Previously duplicated verbatim
-  // in two places, which risked the two copies drifting apart.)
+  /**
+   * Progress loop while audio is live.
+   * - Prefer real speech activity (onboundary updates cursor).
+   * - Do NOT invent cursor motion while the synth is dead (that caused
+   *   "seconds keep ticking, highlight frozen, looks paused").
+   * - If synth dies mid-session, freeze into a clean soft-pause so the
+   *   pill shows the resume (play) affordance consistently.
+   */
   const startProgressRaf = useCallback(() => {
     stopRaf();
+    lastSpeechActivityRef.current = Date.now();
     const tick = () => {
-      if (!playingRef.current) return;
-      const fullLen = Math.max(1, fullTextRef.current.length);
-      const start = startOffsetRef.current;
-      const elapsedWall =
-        pausedAccumMsRef.current + (Date.now() - sessionStartMsRef.current);
-      const remainChars = fullLen - start;
-      const remainDur = estimateDurationMs(remainChars, rateRef.current);
-      const frac = remainDur > 0 ? Math.min(1, elapsedWall / remainDur) : 0;
-      const estimatedCursor = start + Math.floor(frac * remainChars);
-      if (estimatedCursor > cursorPlainRef.current) {
-        cursorPlainRef.current = estimatedCursor;
-        syncProgressFromCursor();
+      if (!playingRef.current || pausedRef.current) return;
+
+      if (isSynthLive()) {
+        lastSpeechActivityRef.current = Date.now();
+      } else {
+        // Synth silent for a bit while we think we're playing → soft-pause
+        // instead of faking progress. (Chrome often drops speak() after cancel.)
+        const silentFor = Date.now() - lastSpeechActivityRef.current;
+        if (silentFor > 900) {
+          playingRef.current = false;
+          pausedRef.current = true;
+          isPlayingRef.current = true;
+          setIsPlaying(true);
+          setIsPaused(true);
+          stopRaf();
+          return;
+        }
       }
+
+      // Only mirror elapsed from the last real cursor (boundaries). Do not
+      // wall-clock-estimate past the spoken position — that desynced UI.
+      syncProgressFromCursor();
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
@@ -831,8 +852,10 @@ export function StoryReader({
 
         utterance.onboundary = (e: SpeechSynthesisEvent) => {
           if (sessionIdRef.current !== mySession) return;
+          if (pausedRef.current) return;
           // charIndex is relative to this chunk's own text
           if (e.name !== "word" && e.name !== "sentence") return;
+          lastSpeechActivityRef.current = Date.now();
           const abs = thisChunkAbsStart + (e.charIndex ?? 0);
           cursorPlainRef.current = abs;
           const fullNow = fullTextRef.current;
@@ -849,29 +872,46 @@ export function StoryReader({
 
         utterance.onstart = () => {
           if (sessionIdRef.current !== mySession) return;
+          lastSpeechActivityRef.current = Date.now();
           playingRef.current = true;
+          pausedRef.current = false;
+          isPlayingRef.current = true;
           setIsPlaying(true);
           setIsPaused(false);
         };
 
         utterance.onend = () => {
           if (sessionIdRef.current !== mySession) return;
+          if (pausedRef.current) return; // soft-paused — do not chain
+          lastSpeechActivityRef.current = Date.now();
           chunkIdx += 1;
           chunkAbsStart = thisChunkAbsStart + chunkText.length;
           speakChunk();
         };
 
-        utterance.onerror = () => {
+        utterance.onerror = (e: SpeechSynthesisErrorEvent) => {
           if (sessionIdRef.current !== mySession) return;
+          // Expected when we cancel for pause / seek / restart.
+          const err = String(e.error ?? "");
+          if (
+            err === "interrupted" ||
+            err === "canceled" ||
+            err === "cancelled"
+          ) {
+            return;
+          }
           finishSession();
         };
 
         startTTS("story", utterance);
       };
 
+      pausedRef.current = false;
+      isPlayingRef.current = true;
       setIsPlaying(true);
       setIsPaused(false);
       playingRef.current = true;
+      lastSpeechActivityRef.current = Date.now();
       startProgressRaf();
       speakChunk();
     },
@@ -906,24 +946,31 @@ export function StoryReader({
   }, [playFrom]);
 
   const pauseResume = useCallback(() => {
-    if (!isPlaying) {
+    // Refs avoid stale React state when the user clicks faster than re-render.
+    if (!isPlayingRef.current) {
       play();
       return;
     }
-    if (isPaused) {
-      resumeTTS();
-      sessionStartMsRef.current = Date.now();
+    if (pausedRef.current) {
+      // Resume from frozen cursor (Chrome resume() is unreliable after cancel).
+      const offset = cursorPlainRef.current;
+      pausedRef.current = false;
       setIsPaused(false);
-      playingRef.current = true;
-      startProgressRaf();
+      playFrom(offset);
       return;
     }
+    // Immediate hard pause. Chromium pause() often lags ~1–2s on chunks.
+    // cancel() stops now; keep session (isPlaying) so next press resumes.
     pausedAccumMsRef.current += Date.now() - sessionStartMsRef.current;
-    pauseTTS();
-    setIsPaused(true);
+    sessionIdRef.current += 1;
     playingRef.current = false;
+    pausedRef.current = true;
+    isPlayingRef.current = true;
     stopRaf();
-  }, [isPaused, isPlaying, play, startProgressRaf, stopRaf]);
+    stopTTS("story");
+    setIsPaused(true);
+    setIsPlaying(true);
+  }, [play, playFrom, stopRaf]);
 
   const stop = useCallback(() => {
     // Bump before cancel() for the same reason as in playFrom — some

@@ -6,25 +6,29 @@ type Listener = (source: TTSSource | null) => void;
 let active: TTSSource | null = null;
 const listeners = new Set<Listener>();
 
-// Round 1 added a setInterval pause()+resume() "heartbeat" here to dodge
-// Chromium's ~15s silent-cutoff on long utterances. Round 2 removed it:
-// live testing showed the highlight desyncing ("coming from beginning")
-// on a ~10s cadence that matches the heartbeat interval exactly. Per the
-// Web Speech API spec, onboundary's charIndex is defined relative to the
-// utterance's own text, but Chromium is known to rebase/reset that counter
-// around pause()/resume() cycles on long-running utterances — repeatedly
-// nudging the engine every 10s was very likely re-triggering that rebase
-// on a timer, not just mitigating the cutoff.
-//
-// The cutoff itself is now avoided at the source (StoryReader.tsx chunks
-// the article into short, sentence-aligned utterances chained via
-// utterance.onend instead of speaking one long utterance) — so no
-// keep-alive nudge is needed at all. pause()/resume() below are still
-// used, but only for a single genuine user-initiated pause/resume, never
-// on a repeating timer, which carries far less of the same risk.
+/**
+ * Monotonic generation for speak scheduling.
+ * cancel() often fires the previous utterance's onend/onerror *after* a new
+ * startTTS() already set `active` again. Without a generation check those
+ * late handlers null `active` and the pending speak() is skipped — so play
+ * appears to die after ~1s with a stuck UI.
+ */
+let speakGen = 0;
 
 function notify() {
   for (const fn of listeners) fn(active);
+}
+
+function unstickSynth(): void {
+  if (typeof window === "undefined" || !window.speechSynthesis) return;
+  // Chrome can leave the synth "paused" after cancel(); speak() then no-ops.
+  try {
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+    }
+  } catch {
+    /* ignore */
+  }
 }
 
 export function startTTS(
@@ -33,15 +37,26 @@ export function startTTS(
 ): void {
   if (typeof window === "undefined" || !window.speechSynthesis) return;
 
-  window.speechSynthesis.cancel();
+  const gen = ++speakGen;
   active = source;
   notify();
+
+  // Cancel prior utterance after claiming gen so late handlers see stale gen.
+  try {
+    window.speechSynthesis.cancel();
+  } catch {
+    /* ignore */
+  }
+  unstickSynth();
 
   const prevEnd = utterance.onend;
   const prevErr = utterance.onerror;
 
-  utterance.onend = function (this: SpeechSynthesisUtterance, e: SpeechSynthesisEvent) {
-    if (active === source) {
+  utterance.onend = function (
+    this: SpeechSynthesisUtterance,
+    e: SpeechSynthesisEvent,
+  ) {
+    if (gen === speakGen && active === source) {
       active = null;
       notify();
     }
@@ -52,43 +67,71 @@ export function startTTS(
     this: SpeechSynthesisUtterance,
     e: SpeechSynthesisErrorEvent,
   ) {
-    if (active === source) {
+    if (gen === speakGen && active === source) {
       active = null;
       notify();
     }
     if (typeof prevErr === "function") prevErr.call(this, e);
   };
 
-  // Calling speak() synchronously right after cancel() is a documented
-  // Chromium race that can silently drop the speak() call — defer by one
-  // tick so cancel() has settled first.
-  setTimeout(() => {
-    if (active !== source) return; // superseded by a newer call in the meantime
-    window.speechSynthesis.speak(utterance);
-  }, 0);
+  // speak() right after cancel() is a documented Chromium race — defer.
+  window.setTimeout(() => {
+    if (gen !== speakGen || active !== source) return;
+    unstickSynth();
+    try {
+      window.speechSynthesis.speak(utterance);
+    } catch {
+      /* ignore */
+    }
+  }, 40);
 }
 
 export function stopTTS(source?: TTSSource): void {
   if (typeof window === "undefined" || !window.speechSynthesis) return;
-  if (!source || active === source) {
+  // Another source owns TTS — leave it alone.
+  if (source && active && active !== source) return;
+
+  speakGen += 1; // invalidate pending speak timeouts
+  try {
     window.speechSynthesis.cancel();
-    active = null;
-    notify();
+  } catch {
+    /* ignore */
   }
+  unstickSynth();
+  try {
+    window.speechSynthesis.cancel();
+  } catch {
+    /* ignore */
+  }
+  active = null;
+  notify();
 }
 
 export function pauseTTS(): void {
   if (typeof window === "undefined" || !window.speechSynthesis) return;
-  window.speechSynthesis.pause();
+  try {
+    window.speechSynthesis.pause();
+  } catch {
+    /* ignore */
+  }
 }
 
 export function resumeTTS(): void {
   if (typeof window === "undefined" || !window.speechSynthesis) return;
-  window.speechSynthesis.resume();
+  try {
+    window.speechSynthesis.resume();
+  } catch {
+    /* ignore */
+  }
 }
 
 export function getActiveSource(): TTSSource | null {
   return active;
+}
+
+export function isSynthLive(): boolean {
+  if (typeof window === "undefined" || !window.speechSynthesis) return false;
+  return window.speechSynthesis.speaking || window.speechSynthesis.pending;
 }
 
 export function subscribeTTS(fn: Listener): () => void {
