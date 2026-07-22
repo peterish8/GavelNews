@@ -89,7 +89,7 @@ export function AppShell({
       />
 
       <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border-app bg-[color-mix(in_srgb,var(--bg)_94%,transparent)] px-3 backdrop-blur-xl sm:px-4">
+        <header className="relative flex shrink-0 items-center gap-2 border-b border-border-app bg-[color-mix(in_srgb,var(--bg)_94%,transparent)] px-3 py-1.5 backdrop-blur-xl sm:px-4">
           {/* Mobile: open when drawer closed */}
           <button
             type="button"
@@ -114,20 +114,21 @@ export function AppShell({
             </button>
           )}
 
-          {/* Nameplate — centered within remaining space via flex-1 */}
+          {/* Nameplate — absolutely centered against the full header width so
+              NavSearch expanding/collapsing on the right never shifts it */}
           <Link
             href="/"
-            className="link-press flex min-w-0 flex-1 items-center justify-center gap-1.5"
+            className="link-press absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-0.5"
           >
-            <span className="truncate font-serif text-base font-bold tracking-tight text-ink sm:text-lg">
+            <span className="font-serif text-lg font-bold tracking-tight text-ink sm:text-xl">
               Gavel News
             </span>
-            <span className="hidden shrink-0 font-mono text-[9px] font-medium uppercase tracking-[0.14em] text-ink-3 sm:inline">
-              · Daily Legal Brief
+            <span className="font-mono text-[9px] font-medium uppercase tracking-[0.14em] text-ink-3">
+              Daily Legal Brief
             </span>
           </Link>
 
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="ml-auto flex shrink-0 items-center gap-2">
             <NavSearch />
             {!signedIn && (
               <Link
