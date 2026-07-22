@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A free, public current-affairs reading website for CLAT PG aspirants. It reads published stories from Supabase (synced there by a separate engine repo, `gavel-news`, where an admin + Claude Code produce daily current-affairs pieces). Reading requires a free account (Google or email).
+A free current-affairs reading website for CLAT PG aspirants. It reads published stories from Supabase (synced there by a separate engine repo, `gavel-news`, where an admin + Claude Code produce daily current-affairs pieces). Story pages are publicly readable in teaser form (headline, summary, what happened, background) for SEO and shareability; the deeper value (why it matters, key points, PYQ connection, favorite/mark-complete) requires a free account (Google or email).
 
 ## Core Value
 
@@ -26,14 +26,16 @@ This means two things pull in the same direction, not opposite ones: the reading
 - [ ] On first login, user answers exactly one onboarding question: which year they're studying / attempt year
 - [ ] User can view today's current-affairs edition as a feed (headline, summary, category, date, reading time)
 - [ ] User can filter the feed by exam relevance and a small set of categories
-- [ ] User can open a story and read: what happened, background, key points, sources, one plain-English "why this matters" explanation, and its connection to past CLAT questions (PYQ) where one exists
-- [ ] User can favorite a story and mark it complete
+- [ ] Anyone (signed in or not) can open a story and read a public teaser: headline, summary, what happened, background, sources
+- [ ] Signed-in users additionally see: key points, one plain-English "why this matters" explanation, and its connection to past CLAT questions (PYQ) where one exists
+- [ ] User can favorite a story and mark it complete (requires sign-in)
 - [ ] User can browse a basic chronological archive of past editions
 - [ ] User can search stories by title/keyword
 - [ ] User can update their exam year, toggle theme, and sign out from a settings page
 - [ ] Site is mobile-first, usable on low-end Android devices, and meets baseline accessibility (semantic HTML, contrast, keyboard nav)
 - [ ] All user data (favorites, reading progress, profile) is protected by Supabase Row Level Security — public visitors can only read published story content
 - [ ] Public story pages are set up for basic SEO (metadata, OG tags) since organic reach grows the list this product exists to build
+- [ ] Signup flow includes a real Privacy Policy / Terms page and honest consent copy — this product's stated purpose (reading) and actual purpose (list-building for a separate, undisclosed future product) diverge, which India's DPDP Act 2023 treats as a specific-purpose consent question, not a formality
 
 ### Out of Scope
 
@@ -69,6 +71,8 @@ This means two things pull in the same direction, not opposite ones: the reading
 | One plain-English relevance explanation instead of numeric UG/PG/confidence scores | Consistent with the engine's founding rejection of scoring formulas; also cheaper to produce correctly | — Pending |
 | CLAT PG treated as the primary/only audience for v1 | Repeatedly stated when explaining the funnel motive; not yet explicitly confirmed as an exclusion of UG | — Pending, revisit if unclear later |
 | Quiz, revision, planner, analytics, notifications, ads all deferred past v1 | None of them are needed to prove the core reading + signup loop; each is a substantial build on its own | — Pending |
+| Teaser pattern: story pages publicly readable in summary form, full depth gated behind signup | Original "reading requires an account" requirement directly conflicted with "public SEO pages drive the list" — a login wall can't be indexed or shared. Teaser serves both: crawlable/shareable content plus a real reason to sign up. Surfaced by pitfalls research. | — Pending |
+| Privacy Policy/Terms + explicit consent copy is a v1 deliverable, not later polish | Product's stated purpose (reading) diverges from its actual purpose (list-building for an undisclosed future product); India's DPDP Act 2023 treats that gap as a consent violation risk. Surfaced by pitfalls research. | — Pending |
 
 ## Evolution
 
