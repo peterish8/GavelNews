@@ -10,6 +10,7 @@ import { CompleteButton } from "@/components/CompleteButton";
 import { RelatedStories } from "@/components/RelatedStories";
 import { PYQSidebar } from "@/components/PYQSidebar";
 import { SignInGate } from "@/components/SignInGate";
+import { StoryReader } from "@/components/StoryReader";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -44,14 +45,12 @@ export default async function StoryPage({ params }: PageProps) {
   const related = await data.getRelatedStories(story.id);
   const meta = CATEGORY_META[story.category];
 
-  // Sidebar only when there is something real to put in it — never leave
-  // a dead 280px column for anonymous visitors without PYQ content.
   const showSidebar =
     user.signedIn &&
     (Boolean(story.pyqKeyword) || related.length > 0);
 
   return (
-    <article className="mx-auto max-w-5xl px-5 py-10 md:py-14">
+    <article className="relative mx-auto max-w-5xl px-5 py-10 pb-28 md:py-14 md:pb-32">
       <nav className="mb-6 flex items-center gap-1.5 text-xs text-ink-3">
         <Link href="/" className="transition-colors hover:text-ink">
           Today
@@ -127,84 +126,85 @@ export default async function StoryPage({ params }: PageProps) {
             : "grid gap-10"
         }
       >
-        <div className="prose-article max-w-none">
-          <section className="mb-10">
-            <h2>What happened</h2>
-            {story.whatHappened.split("\n\n").map((para, i) => (
-              <p key={i}>{para}</p>
-            ))}
-          </section>
+        {/* Story body + TTS (Gavelogy JudgmentReaderPill / useNoteTTS) */}
+        <StoryReader title={story.title}>
+          <div className="prose-article max-w-none">
+            <section className="mb-10">
+              <h2>What happened</h2>
+              {story.whatHappened.split("\n\n").map((para, i) => (
+                <p key={i}>{para}</p>
+              ))}
+            </section>
 
-          <section className="mb-10">
-            <h2>Background</h2>
-            {story.background.split("\n\n").map((para, i) => (
-              <p key={i}>{para}</p>
-            ))}
-          </section>
+            <section className="mb-10">
+              <h2>Background</h2>
+              {story.background.split("\n\n").map((para, i) => (
+                <p key={i}>{para}</p>
+              ))}
+            </section>
 
-          {user.signedIn ? (
-            <>
-              {story.whatCourtHeld && (
-                <section className="mb-10">
-                  <h2>What the court held</h2>
-                  {story.whatCourtHeld.split("\n\n").map((para, i) => (
-                    <p key={i}>{para}</p>
-                  ))}
+            {user.signedIn ? (
+              <>
+                {story.whatCourtHeld && (
+                  <section className="mb-10">
+                    <h2>What the court held</h2>
+                    {story.whatCourtHeld.split("\n\n").map((para, i) => (
+                      <p key={i}>{para}</p>
+                    ))}
+                  </section>
+                )}
+
+                <section className="surface-emphasis mb-10 p-5 md:p-6">
+                  <h2 className="!mt-0 !text-[var(--gv-warn)]">
+                    Why it matters for CLAT
+                  </h2>
+                  <p className="!mb-0">{story.whyItMatters}</p>
                 </section>
-              )}
 
-              {/* Higher visual weight than plain sections */}
-              <section className="surface-emphasis mb-10 p-5 md:p-6">
-                <h2 className="!mt-0 !text-[var(--gv-warn)]">
-                  Why it matters for CLAT
-                </h2>
-                <p className="!mb-0">{story.whyItMatters}</p>
-              </section>
+                <section className="mb-10">
+                  <h2>Key points</h2>
+                  <ul>
+                    {story.keyPoints.map((kp, i) => (
+                      <li key={i}>{kp.text}</li>
+                    ))}
+                  </ul>
+                </section>
+              </>
+            ) : (
+              <SignInGate
+                benefit={
+                  story.pyqKeyword
+                    ? "Exam layer + past questions on this topic"
+                    : "Exam layer: why it matters + key points"
+                }
+                context="exam-layer"
+              />
+            )}
 
-              <section className="mb-10">
-                <h2>Key points</h2>
-                <ul>
-                  {story.keyPoints.map((kp, i) => (
-                    <li key={i}>{kp.text}</li>
+            {story.sources.length > 0 && (
+              <section>
+                <h2>Sources</h2>
+                <ul className="!list-none !pl-0">
+                  {story.sources.map((src, i) => (
+                    <li key={i} className="!mb-3 flex items-start gap-3">
+                      <span className="mt-0.5 inline-flex shrink-0 rounded-full border border-border-app bg-elevated-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-ink-3">
+                        {src.type.replace("_", " ")}
+                      </span>
+                      <a
+                        href={src.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[15px] leading-snug"
+                      >
+                        {src.name}
+                      </a>
+                    </li>
                   ))}
                 </ul>
               </section>
-            </>
-          ) : (
-            /* ONE conversion panel — not three stacked gates */
-            <SignInGate
-              benefit={
-                story.pyqKeyword
-                  ? "Exam layer + past questions on this topic"
-                  : "Exam layer: why it matters + key points"
-              }
-              context="exam-layer"
-            />
-          )}
-
-          {story.sources.length > 0 && (
-            <section>
-              <h2>Sources</h2>
-              <ul className="!list-none !pl-0">
-                {story.sources.map((src, i) => (
-                  <li key={i} className="!mb-3 flex items-start gap-3">
-                    <span className="mt-0.5 inline-flex shrink-0 rounded-full border border-border-app bg-elevated-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-ink-3">
-                      {src.type.replace("_", " ")}
-                    </span>
-                    <a
-                      href={src.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[15px] leading-snug"
-                    >
-                      {src.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-        </div>
+            )}
+          </div>
+        </StoryReader>
 
         {showSidebar && (
           <aside className="space-y-6">

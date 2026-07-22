@@ -581,3 +581,116 @@ body {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* ── Gavelogy-style TTS reader bar + click-to-speak ────────────────
+   Ported from Gavelogy_trail brand-system (.gav-reader-bar / dropdowns)
+   and use-note-tts .speaking highlight. */
+.gav-reader-bar {
+  pointer-events: auto;
+  display: flex;
+  width: 100%;
+  max-width: 720px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-radius: 30px;
+  border: 1px solid var(--app-border);
+  background: color-mix(in srgb, var(--app-elevated) 96%, transparent);
+  padding: 0.65rem 1rem;
+  box-shadow:
+    0 8px 32px rgba(19, 15, 42, 0.12),
+    0 1px 0 rgba(255, 255, 255, 0.5) inset;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+:root.dark .gav-reader-bar {
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.45),
+    0 1px 0 rgba(255, 255, 255, 0.06) inset;
+}
+
+.gav-dropdown {
+  border-radius: 0.75rem;
+  border: 1px solid var(--app-border-strong, var(--app-border));
+  background: var(--app-elevated);
+  box-shadow: 0 12px 40px rgba(19, 15, 42, 0.14);
+  color: var(--ink);
+}
+
+.gav-dropdown--portal {
+  z-index: 10000;
+  min-width: 10rem;
+  padding: 0.25rem 0;
+  animation: gav-dropdown-in 120ms ease-out;
+}
+
+@keyframes gav-dropdown-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.gav-dropdown-item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--ink);
+  transition: background 120ms ease;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.gav-dropdown-item:hover {
+  background: var(--brand-soft);
+}
+
+.gav-dropdown-item--active {
+  font-weight: 600;
+  color: var(--brand);
+  background: var(--brand-soft);
+}
+
+.gav-dropdown-label {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.gav-dropdown-divider {
+  margin: 0.25rem 0;
+  height: 1px;
+  background: var(--app-border);
+}
+
+/* Click-to-speak active paragraph (from Gavelogy use-note-tts) */
+.story-tts-root p,
+.story-tts-root li,
+.story-tts-root h2,
+.story-tts-root h3 {
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 160ms ease, box-shadow 160ms ease;
+}
+
+.story-tts-root p:hover,
+.story-tts-root li:hover {
+  background: color-mix(in srgb, var(--brand-soft) 70%, transparent);
+}
+
+.story-tts-root .speaking {
+  background: color-mix(in srgb, var(--brand-soft) 100%, transparent);
+  box-shadow: inset 3px 0 0 var(--brand);
+}

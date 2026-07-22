@@ -256,7 +256,8 @@ export function NewsReaderPill({ getContent, title }: NewsReaderPillProps) {
                   key={speed}
                   type="button"
                   onClick={() => {
-                    setSpeedIdx(SPEEDS.indexOf(speed) as 0 | 1 | 2 | 3 | 4 | 5 | 6);
+                    const idx = SPEEDS.indexOf(speed);
+                    if (idx >= 0) setSpeedIdx(idx);
                     setShowControlsMenu(false);
                   }}
                   className={cn(
