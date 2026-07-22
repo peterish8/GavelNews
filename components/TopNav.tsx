@@ -19,7 +19,7 @@ const PRIMARY_NAV: NavItem[] = [
   { href: "/", label: "Today", match: (p) => p === "/" },
   {
     href: "/archive",
-    label: "Archive",
+    label: "Calendar",
     match: (p) => p.startsWith("/archive") || p.startsWith("/edition"),
   },
   {
@@ -206,7 +206,7 @@ export default function TopNav({
             </div>
             <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-3">
               <Link href="/archive" className="hover:text-brand">
-                Past editions
+                Calendar
               </Link>
               {!signedIn && (
                 <>

@@ -26,7 +26,7 @@ export function Footer() {
             </li>
             <li>
               <Link href="/archive" className="link-press hover:text-brand">
-                Archive
+                Calendar
               </Link>
             </li>
             <li>

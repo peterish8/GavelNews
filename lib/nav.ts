@@ -23,8 +23,8 @@ export const NAV_ITEMS: NavItem[] = [
   },
   {
     href: "/archive",
-    label: "Archive",
-    description: "Past daily editions",
+    label: "Calendar",
+    description: "Browse editions by date",
     match: (p) => p.startsWith("/archive") || p.startsWith("/edition"),
     section: "read",
   },

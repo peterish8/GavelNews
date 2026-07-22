@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Sidebar, PanelLeftIcon } from "./Sidebar";
 import { Footer } from "./Footer";
 import { NavSearch } from "./NavSearch";
-import { signInHref } from "@/lib/nav";
+import { NAV_ITEMS, signInHref } from "@/lib/nav";
 
 const COLLAPSE_KEY = "gavel-sidebar-collapsed";
 
@@ -131,7 +131,29 @@ export function AppShell({
             </span>
           </Link>
 
-          <div className="ml-auto flex shrink-0 items-center gap-2">
+          <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+            {/* Primary links in the top bar (Calendar → /archive) */}
+            <nav
+              className="flex items-center rounded-full border border-border-app bg-elevated/80 p-0.5"
+              aria-label="Primary"
+            >
+              {NAV_ITEMS.filter((item) => item.section === "read").map((item) => {
+                const active = item.match(pathname);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`pressable rounded-full px-2 py-1 text-[11px] font-semibold transition-colors sm:px-3 sm:text-[12px] ${
+                      active
+                        ? "bg-brand text-[var(--on-accent,#fff)] shadow-sm"
+                        : "text-ink-2 hover:bg-brand-soft hover:text-brand"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
             <NavSearch />
             {!signedIn && (
               <Link

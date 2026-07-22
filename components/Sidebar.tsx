@@ -318,14 +318,29 @@ function NavIcon({ name }: { name: string }) {
           />
         </svg>
       );
-    case "Archive":
+    case "Calendar":
       return (
         <svg {...common}>
-          <path
-            d="M4 7h16v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7zM2 5h20v2H2z"
+          <rect
+            x="3"
+            y="5"
+            width="18"
+            height="16"
+            rx="2"
             stroke="currentColor"
             strokeWidth="1.7"
-            strokeLinejoin="round"
+          />
+          <path
+            d="M3 10h18M8 3v4M16 3v4"
+            stroke="currentColor"
+            strokeWidth="1.7"
+            strokeLinecap="round"
+          />
+          <path
+            d="M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
           />
         </svg>
       );

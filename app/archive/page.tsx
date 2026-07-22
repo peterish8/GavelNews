@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CalendarBrowser } from "@/components/CalendarBrowser";
 import { getDataSource } from "@/lib/data";
 import { formatDate } from "@/lib/format";
 import { CATEGORY_META } from "@/lib/types";
@@ -20,6 +21,15 @@ export default async function ArchivePage() {
           Every edition, going back as far as we&apos;ve published.
         </p>
       </header>
+
+      <CalendarBrowser archive={archive} />
+
+      <div className="mb-5 flex items-end gap-3">
+        <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-3">
+          Browse as list
+        </h2>
+        <div className="mb-1 h-px flex-1 bg-border-app/80" aria-hidden />
+      </div>
 
       <div className="space-y-12">
         {archive.map((m) => (
