@@ -35,7 +35,25 @@ const LANGS = [
 ] as const;
 
 const HIGHLIGHT_NAME = "gavel-tts-word";
+const HIGHLIGHT_STYLE_ID = "gavel-tts-word-highlight-style";
 const WPM = 150; // used for duration estimate when boundary events are sparse
+
+/**
+ * Inject ::highlight() styles at runtime.
+ * Lightning CSS (Next production CSS optimizer) does not recognize
+ * ::highlight(custom-name) and emits a build warning if left in globals.css.
+ */
+function ensureHighlightStyles() {
+  if (typeof document === "undefined") return;
+  if (document.getElementById(HIGHLIGHT_STYLE_ID)) return;
+  const style = document.createElement("style");
+  style.id = HIGHLIGHT_STYLE_ID;
+  style.textContent = `::highlight(${HIGHLIGHT_NAME}) {
+  background-color: #fef08a;
+  color: inherit;
+}`;
+  document.head.appendChild(style);
+}
 
 // ── DOM text helpers (read-only — never split/wrap text nodes) ───────
 
@@ -175,6 +193,7 @@ function highlightWordAtOffset(
   wordLen: number,
 ) {
   clearWordHighlight(root);
+  ensureHighlightStyles();
 
   const full = root.textContent ?? "";
   if (!full || absStart < 0 || absStart >= full.length) return;

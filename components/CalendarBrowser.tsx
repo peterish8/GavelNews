@@ -122,21 +122,21 @@ export function CalendarBrowser({ archive }: CalendarBrowserProps) {
 
   return (
     <section className="mb-10" aria-label="Browse editions by date">
-      {/* Compact calendar — constrained so it doesn't eat the whole page */}
-      <div className="glass-card mx-auto w-full max-w-[22rem] overflow-hidden p-3.5 sm:max-w-[24rem] sm:p-4">
+      {/* Mid-size calendar — uses available width, keeps row height compact */}
+      <div className="glass-card mx-auto w-full max-w-2xl overflow-hidden p-4 sm:p-5 md:max-w-3xl">
         {/* Month header */}
-        <div className="mb-3 flex items-center justify-between gap-2">
+        <div className="mb-3.5 flex items-center justify-between gap-2">
           <button
             type="button"
             onClick={goPrevMonth}
             disabled={!canPrev}
             aria-label="Previous month with editions"
-            className="btn-press inline-flex size-8 items-center justify-center rounded-full border border-border-app bg-elevated/90 text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand disabled:pointer-events-none disabled:opacity-30"
+            className="btn-press inline-flex size-9 items-center justify-center rounded-full border border-border-app bg-elevated/90 text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand disabled:pointer-events-none disabled:opacity-30"
           >
             <Chevron dir="left" />
           </button>
 
-          <h2 className="font-ui text-base font-bold tracking-tight text-ink sm:text-lg">
+          <h2 className="font-ui text-lg font-bold tracking-tight text-ink sm:text-xl">
             {monthLabel}
           </h2>
 
@@ -145,29 +145,29 @@ export function CalendarBrowser({ archive }: CalendarBrowserProps) {
             onClick={goNextMonth}
             disabled={!canNext}
             aria-label="Next month with editions"
-            className="btn-press inline-flex size-8 items-center justify-center rounded-full border border-border-app bg-elevated/90 text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand disabled:pointer-events-none disabled:opacity-30"
+            className="btn-press inline-flex size-9 items-center justify-center rounded-full border border-border-app bg-elevated/90 text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand disabled:pointer-events-none disabled:opacity-30"
           >
             <Chevron dir="right" />
           </button>
         </div>
 
         {/* Weekday row */}
-        <div className="mb-1 grid grid-cols-7 gap-1">
+        <div className="mb-1.5 grid grid-cols-7 gap-1.5 sm:gap-2">
           {WEEKDAYS.map((d) => (
             <div
               key={d}
-              className="py-0.5 text-center font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-ink-3"
+              className="py-0.5 text-center font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-ink-3 sm:text-[10px]"
             >
               {d}
             </div>
           ))}
         </div>
 
-        {/* Date grid — fixed short cells, not giant squares */}
-        <div className="grid grid-cols-7 gap-1">
+        {/* Date grid — wide cells, short height (uses free width without towering) */}
+        <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
           {cells.map((cell) => {
             if (cell.day === null || !cell.iso) {
-              return <div key={cell.key} className="h-9 sm:h-10" aria-hidden />;
+              return <div key={cell.key} className="h-10 sm:h-11 md:h-12" aria-hidden />;
             }
 
             const edition = editionByDate.get(cell.iso);
@@ -179,9 +179,9 @@ export function CalendarBrowser({ archive }: CalendarBrowserProps) {
               return (
                 <div
                   key={cell.key}
-                  className="flex h-9 cursor-default items-center justify-center rounded-lg border border-transparent sm:h-10"
+                  className="flex h-10 cursor-default items-center justify-center rounded-xl border border-transparent sm:h-11 md:h-12"
                 >
-                  <span className="font-ui text-xs font-medium tabular-nums text-ink-3/45 sm:text-[13px]">
+                  <span className="font-ui text-[13px] font-medium tabular-nums text-ink-3/45 sm:text-sm">
                     {cell.day}
                   </span>
                 </div>
@@ -198,7 +198,7 @@ export function CalendarBrowser({ archive }: CalendarBrowserProps) {
                 whileHover={
                   reduceMotion
                     ? undefined
-                    : { scale: 1.05, y: -1 }
+                    : { scale: 1.03, y: -1 }
                 }
                 whileTap={reduceMotion ? undefined : { scale: 0.95 }}
                 transition={
@@ -206,14 +206,14 @@ export function CalendarBrowser({ archive }: CalendarBrowserProps) {
                     ? { duration: 0 }
                     : { type: "spring", stiffness: 480, damping: 28 }
                 }
-                className={`relative flex h-9 flex-col items-center justify-center rounded-lg border transition-shadow duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)] sm:h-10 ${
+                className={`relative flex h-10 flex-col items-center justify-center rounded-xl border transition-shadow duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)] sm:h-11 md:h-12 ${
                   isSelected
                     ? "border-brand bg-brand text-[var(--on-accent,#fff)] shadow-sm ring-2 ring-brand"
                     : "border-brand-border bg-brand-soft text-brand hover:shadow-sm"
                 }`}
               >
                 <span
-                  className={`font-ui text-xs font-bold tabular-nums sm:text-sm ${
+                  className={`font-ui text-sm font-bold tabular-nums sm:text-[15px] ${
                     isSelected ? "text-[var(--on-accent,#fff)]" : "text-ink"
                   }`}
                 >
@@ -221,7 +221,7 @@ export function CalendarBrowser({ archive }: CalendarBrowserProps) {
                 </span>
 
                 <span
-                  className={`absolute -right-0.5 -top-0.5 flex size-3.5 items-center justify-center rounded-full text-[8px] font-bold tabular-nums sm:size-4 sm:text-[9px] ${
+                  className={`absolute right-0.5 top-0.5 flex size-4 items-center justify-center rounded-full text-[9px] font-bold tabular-nums sm:size-[1.125rem] sm:text-[10px] ${
                     isSelected
                       ? "bg-[var(--on-accent,#fff)] text-brand"
                       : "bg-brand text-[var(--on-accent,#fff)]"

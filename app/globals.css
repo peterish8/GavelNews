@@ -584,8 +584,8 @@ body {
 
 /* ── Gavelogy-style TTS reader bar + click-to-speak ────────────────
    Ported from Gavelogy_trail brand-system (.gav-reader-bar / dropdowns).
-   Only the single spoken word is highlighted (::highlight(gavel-tts-word)
-   below) — no paragraph/passage-level tint. */
+   Word highlight uses the CSS Custom Highlight API, injected at runtime
+   from StoryReader (Lightning CSS does not parse ::highlight() names). */
 .gav-reader-bar {
   pointer-events: auto;
   display: flex;
@@ -689,15 +689,6 @@ body {
 .story-tts-root p:hover,
 .story-tts-root li:hover {
   background: color-mix(in srgb, var(--brand-soft) 55%, transparent);
-}
-
-/*
- * Word-by-word highlight — CSS Custom Highlight API (no DOM mutation).
- * Name must match HIGHLIGHT_NAME in StoryReader.tsx ("gavel-tts-word").
- */
-::highlight(gavel-tts-word) {
-  background-color: #fef08a;
-  color: inherit;
 }
 
 /* When the sidebar is collapsed, let wide-viewport pages use the freed-up
