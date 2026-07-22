@@ -12,6 +12,7 @@ import { RelatedStories } from "@/components/RelatedStories";
 import { PYQSidebar } from "@/components/PYQSidebar";
 import { SignInGate } from "@/components/SignInGate";
 import { StoryReader } from "@/components/StoryReader";
+import { ShareButton } from "@/components/ShareButton";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -111,7 +112,7 @@ export default async function StoryPage({ params }: PageProps) {
           <p className="text-lg leading-relaxed text-ink-2">{story.summary}</p>
         )}
 
-        <div className="mt-6">
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
           {user.signedIn ? (
             <div className="flex items-center gap-2">
               <FavoriteButton storyId={story.id} />
@@ -127,6 +128,10 @@ export default async function StoryPage({ params }: PageProps) {
               variant="compact"
             />
           )}
+          <ShareButton
+            title={story.title}
+            url={`${SITE_URL}/story/${story.slug}`}
+          />
         </div>
       </header>
 
