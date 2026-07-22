@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { TopNav } from "@/components/TopNav";
-import { Footer } from "@/components/Footer";
+import { AppShell } from "@/components/AppShell";
+import { getDataSource } from "@/lib/data";
+import { getCurrentUser } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Gavel News — CLAT Current Affairs",
@@ -15,8 +16,6 @@ export const metadata: Metadata = {
   },
 };
 
-// Theme bootstrap — runs before paint so we don't flash the wrong palette.
-// Reads localStorage / prefers-color-scheme and sets html.classList.
 const themeBootstrap = `
 (function () {
   try {
@@ -28,20 +27,40 @@ const themeBootstrap = `
 })();
 `;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const data = getDataSource();
+  const [today, archive, user] = await Promise.all([
+    data.getTodayEdition(),
+    data.getArchive(),
+    getCurrentUser(),
+  ]);
+  const editionIndex = archive.reduce((n, m) => n + m.editions.length, 0);
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
       </head>
-      <body className="min-h-screen bg-surface text-ink antialiased">
-        <TopNav />
-        <main className="min-h-[calc(100vh-160px)]">{children}</main>
-        <Footer />
+      <body
+        className="h-dvh overflow-hidden text-ink antialiased"
+        suppressHydrationWarning
+      >
+        <div className="ambient-sunrise" aria-hidden />
+        <div className="relative z-[1] h-dvh overflow-hidden">
+          <AppShell
+            signedIn={user.signedIn}
+            email={user.email}
+            editionDate={today.date}
+            storyCount={today.stories.length}
+            editionIndex={editionIndex}
+          >
+            {children}
+          </AppShell>
+        </div>
       </body>
     </html>
   );

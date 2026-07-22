@@ -2,18 +2,22 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getDataSource } from "@/lib/data";
+import { getCurrentUser } from "@/lib/auth";
 import { CATEGORY_META } from "@/lib/types";
 import { formatDate, formatReadingTime } from "@/lib/format";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { CompleteButton } from "@/components/CompleteButton";
 import { RelatedStories } from "@/components/RelatedStories";
 import { PYQSidebar } from "@/components/PYQSidebar";
+import { SignInGate } from "@/components/SignInGate";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const data = getDataSource();
   const story = await data.getStory(slug);
@@ -21,21 +25,33 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: `${story.title} — Gavel News`,
     description: story.summary ?? story.whatHappened.slice(0, 160),
+    openGraph: {
+      title: story.title,
+      description: story.summary ?? story.whatHappened.slice(0, 160),
+      type: "article",
+      publishedTime: story.publishedAt,
+    },
   };
 }
 
 export default async function StoryPage({ params }: PageProps) {
   const { slug } = await params;
   const data = getDataSource();
+  const user = await getCurrentUser();
   const story = await data.getStory(slug);
   if (!story) notFound();
 
   const related = await data.getRelatedStories(story.id);
   const meta = CATEGORY_META[story.category];
 
+  // Sidebar only when there is something real to put in it — never leave
+  // a dead 280px column for anonymous visitors without PYQ content.
+  const showSidebar =
+    user.signedIn &&
+    (Boolean(story.pyqKeyword) || related.length > 0);
+
   return (
     <article className="mx-auto max-w-5xl px-5 py-10 md:py-14">
-      {/* Breadcrumb */}
       <nav className="mb-6 flex items-center gap-1.5 text-xs text-ink-3">
         <Link href="/" className="transition-colors hover:text-ink">
           Today
@@ -51,12 +67,16 @@ export default async function StoryPage({ params }: PageProps) {
         <span className="text-ink-2">{meta.label}</span>
       </nav>
 
-      {/* Header */}
       <header className="mb-8 md:mb-10">
         <div className="mb-4 flex flex-wrap items-center gap-2 text-xs">
           <span className="rounded-full border border-brand-border bg-brand-soft px-2.5 py-0.5 font-medium text-brand">
             {meta.label}
           </span>
+          {story.decision === "must_cover" && (
+            <span className="rounded-full border border-brand bg-brand px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--on-accent)]">
+              Must cover
+            </span>
+          )}
           {story.examTags.map((t) => (
             <span
               key={t}
@@ -66,7 +86,9 @@ export default async function StoryPage({ params }: PageProps) {
             </span>
           ))}
           <span className="text-ink-3">·</span>
-          <span className="text-ink-3">{formatReadingTime(story.readingTimeMin)}</span>
+          <span className="text-ink-3">
+            {formatReadingTime(story.readingTimeMin)}
+          </span>
           <span className="text-ink-3">·</span>
           <span className="text-ink-3">{formatDate(story.editionDate)}</span>
         </div>
@@ -79,16 +101,33 @@ export default async function StoryPage({ params }: PageProps) {
           <p className="text-lg leading-relaxed text-ink-2">{story.summary}</p>
         )}
 
-        {/* Action bar */}
-        <div className="mt-6 flex items-center gap-2">
-          <FavoriteButton storyId={story.id} />
-          <CompleteButton storyId={story.id} />
+        <div className="mt-6">
+          {user.signedIn ? (
+            <div className="flex items-center gap-2">
+              <FavoriteButton storyId={story.id} />
+              <CompleteButton storyId={story.id} />
+              <span className="ml-1 text-xs text-ink-3">
+                Signed in as {user.email}
+              </span>
+            </div>
+          ) : (
+            <SignInGate
+              benefit="Save favorites · Mark complete · Track reading"
+              context="actions"
+              variant="compact"
+            />
+          )}
         </div>
       </header>
 
-      {/* Body — article grid */}
-      <div className="grid gap-10 md:grid-cols-[1fr_280px] md:gap-12">
-        <div className="prose-article">
+      <div
+        className={
+          showSidebar
+            ? "grid gap-10 md:grid-cols-[1fr_280px] md:gap-12"
+            : "grid gap-10"
+        }
+      >
+        <div className="prose-article max-w-none">
           <section className="mb-10">
             <h2>What happened</h2>
             {story.whatHappened.split("\n\n").map((para, i) => (
@@ -103,28 +142,45 @@ export default async function StoryPage({ params }: PageProps) {
             ))}
           </section>
 
-          {story.whatCourtHeld && (
-            <section className="mb-10">
-              <h2>What the court held</h2>
-              {story.whatCourtHeld.split("\n\n").map((para, i) => (
-                <p key={i}>{para}</p>
-              ))}
-            </section>
+          {user.signedIn ? (
+            <>
+              {story.whatCourtHeld && (
+                <section className="mb-10">
+                  <h2>What the court held</h2>
+                  {story.whatCourtHeld.split("\n\n").map((para, i) => (
+                    <p key={i}>{para}</p>
+                  ))}
+                </section>
+              )}
+
+              {/* Higher visual weight than plain sections */}
+              <section className="surface-emphasis mb-10 p-5 md:p-6">
+                <h2 className="!mt-0 !text-[var(--gv-warn)]">
+                  Why it matters for CLAT
+                </h2>
+                <p className="!mb-0">{story.whyItMatters}</p>
+              </section>
+
+              <section className="mb-10">
+                <h2>Key points</h2>
+                <ul>
+                  {story.keyPoints.map((kp, i) => (
+                    <li key={i}>{kp.text}</li>
+                  ))}
+                </ul>
+              </section>
+            </>
+          ) : (
+            /* ONE conversion panel — not three stacked gates */
+            <SignInGate
+              benefit={
+                story.pyqKeyword
+                  ? "Exam layer + past questions on this topic"
+                  : "Exam layer: why it matters + key points"
+              }
+              context="exam-layer"
+            />
           )}
-
-          <section className="mb-10 rounded-xl border border-warn/30 bg-warn-soft p-5">
-            <h2 className="!mt-0 !text-[var(--gv-warn)]">Why it matters for CLAT</h2>
-            <p>{story.whyItMatters}</p>
-          </section>
-
-          <section className="mb-10">
-            <h2>Key points</h2>
-            <ul>
-              {story.keyPoints.map((kp, i) => (
-                <li key={i}>{kp.text}</li>
-              ))}
-            </ul>
-          </section>
 
           {story.sources.length > 0 && (
             <section>
@@ -150,11 +206,12 @@ export default async function StoryPage({ params }: PageProps) {
           )}
         </div>
 
-        {/* Sidebar */}
-        <aside className="space-y-6">
-          {story.pyqKeyword && <PYQSidebar keyword={story.pyqKeyword} />}
-          <RelatedStories stories={related} />
-        </aside>
+        {showSidebar && (
+          <aside className="space-y-6">
+            {story.pyqKeyword && <PYQSidebar keyword={story.pyqKeyword} />}
+            <RelatedStories stories={related} />
+          </aside>
+        )}
       </div>
     </article>
   );

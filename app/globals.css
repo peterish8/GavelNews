@@ -1,23 +1,78 @@
 /* ═══════════════════════════════════════════════════════════════════
    GAVEL NEWS LEARNERS — Global stylesheet.
-   Tokens live in tokens.css (copied from Gavelogy, no edits).
-   This file: Tailwind v4 setup, font imports, minimal base reset,
-   and Tailwind → CSS-variable mappings so utility classes like
-   `bg-brand` / `text-ink` work directly.
+   Pattern matches Gavelogy learner-web globals setup:
+   fonts → Tailwind v4 (CSS-first) → tokens → theme bridge → base
+   + glass surface system + premium interaction system.
+   Tokens live only in tokens.css (byte-identical to Gavelogy).
    ═══════════════════════════════════════════════════════════════════ */
 
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap");
 
-@import "tailwindcss";
+/* Pure Tailwind v4 — no tailwindcss-animate / no JS config.
+   Reference hybrid ships animate for shadcn accordion; we don't use those yet. */
+@import "tailwindcss" source(none);
+@source "../**/*.{ts,tsx,js,jsx,mdx}";
 @import "./tokens.css";
 
 @custom-variant dark (&:is(.dark *));
 
-/* ── Tailwind theme bridge — expose tokens as utility classes ── */
+/* ── Tailwind theme bridge — shadcn base + Gavelogy brand utilities ── */
 @theme inline {
-  --color-bg: var(--background);
+  /* shadcn base tokens (same mapping as Gavelogy) */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  /* App uses "accent" as brand-2 (magenta) for favorites etc.
+     shadcn's soft blue accent remains available as --accent CSS var. */
+  --color-accent: var(--gv-accent);
+  --color-accent-foreground: #ffffff;
+  --color-accent-hover: var(--gv-accent-hover);
+  --color-accent-soft: var(--gv-accent-soft);
+  --color-accent-border: var(--gv-accent-border);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  /* Fonts */
+  --font-sans: "Plus Jakarta Sans", "Inter", -apple-system, system-ui, sans-serif;
+  --font-ui: var(--font-ui);
+  --font-display: var(--display-family);
+  --font-mono: "IBM Plex Mono", "Fira Code", monospace;
+  --font-serif: var(--font-serif);
+
+  /* Gavelogy brand / ink utilities used across this app */
+  --color-bg: var(--bg);
   --color-fg: var(--foreground);
   --color-ink: var(--ink);
   --color-ink-2: var(--ink-2);
@@ -29,9 +84,8 @@
   --color-brand-2: var(--brand-2);
   --color-brand-2-hover: var(--brand-2-hover);
   --color-brand-2-soft: var(--brand-2-soft);
-  --color-accent: var(--gv-accent);
-  --color-accent-hover: var(--gv-accent-hover);
-  --color-accent-soft: var(--gv-accent-soft);
+  --color-brand-2-border: var(--brand-2-border);
+  /* Semantic accents (map to gv-* tokens; override shadcn "accent" utilities via these names) */
   --color-success: var(--gv-success);
   --color-success-soft: var(--gv-success-soft);
   --color-warn: var(--gv-warn);
@@ -40,6 +94,7 @@
   --color-danger-soft: var(--gv-danger-soft);
   --color-gold: var(--gv-gold);
   --color-gold-soft: var(--gv-gold-soft);
+  --color-gold-border: var(--gv-gold-border);
   --color-support: var(--gv-support);
   --color-support-soft: var(--gv-support-soft);
   --color-surface: var(--app-surface);
@@ -47,98 +102,431 @@
   --color-elevated-muted: var(--app-elevated-muted);
   --color-border-app: var(--app-border);
   --color-border-app-strong: var(--app-border-strong);
-  --color-panel: var(--gv-panel);
-
-  --font-ui: var(--font-ui);
-  --font-serif: var(--font-serif);
-
-  --radius: var(--radius);
+  --color-panel: var(--panel);
 }
 
-/* ── Minimal modern reset ──────────────────────────────────────────── */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+/* ── Base ─────────────────────────────────────────────────────────── */
 * {
-  margin: 0;
+  border-color: var(--border);
 }
-html,
-body {
+
+html {
   height: 100%;
+  overflow: hidden;
 }
+
 body {
-  font-family: var(--font-ui);
-  background: var(--app-surface);
-  color: var(--ink);
+  font-family: var(--font-ui, var(--font-sans));
+  background: var(--bg, #F7F6FB);
+  color: var(--ink, #130F2A);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  transition:
-    background-color var(--duration-hover) var(--ease-out-strong),
-    color var(--duration-hover) var(--ease-out-strong);
-}
-img,
-picture,
-video,
-canvas,
-svg {
-  display: block;
-  max-width: 100%;
-}
-input,
-button,
-textarea,
-select {
-  font: inherit;
-  color: inherit;
-}
-button {
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-}
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  overflow-wrap: break-word;
-}
-#__next,
-#root {
-  isolation: isolate;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  height: 100%;
+  overflow: hidden;
 }
 
-/* ── Focus rings ───────────────────────────────────────────────────── */
+/* Focus rings */
 :focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* ── Selection ─────────────────────────────────────────────────────── */
+/* Selection */
 ::selection {
   background: var(--brand-soft);
   color: var(--brand-hover);
 }
 
-/* ── Reduced motion ────────────────────────────────────────────────── */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+/* ── Ambient sunrise orb — position:fixed, never scrolls ─────────────
+   Light mode only in theory; currently hidden in both themes (dark orb
+   lives on :root.dark body). Kept so layout can mount the element. */
+.ambient-sunrise {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 65vh;
+  pointer-events: none;
+  z-index: 0;
+
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 108%, rgba(37, 99, 235, 0.12) 0%, rgba(59, 130, 246, 0.07) 45%, transparent 64%),
+    radial-gradient(ellipse 38% 28% at 12% 112%, rgba(99, 102, 241, 0.04) 0%, transparent 58%),
+    radial-gradient(ellipse 44% 34% at 88% 112%, rgba(59, 130, 246, 0.11) 0%, transparent 58%);
+}
+
+/* Light mode: no ambient horizon glow — plain white + dot canvas only */
+:root:not(.dark) .ambient-sunrise {
+  display: none;
+}
+
+/* Hidden in dark mode — dark mode orb lives on :root.dark body */
+.dark .ambient-sunrise {
+  display: none;
+}
+
+/* ── Light mode: soft paper + fine dot canvas ── */
+:root:not(.dark) body {
+  background-color: #f7f8fc;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(37, 99, 235, 0.07), transparent 55%),
+    radial-gradient(circle, rgba(19, 15, 42, 0.055) 1px, transparent 1px);
+  background-size: auto, 22px 22px;
+  background-attachment: fixed;
+}
+
+/* Clamp long card teasers cleanly */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Dark mode body — deep void with bottom-center blue/violet orb ── */
+:root.dark body {
+  background:
+    radial-gradient(ellipse 70% 42% at 50% 108%, rgba(37, 99, 235, 0.07) 0%, transparent 58%),
+    radial-gradient(ellipse 50% 28% at 50% 0%, rgba(59, 130, 246, 0.04) 0%, transparent 62%),
+    radial-gradient(ellipse 40% 24% at 88% 100%, rgba(99, 102, 241, 0.03) 0%, transparent 55%),
+    #050506;
+  background-attachment: fixed;
+}
+
+/* ── Glass utility classes ────────────────────────────────────────── */
+@layer components {
+
+/* Level 1 — standard cards, stat panels */
+.glass-card {
+  background: var(--glass-1);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow), var(--glass-inner-glow);
+  border-radius: var(--card-radius, 14px);
+}
+
+/* Level 2 — elevated panels, modals, popovers */
+.glass-panel {
+  background: var(--glass-2);
+  backdrop-filter: var(--glass-blur-sm);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
+  border: 1px solid var(--glass-border-subtle);
+  box-shadow: var(--glass-shadow-lg), var(--glass-inner-glow);
+  border-radius: var(--card-radius, 14px);
+}
+
+/* Level 3 — header, sticky bars (most opaque) */
+.glass-surface {
+  background: var(--glass-3);
+  backdrop-filter: blur(24px) saturate(1.8);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8);
+  border-bottom: 1px solid var(--glass-border-subtle);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.8), var(--glass-shadow);
+}
+
+/* Ghost / outline buttons & inputs — subtle glass */
+.glass-input {
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--glass-border-subtle);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ── Hierarchy surfaces (deliberate 3-tier scale) ──────────────────
+   hero     → lead story, primary conversion gate
+   standard → must_cover cards, signed-in sidebar
+   muted    → maybe stories, empty states, secondary chrome
+*/
+.surface-hero {
+  position: relative;
+  background: var(--glass-2);
+  backdrop-filter: var(--glass-blur-sm);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
+  border: 1px solid var(--brand-border);
+  box-shadow: var(--glass-shadow-lg), var(--glass-inner-glow);
+  border-radius: calc(var(--card-radius, 14px) + 4px);
+}
+
+.surface-hero::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 3px;
+  border-radius: inherit;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  background: var(--brand-blend);
+  pointer-events: none;
+}
+
+.surface-standard {
+  background: var(--glass-1);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow), var(--glass-inner-glow);
+  border-radius: var(--card-radius, 14px);
+}
+
+.surface-muted {
+  background: color-mix(in srgb, var(--elevated, #fff) 55%, transparent);
+  border: 1px solid color-mix(in srgb, var(--app-border) 70%, transparent);
+  border-radius: calc(var(--card-radius, 14px) - 2px);
+  box-shadow: none;
+}
+
+.surface-gate {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 80% at 0% 0%, rgba(37, 99, 235, 0.10), transparent 55%),
+    var(--glass-2);
+  backdrop-filter: var(--glass-blur-sm);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
+  border: 1px solid var(--brand-border);
+  box-shadow: var(--glass-shadow-lg);
+  border-radius: calc(var(--card-radius, 14px) + 2px);
+}
+
+.surface-emphasis {
+  border: 1px solid color-mix(in srgb, var(--gv-warn) 35%, transparent);
+  background: color-mix(in srgb, var(--gv-warn-soft) 88%, transparent);
+  border-radius: var(--card-radius, 14px);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
+}
+
+:root.dark .surface-muted {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.07);
+}
+
+:root.dark .surface-gate {
+  background:
+    radial-gradient(ellipse 70% 80% at 0% 0%, rgba(37, 99, 235, 0.16), transparent 55%),
+    rgba(14, 14, 16, 0.94);
+}
+
+:root.dark .surface-emphasis {
+  background: color-mix(in srgb, var(--gv-warn-soft) 35%, rgba(14, 14, 16, 0.9));
+  box-shadow: none;
+}
+
+} /* end @layer components — glass bases */
+
+/* ── Light mode: edge-to-centre gradient on glass surfaces ────────── */
+:root:not(.dark) .glass-card {
+  background:
+    radial-gradient(ellipse 78% 52% at 50% 118%, rgba(37, 99, 235, 0.09) 0%, rgba(59, 130, 246, 0.05) 48%, transparent 58%),
+    radial-gradient(ellipse 42% 34% at 0% 100%, rgba(99, 102, 241, 0.03) 0%, transparent 52%),
+    radial-gradient(ellipse 50% 40% at 100% 100%, rgba(59, 130, 246, 0.07) 0%, transparent 52%),
+    rgba(255, 255, 255, 0.68);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(191, 205, 250, 0.55);
+  box-shadow: var(--glass-shadow), var(--glass-inner-glow);
+}
+
+:root:not(.dark) .glass-panel {
+  background:
+    radial-gradient(ellipse 78% 52% at 50% 118%, rgba(37, 99, 235, 0.07) 0%, rgba(59, 130, 246, 0.04) 48%, transparent 58%),
+    radial-gradient(ellipse 42% 34% at 0% 100%, rgba(99, 102, 241, 0.025) 0%, transparent 52%),
+    radial-gradient(ellipse 50% 40% at 100% 100%, rgba(59, 130, 246, 0.06) 0%, transparent 52%),
+    rgba(255, 255, 255, 0.82);
+  backdrop-filter: var(--glass-blur-sm);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
+  border: 1px solid rgba(191, 205, 250, 0.45);
+  box-shadow: var(--glass-shadow-lg), var(--glass-inner-glow);
+}
+
+/* ── Dark glass overrides (from Gavelogy dark-theme generic surfaces) ─ */
+.dark .glass-card {
+  background: rgba(12, 12, 14, 0.94);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.60),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.dark .glass-panel {
+  background: rgba(14, 14, 16, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.dark .glass-surface {
+  background: rgba(6, 6, 8, 0.95);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04), 0 4px 20px rgba(0, 0, 0, 0.50);
+}
+
+.dark .glass-input {
+  background: rgba(14, 14, 16, 0.80);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-color: rgba(255, 255, 255, 0.09);
+}
+
+/* Fallback when backdrop-filter unsupported */
+@supports not (backdrop-filter: blur(1px)) {
+  .glass-card  { background: rgba(255, 255, 255, 0.94); }
+  .glass-panel { background: rgba(255, 255, 255, 0.97); }
+  :root.dark .glass-card  { background: rgba(12,12,14,0.98); }
+  :root.dark .glass-panel { background: rgba(14,14,16,0.99); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PREMIUM INTERACTION SYSTEM
+   transform + opacity only. Custom easing from tokens.css.
+   ═══════════════════════════════════════════════════════════════════ */
+
+@layer components {
+
+.btn-press {
+  transition: transform var(--duration-press) var(--ease-out-strong),
+              background-color var(--duration-hover) ease,
+              color var(--duration-hover) ease,
+              border-color var(--duration-hover) ease,
+              box-shadow var(--duration-hover) ease;
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-press:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.card-interactive {
+  transition: transform var(--duration-hover) var(--ease-out-strong),
+              box-shadow var(--duration-hover) var(--ease-out-strong);
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :root:not(.dark) .card-interactive:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      var(--glass-shadow-lg),
+      0 0 0 1px rgba(37, 99, 235, 0.07),
+      0 16px 48px rgba(37, 99, 235, 0.10);
+  }
+
+  :root.dark .card-interactive:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 8px 40px rgba(0, 0, 0, 0.55),
+      0 0 0 1px rgba(96, 165, 250, 0.14),
+      0 16px 48px rgba(37, 99, 235, 0.12);
   }
 }
 
-/* ── Article prose ─────────────────────────────────────────────────── */
+.card-interactive:active {
+  transform: scale(0.985);
+  transition-duration: 100ms;
+}
+
+.pressable {
+  transition: transform var(--duration-press) var(--ease-out-strong),
+              opacity var(--duration-press) ease;
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+}
+
+.pressable:active {
+  transform: scale(0.97);
+}
+
+.link-press {
+  transition: transform var(--duration-press) var(--ease-out-strong),
+              color var(--duration-hover) ease;
+  display: inline-block;
+}
+
+.link-press:active {
+  transform: scale(0.98);
+}
+
+.icon-btn {
+  transition: transform var(--duration-press) var(--ease-out-strong),
+              background-color var(--duration-hover) ease,
+              color var(--duration-hover) ease;
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.icon-btn:active {
+  transform: scale(0.9);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hover-lift:hover {
+    transform: translateY(-2px);
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.02);
+  }
+
+  .hover-glow:hover {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);
+  }
+}
+
+.popover-enter {
+  transform-origin: var(--radix-popover-content-transform-origin, top);
+  animation: popoverIn var(--duration-dropdown) var(--ease-out-strong) forwards;
+}
+
+@keyframes popoverIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-press,
+  .card-interactive,
+  .pressable,
+  .link-press,
+  .icon-btn {
+    transition: background-color var(--duration-hover) ease,
+                color var(--duration-hover) ease,
+                opacity var(--duration-hover) ease;
+  }
+
+  .btn-press:active:not(:disabled),
+  .card-interactive:active,
+  .pressable:active,
+  .icon-btn:active {
+    transform: none;
+  }
+
+  .card-interactive:hover {
+    transform: none;
+  }
+}
+
+} /* end @layer components — interaction */
+
+/* ── Article prose (Gavel News specific — keep) ───────────────────── */
 .prose-article {
   font-family: var(--font-serif);
   font-size: 17px;
@@ -183,4 +571,13 @@ h6 {
 }
 .prose-article a:hover {
   color: var(--brand-hover);
+}
+
+/* Scrollbar hide utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

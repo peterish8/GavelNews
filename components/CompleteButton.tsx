@@ -2,6 +2,12 @@
 
 import { useEffect, useState } from "react";
 
+// STATE-02 (REQUIREMENTS.md): marking a story complete requires sign-in.
+//
+// Decision (2026-07-22): no localStorage fallback. Same reasoning as
+// FavoriteButton — anonymous visitors see <SignInGate>, not this button.
+// See FavoriteButton.tsx for the full rationale.
+
 const KEY = "gavel-completed";
 
 interface CompleteButtonProps {
@@ -18,7 +24,9 @@ export function CompleteButton({ storyId }: CompleteButtonProps) {
       const raw = localStorage.getItem(KEY);
       const ids: string[] = raw ? JSON.parse(raw) : [];
       setDone(ids.includes(storyId));
-    } catch {}
+    } catch {
+      /* localStorage unavailable; default to not-completed */
+    }
   }, [storyId]);
 
   const toggle = () => {
@@ -28,12 +36,14 @@ export function CompleteButton({ storyId }: CompleteButtonProps) {
       const next = done ? ids.filter((x) => x !== storyId) : [...ids, storyId];
       localStorage.setItem(KEY, JSON.stringify(next));
       setDone(!done);
-    } catch {}
+    } catch {
+      /* fail silently */
+    }
   };
 
   if (!mounted) {
     return (
-      <div className="inline-flex h-[34px] w-[110px] animate-pulse rounded-full border border-border-app bg-elevated" />
+      <div className="inline-flex h-[34px] w-[140px] animate-pulse rounded-full border border-border-app bg-elevated" />
     );
   }
 
@@ -42,10 +52,10 @@ export function CompleteButton({ storyId }: CompleteButtonProps) {
       type="button"
       onClick={toggle}
       aria-pressed={done}
-      className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-all duration-[200ms] ease-out active:scale-[0.94] ${
+      className={`btn-press inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm font-medium ${
         done
           ? "border-success bg-success-soft text-success"
-          : "border-border-app bg-elevated text-ink-2 hover:border-success hover:bg-success-soft hover:text-success"
+          : "border-border-app bg-elevated/80 text-ink-2 hover:border-success hover:bg-success-soft hover:text-success"
       }`}
     >
       {done ? <CheckCircleIcon /> : <CircleIcon />}

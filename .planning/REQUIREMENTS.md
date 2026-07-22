@@ -61,6 +61,11 @@ Deferred to future release. Tracked but not in current roadmap.
 
 - **CONTENT-08**: Story can optionally have a header/thumbnail image. Admin uploads it from the `gavel-news` engine's admin-preview UI; the file is stored on Cloudflare R2 (not Supabase), and only the resulting R2 URL is written to `published_stories`. Blocked on: engine repo adding an optional image-upload field to `editorial.py` / admin-preview, plus an R2 upload step in `supabase_sync.py`.
 
+### Notes & Personal Annotation
+
+- **NOTES-01**: User can write and save a free-text note against any story (own content, not editorial). New — surfaced during the 2026-07-22 layout redesign pass, not previously scoped. Needs its own data model (`notes` table, RLS owner-only) and UI (editor + list view) — do not build inline as part of a layout/visual pass; scope as a separate phase.
+- **NOTES-02**: User can highlight text within a story and have it persist per-user. Same caveat as NOTES-01 — real feature, not a styling task.
+
 ### Retention & Habit
 
 - **STATE-03**: User sees a current streak

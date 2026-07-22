@@ -30,7 +30,7 @@ export function ThemeToggle() {
       <button
         type="button"
         aria-label="Toggle theme"
-        className="inline-flex size-9 items-center justify-center rounded-full border border-border-app bg-elevated text-ink-2 transition-colors hover:border-brand-border hover:text-brand"
+        className="icon-btn inline-flex size-9 items-center justify-center rounded-full border border-border-app bg-elevated/80 text-ink-2 hover:border-brand-border hover:text-brand"
       >
         <span className="block size-4" />
       </button>
@@ -42,7 +42,7 @@ export function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
-      className="inline-flex size-9 items-center justify-center rounded-full border border-border-app bg-elevated text-ink-2 transition-all duration-200 ease-out hover:border-brand-border hover:bg-brand-soft hover:text-brand active:scale-[0.92]"
+      className="icon-btn inline-flex size-9 items-center justify-center rounded-full border border-border-app bg-elevated/80 text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand"
     >
       {isDark ? <SunIcon /> : <MoonIcon />}
     </button>

@@ -8,7 +8,7 @@ interface CategoryFilterProps {
 
 export function CategoryFilter({ selected, onToggle }: CategoryFilterProps) {
   return (
-    <div className="-mx-1 flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-2">
       {ALL_CATEGORIES.map((cat) => {
         const meta = CATEGORY_META[cat];
         const active = selected.includes(cat);
@@ -17,10 +17,10 @@ export function CategoryFilter({ selected, onToggle }: CategoryFilterProps) {
             key={cat}
             type="button"
             onClick={() => onToggle(cat)}
-            className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-[200ms] ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.95] ${
+            className={`btn-press inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-semibold ${
               active
-                ? "border-brand bg-brand text-[var(--on-accent)]"
-                : "border-border-app bg-elevated text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand"
+                ? "border-brand bg-brand text-[var(--on-accent,#fff)] shadow-sm"
+                : "border-border-app bg-elevated/90 text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand"
             }`}
           >
             {active && <CheckIcon />}

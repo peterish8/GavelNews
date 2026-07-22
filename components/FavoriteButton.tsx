@@ -2,6 +2,19 @@
 
 import { useEffect, useState } from "react";
 
+// STATE-01 (REQUIREMENTS.md): favoriting a story requires sign-in.
+//
+// Decision (2026-07-22): no localStorage fallback. Anonymous visitors
+// never see this button at all — the story page renders a <SignInGate>
+// CTA in its place. This matches STATE-01 verbatim and avoids the
+// "merge into account on sign-in" UX complexity. If the product later
+// wants a local-first wishlist, this is the place to add it.
+//
+// Auth check: this component trusts that its parent only mounts it
+// when `getCurrentUser().signedIn === true`. It does not re-check —
+// it is a leaf, not a gate. The page-level gate is in
+// app/story/[slug]/page.tsx.
+
 const KEY = "gavel-favorites";
 
 interface FavoriteButtonProps {
@@ -12,13 +25,18 @@ export function FavoriteButton({ storyId }: FavoriteButtonProps) {
   const [isFav, setIsFav] = useState(false);
   const [mounted, setMounted] = useState(false);
 
+  // Read favorite state on mount. v1 stores in localStorage as a
+  // lightweight cache; post-Supabase this becomes a fetch from the
+  // `favourites` table (RLS will scope the read to the current user).
   useEffect(() => {
     setMounted(true);
     try {
       const raw = localStorage.getItem(KEY);
       const ids: string[] = raw ? JSON.parse(raw) : [];
       setIsFav(ids.includes(storyId));
-    } catch {}
+    } catch {
+      /* localStorage unavailable; default to not-favorited */
+    }
   }, [storyId]);
 
   const toggle = () => {
@@ -28,7 +46,9 @@ export function FavoriteButton({ storyId }: FavoriteButtonProps) {
       const next = isFav ? ids.filter((x) => x !== storyId) : [...ids, storyId];
       localStorage.setItem(KEY, JSON.stringify(next));
       setIsFav(!isFav);
-    } catch {}
+    } catch {
+      /* fail silently — UX should still feel responsive */
+    }
   };
 
   return (
@@ -37,14 +57,14 @@ export function FavoriteButton({ storyId }: FavoriteButtonProps) {
       onClick={toggle}
       aria-pressed={isFav}
       aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
-      className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-all duration-[200ms] ease-out active:scale-[0.94] ${
+      className={`btn-press inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm font-medium ${
         isFav
           ? "border-accent bg-accent-soft text-accent"
-          : "border-border-app bg-elevated text-ink-2 hover:border-accent-border hover:bg-accent-soft hover:text-accent"
+          : "border-border-app bg-elevated/80 text-ink-2 hover:border-accent-border hover:bg-accent-soft hover:text-accent"
       }`}
     >
-      <HeartIcon filled={isFav} />
-      <span>{isFav ? "Favorited" : "Favorite"}</span>
+      <HeartIcon filled={isFav && mounted} />
+      <span>{mounted && isFav ? "Favorited" : "Favorite"}</span>
     </button>
   );
 }

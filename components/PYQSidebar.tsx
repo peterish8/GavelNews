@@ -7,7 +7,7 @@ interface PYQSidebarProps {
 export function PYQSidebar({ keyword }: PYQSidebarProps) {
   const questions = getIllustrativePYQs(keyword);
   return (
-    <div className="rounded-2xl border border-brand-border bg-brand-soft/40 p-5">
+    <div className="surface-hero p-5">
       <div className="mb-3 flex items-center gap-2">
         <span className="inline-flex size-7 items-center justify-center rounded-full bg-brand text-[var(--on-accent)]">
           <PyqIcon />
@@ -19,7 +19,7 @@ export function PYQSidebar({ keyword }: PYQSidebarProps) {
       <p className="mb-3 text-xs text-ink-3">On &quot;{keyword}&quot;</p>
       <ol className="space-y-2.5 text-sm">
         {questions.map((q, i) => (
-          <li key={i} className="rounded-lg bg-elevated p-3 leading-snug text-ink-2">
+          <li key={i} className="rounded-lg bg-elevated/70 p-3 leading-snug text-ink-2">
             <span className="mr-1 font-semibold text-ink">{i + 1}.</span>
             {q}
           </li>

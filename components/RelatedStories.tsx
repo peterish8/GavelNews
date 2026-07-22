@@ -10,7 +10,7 @@ interface RelatedStoriesProps {
 export function RelatedStories({ stories }: RelatedStoriesProps) {
   if (stories.length === 0) return null;
   return (
-    <div className="rounded-2xl border border-border-app bg-elevated p-5">
+    <div className="surface-standard p-5">
       <h3 className="mb-3 font-ui text-xs font-semibold uppercase tracking-wider text-ink-3">
         Related stories
       </h3>
@@ -21,7 +21,7 @@ export function RelatedStories({ stories }: RelatedStoriesProps) {
             <li key={s.id}>
               <Link
                 href={`/story/${s.slug}`}
-                className="group block rounded-lg p-2 -mx-2 transition-colors duration-[200ms] hover:bg-elevated-muted"
+                className="pressable group -mx-2 block rounded-lg p-2 hover:bg-elevated-muted/60"
               >
                 <div className="mb-1 flex items-center gap-1.5 text-[10px]">
                   <span className="rounded-full bg-brand-soft px-1.5 py-0.5 font-medium text-brand">

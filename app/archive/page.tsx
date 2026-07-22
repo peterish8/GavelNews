@@ -8,32 +8,40 @@ export default async function ArchivePage() {
   const archive = await data.getArchive();
 
   return (
-    <div className="mx-auto max-w-3xl px-5 py-12 md:py-16">
-      <header className="mb-10">
-        <h1 className="mb-2 font-ui text-3xl font-semibold tracking-tight text-ink md:text-4xl">
+    <div className="mx-auto max-w-6xl px-5 py-8 md:py-12">
+      <header className="mb-10 border-b border-border-app pb-8">
+        <p className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-3">
+          Back catalog
+        </p>
+        <h1 className="mb-2 font-ui text-4xl font-bold tracking-tight text-ink md:text-5xl">
           Archive
         </h1>
-        <p className="text-ink-2">Every edition, going back as far as we&apos;ve published.</p>
+        <p className="max-w-xl text-ink-2">
+          Every edition, going back as far as we&apos;ve published.
+        </p>
       </header>
 
       <div className="space-y-12">
         {archive.map((m) => (
           <section key={m.month}>
-            <h2 className="mb-5 font-ui text-sm font-semibold uppercase tracking-wider text-ink-3">
-              {m.label}
-            </h2>
-            <ul className="space-y-3">
+            <div className="mb-5 flex items-end gap-3">
+              <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-3">
+                {m.label}
+              </h2>
+              <div className="mb-1 h-px flex-1 bg-border-app/80" aria-hidden />
+            </div>
+            <ul className="grid gap-3 md:grid-cols-2">
               {m.editions.map((ed) => (
                 <li key={ed.date}>
                   <Link
                     href={`/edition/${ed.date}`}
-                    className="group flex items-start gap-4 rounded-xl border border-border-app bg-elevated p-4 transition-all duration-[200ms] ease-out hover:-translate-y-0.5 hover:border-brand-border hover:shadow-[var(--shadow-md)] active:translate-y-0"
+                    className="glass-card card-interactive group flex h-full items-start gap-4 p-5"
                   >
-                    <div className="shrink-0">
-                      <div className="text-2xl font-semibold leading-none text-ink transition-colors group-hover:text-brand">
+                    <div className="flex size-14 shrink-0 flex-col items-center justify-center rounded-2xl border border-border-app bg-elevated-muted">
+                      <div className="font-ui text-2xl font-bold leading-none text-ink transition-colors group-hover:text-brand">
                         {new Date(`${ed.date}T00:00:00Z`).getUTCDate()}
                       </div>
-                      <div className="mt-1 text-[10px] uppercase tracking-wider text-ink-3">
+                      <div className="mt-1 font-mono text-[9px] uppercase tracking-[0.14em] text-ink-3">
                         {new Date(`${ed.date}T00:00:00Z`).toLocaleDateString("en-US", {
                           month: "short",
                           timeZone: "UTC",
@@ -42,20 +50,21 @@ export default async function ArchivePage() {
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <div className="mb-1.5 flex items-center gap-2 text-xs text-ink-3">
+                      <div className="mb-2 flex flex-wrap items-center gap-2 font-mono text-[11px] text-ink-3">
                         <span>{formatDate(ed.date)}</span>
-                        <span>·</span>
+                        <span className="opacity-40">·</span>
                         <span>
-                          {ed.stories.length} {ed.stories.length === 1 ? "story" : "stories"}
+                          {ed.stories.length}{" "}
+                          {ed.stories.length === 1 ? "story" : "stories"}
                         </span>
                       </div>
-                      <ul className="space-y-0.5">
+                      <ul className="space-y-1">
                         {ed.stories.slice(0, 3).map((s) => (
                           <li
                             key={s.id}
-                            className="truncate text-sm text-ink-2 group-hover:text-ink"
+                            className="truncate text-sm font-medium text-ink-2 group-hover:text-ink"
                           >
-                            · {s.title}
+                            {s.title}
                           </li>
                         ))}
                         {ed.stories.length > 3 && (
@@ -64,17 +73,16 @@ export default async function ArchivePage() {
                           </li>
                         )}
                       </ul>
-                    </div>
-
-                    <div className="hidden shrink-0 sm:flex sm:flex-wrap sm:gap-1">
-                      {Array.from(new Set(ed.stories.map((s) => s.category))).map((c) => (
-                        <span
-                          key={c}
-                          className="rounded-full border border-border-app bg-elevated-muted px-1.5 py-0.5 text-[10px] font-medium text-ink-3"
-                        >
-                          {CATEGORY_META[c].shortLabel}
-                        </span>
-                      ))}
+                      <div className="mt-3 hidden flex-wrap gap-1 sm:flex">
+                        {Array.from(new Set(ed.stories.map((s) => s.category))).map((c) => (
+                          <span
+                            key={c}
+                            className="rounded-full border border-border-app bg-elevated-muted px-2 py-0.5 text-[10px] font-medium text-ink-3"
+                          >
+                            {CATEGORY_META[c].shortLabel}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </Link>
                 </li>
