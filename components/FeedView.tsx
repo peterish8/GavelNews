@@ -71,9 +71,9 @@ export function FeedView({
   const dateLabel = editionDate ?? stories[0]?.editionDate;
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-8 md:py-12">
+    <div className="mx-auto max-w-6xl px-5 py-6 md:py-9">
       {/* Edition masthead */}
-      <header className="mb-8 grid gap-6 border-b border-border-app pb-8 md:mb-10 md:grid-cols-[1.4fr_auto] md:items-end md:gap-10 md:pb-10">
+      <header className="mb-5 grid gap-6 border-b border-border-app pb-5 md:mb-6 md:grid-cols-[1.4fr_auto] md:items-end md:gap-10 md:pb-6">
         <div>
           <div className="mb-4 flex flex-wrap items-center gap-2">
             {typeof editionIndex === "number" && editionIndex > 0 && (
@@ -147,7 +147,7 @@ export function FeedView({
       </header>
 
       {/* Filters */}
-      <section className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <section className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="mb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-3">
             Syllabus filter
