@@ -583,22 +583,23 @@ body {
 }
 
 /* ── Gavelogy-style TTS reader bar + click-to-speak ────────────────
-   Ported from Gavelogy_trail brand-system (.gav-reader-bar / dropdowns)
-   and use-note-tts .speaking highlight. */
+   Ported from Gavelogy_trail brand-system (.gav-reader-bar / dropdowns).
+   Only the single spoken word is highlighted (::highlight(gavel-tts-word)
+   below) — no paragraph/passage-level tint. */
 .gav-reader-bar {
   pointer-events: auto;
   display: flex;
   width: 100%;
-  max-width: 720px;
+  max-width: 460px;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
-  border-radius: 30px;
+  gap: 0.5rem;
+  border-radius: 999px;
   border: 1px solid var(--app-border);
   background: color-mix(in srgb, var(--app-elevated) 96%, transparent);
-  padding: 0.65rem 1rem;
+  padding: 0.4rem 0.6rem;
   box-shadow:
-    0 8px 32px rgba(19, 15, 42, 0.12),
+    0 4px 16px rgba(19, 15, 42, 0.1),
     0 1px 0 rgba(255, 255, 255, 0.5) inset;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -606,7 +607,7 @@ body {
 
 :root.dark .gav-reader-bar {
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.45),
+    0 4px 16px rgba(0, 0, 0, 0.4),
     0 1px 0 rgba(255, 255, 255, 0.06) inset;
 }
 
@@ -688,12 +689,6 @@ body {
 .story-tts-root p:hover,
 .story-tts-root li:hover {
   background: color-mix(in srgb, var(--brand-soft) 55%, transparent);
-}
-
-/* Soft paragraph context while a session is active in that block */
-.story-tts-root .speaking {
-  background: color-mix(in srgb, #fef9c3 45%, transparent);
-  box-shadow: inset 3px 0 0 #fde68a;
 }
 
 /*

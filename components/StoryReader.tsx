@@ -202,7 +202,7 @@ function highlightWordAtOffset(
       win.CSS.highlights.set(HIGHLIGHT_NAME, highlight);
     }
   } catch {
-    /* no custom highlight support — paragraph .speaking is enough */
+    /* no CSS Custom Highlight API support in this browser — no highlight */
   }
 
   // Soft scroll without changing layout
@@ -284,16 +284,78 @@ function estimateDurationMs(charCount: number, rate: number): number {
   return Math.round((words / WPM) * 60_000 / rate);
 }
 
-// ── Controller types ────────────────────────────────────────────────
+// ── Long-utterance chunking (round 2) ─────────────────────────────────
+//
+// Round 1 spoke the entire rest of the article as ONE utterance and used a
+// setInterval pause()+resume() "heartbeat" (lib/tts-manager.ts) to dodge
+// Chromium's ~15s silent-cutoff on long utterances. Live testing after
+// round 1 showed the word highlight periodically snapping back toward the
+// start — on roughly the same cadence as the heartbeat. Per the Web Speech
+// API, onboundary's charIndex is scoped to the utterance's own text, but
+// Chromium is known to rebase that counter around pause()/resume() cycles
+// on long utterances, so a nudge every ~10s was very likely the cause of
+// the desync, not just a workaround for the cutoff.
+//
+// Fix: split the remaining text into short, sentence-aligned chunks and
+// chain them with utterance.onend instead of pausing/resuming one long
+// utterance. Every chunk is sized so its *estimated* speaking time stays
+// well under the ~15s cutoff even at the slowest configured rate — so the
+// cutoff never has a chance to matter, and pause()/resume() is only ever
+// called for a single genuine user-initiated pause (not on a timer).
+const CHUNK_BUDGET_MS = 10_000; // stay well clear of the ~15s cliff
+const SLOWEST_RATE = 0.75; // must match the smallest value in SPEEDS
 
-type TtsApi = {
-  playFrom: (plainOffset: number) => void;
-  play: () => void;
-  pauseResume: () => void;
-  stop: () => void;
-  seekPct: (pct: number) => void;
-  getFullText: () => string;
-};
+/** Max characters per chunk so it stays under CHUNK_BUDGET_MS even at the
+ * slowest configured rate (uses the same WPM estimate as estimateDurationMs,
+ * solved for charCount instead of duration). */
+const MAX_CHUNK_CHARS = Math.max(
+  40,
+  Math.floor((CHUNK_BUDGET_MS * SLOWEST_RATE * WPM * 5) / 60_000),
+);
+
+/** Find the offset of the last sentence-ending match strictly inside
+ * `window` (relative offset, or -1 if none). Uses matchAll rather than a
+ * manual exec()-loop so there is no shared regex lastIndex state to manage. */
+function lastSentenceBoundary(window: string): number {
+  const pattern = /[.!?]["']?\s+(?=[A-Z0-9]|$)/g;
+  let last = -1;
+  for (const match of window.matchAll(pattern)) {
+    last = match.index + match[0].length;
+  }
+  return last;
+}
+
+/**
+ * Split `text` into a contiguous sequence of chunks (chunks.join("") === text,
+ * no gaps/overlaps — required so absolute-offset math stays exact across
+ * chunk boundaries). Prefers sentence boundaries; falls back to the nearest
+ * earlier word boundary for sentences longer than MAX_CHUNK_CHARS.
+ */
+function chunkArticleText(text: string): string[] {
+  const chunks: string[] = [];
+  let i = 0;
+
+  while (i < text.length) {
+    let end = Math.min(text.length, i + MAX_CHUNK_CHARS);
+    if (end < text.length) {
+      const lookaheadEnd = Math.min(text.length, end + 60);
+      const window = text.slice(i, lookaheadEnd);
+      const rel = lastSentenceBoundary(window);
+      if (rel > 0) {
+        end = i + rel;
+      } else {
+        // No sentence boundary in range — fall back to the nearest earlier
+        // word boundary so we never split mid-word.
+        let j = end;
+        while (j > i + 1 && !/\s/.test(text[j]!)) j--;
+        if (j > i) end = j;
+      }
+    }
+    chunks.push(text.slice(i, end));
+    i = end;
+  }
+  return chunks.length > 0 ? chunks : [text];
+}
 
 // ── Pill UI ─────────────────────────────────────────────────────────
 
@@ -401,133 +463,133 @@ function NewsReaderPill({
     : null;
 
   return createPortal(
-    <div className="pointer-events-none fixed inset-x-0 bottom-4 z-[60] flex justify-center px-4 md:bottom-6">
+    <div
+      className="pointer-events-none fixed inset-x-0 bottom-4 z-[60] flex justify-center px-3 md:bottom-5"
+      role="group"
+      aria-label={`Listen to ${title ?? "this story"}`}
+    >
       <div className="gav-reader-bar pointer-events-auto">
-        <div className="flex min-w-0 flex-1 items-center gap-2 md:gap-3">
-          <div className="hidden min-w-0 max-w-[9rem] flex-col sm:flex">
-            <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-ink-3">
-              Listen
-            </span>
-            <span className="truncate text-xs font-semibold text-ink">
-              {title ?? "Story"}
-            </span>
-          </div>
+        <button
+          type="button"
+          data-no-tts
+          onClick={isPlaying ? onPauseResume : onPlay}
+          className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-brand text-[var(--on-accent)] shadow-sm hover:bg-brand-hover active:scale-95"
+          aria-label={isPlaying && !isPaused ? "Pause" : "Play"}
+        >
+          {isPlaying && !isPaused ? (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z" />
+            </svg>
+          ) : (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="ml-0.5">
+              <path d="M8 5v14l11-7L8 5z" />
+            </svg>
+          )}
+        </button>
 
-          <div className="hidden h-5 w-px bg-border-app sm:block" />
-
-          <button
-            type="button"
-            data-no-tts
-            onClick={onLang}
-            className="rounded-full border border-brand-border bg-brand-soft px-2.5 py-1 text-[11px] font-semibold tracking-wide text-brand hover:bg-brand hover:text-[var(--on-accent)]"
-            title="Language"
-          >
-            {LANGS[langIdx].label}
-          </button>
-
-          <button
-            type="button"
-            data-no-tts
-            onClick={isPlaying ? onPauseResume : onPlay}
-            className="rounded-full bg-brand p-2.5 text-[var(--on-accent)] shadow-sm hover:bg-brand-hover active:scale-95"
-            aria-label={isPlaying && !isPaused ? "Pause" : "Play"}
-          >
-            {isPlaying && !isPaused ? (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z" />
-              </svg>
-            ) : (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8 5v14l11-7L8 5z" />
-              </svg>
-            )}
-          </button>
-
-          <div
-            data-no-tts
-            className="group relative hidden h-3 w-[140px] cursor-pointer touch-none select-none items-center md:flex lg:w-[200px]"
-            onPointerDown={(e) => {
-              e.preventDefault();
-              const rect = e.currentTarget.getBoundingClientRect();
-              const v = Math.max(
-                0,
-                Math.min(100, ((e.clientX - rect.left) / rect.width) * 100),
-              );
-              setScrubValue(v);
-              setIsScrubbing(true);
-              e.currentTarget.setPointerCapture(e.pointerId);
-            }}
-            onPointerMove={(e) => {
-              if (!isScrubbing) return;
-              const rect = e.currentTarget.getBoundingClientRect();
-              const v = Math.max(
-                0,
-                Math.min(100, ((e.clientX - rect.left) / rect.width) * 100),
-              );
-              setScrubValue(v);
-            }}
-            onPointerUp={(e) => {
-              if (!isScrubbing) return;
-              setIsScrubbing(false);
+        <div
+          data-no-tts
+          className="group relative hidden h-5 w-[110px] cursor-pointer touch-none select-none items-center sm:flex lg:w-[160px]"
+          onPointerDown={(e) => {
+            e.preventDefault();
+            const rect = e.currentTarget.getBoundingClientRect();
+            const v = Math.max(
+              0,
+              Math.min(100, ((e.clientX - rect.left) / rect.width) * 100),
+            );
+            setScrubValue(v);
+            setIsScrubbing(true);
+            e.currentTarget.setPointerCapture(e.pointerId);
+          }}
+          onPointerMove={(e) => {
+            if (!isScrubbing) return;
+            const rect = e.currentTarget.getBoundingClientRect();
+            const v = Math.max(
+              0,
+              Math.min(100, ((e.clientX - rect.left) / rect.width) * 100),
+            );
+            setScrubValue(v);
+          }}
+          onPointerUp={(e) => {
+            if (!isScrubbing) return;
+            setIsScrubbing(false);
+            e.currentTarget.releasePointerCapture(e.pointerId);
+            onSeekPct(scrubValue);
+          }}
+          onPointerCancel={(e) => {
+            setIsScrubbing(false);
+            try {
               e.currentTarget.releasePointerCapture(e.pointerId);
-              onSeekPct(scrubValue);
+            } catch {
+              /* ignore */
+            }
+          }}
+        >
+          {/* Round 2: track was a 4px line inside a 12px hit box (small touch
+              target), and the thumb was fully invisible (opacity-0) except
+              on hover/while-scrubbing — on touch devices (no real ":hover")
+              that meant there was NEVER a visible handle at rest, just a
+              bare line, which reads as "not proper"/broken rather than as a
+              draggable control. Fixed: taller hit box (h-5), slightly
+              thicker track for visibility, and a thumb that's always at
+              least partially visible so its presence as a draggable handle
+              is discoverable without a mouse hover. */}
+          <div className="absolute inset-x-0 h-1.5 rounded-full bg-border-app" />
+          <div
+            className="absolute left-0 h-1.5 rounded-full bg-brand"
+            style={{ width: `${displayProgress}%` }}
+          />
+          <div
+            className={
+              "absolute z-10 h-3 w-3 rounded-full border-2 border-brand bg-elevated shadow transition-opacity " +
+              (isScrubbing
+                ? "opacity-100"
+                : "opacity-70 group-hover:opacity-100")
+            }
+            style={{
+              // `left:0%/100%` + translateX(-50%) centers the thumb exactly
+              // on the track's own edge, pushing half its width past the
+              // track's bounding box and into the flex gap next to the
+              // adjacent play button / time label. clamp() keeps the whole
+              // circle inside the track at both extremes.
+              left: `clamp(6px, ${displayProgress}%, calc(100% - 6px))`,
+              transform: "translateX(-50%)",
             }}
-            onPointerCancel={(e) => {
-              setIsScrubbing(false);
-              try {
-                e.currentTarget.releasePointerCapture(e.pointerId);
-              } catch {
-                /* ignore */
-              }
-            }}
-          >
-            <div className="absolute inset-x-0 h-1.5 rounded-full bg-border-app" />
-            <div
-              className="absolute left-0 h-1.5 rounded-full bg-brand"
-              style={{ width: `${displayProgress}%` }}
-            />
-            <div
-              className={
-                "absolute z-10 h-3.5 w-3.5 rounded-full border-2 border-brand bg-elevated shadow " +
-                (isScrubbing
-                  ? "opacity-100"
-                  : "opacity-0 group-hover:opacity-100")
-              }
-              style={{
-                left: `${displayProgress}%`,
-                transform: "translateX(-50%)",
-              }}
-            />
-          </div>
-
-          <span className="hidden text-sm font-medium tabular-nums text-ink-3 md:inline">
-            {formatTime(elapsedMs)}
-            <span className="text-ink-3/60">
-              {" "}
-              / {formatTime(durationMs)}
-            </span>
-          </span>
-
-          <button
-            type="button"
-            data-no-tts
-            className="rounded-full border border-border-app px-2 py-1 font-mono text-[10px] font-semibold text-ink-2 hover:border-brand-border hover:text-brand"
-            onClick={(e) => {
-              const rect = e.currentTarget.getBoundingClientRect();
-              setMenuPos({
-                top: rect.top - 200,
-                left: rect.left + rect.width / 2,
-              });
-              setShowMenu((v) => !v);
-            }}
-          >
-            {SPEEDS[speedIdx]}x
-          </button>
+          />
         </div>
 
-        <p className="hidden shrink-0 text-[11px] text-ink-3 xl:block">
-          Click text · scrub · play — one session
-        </p>
+        <span className="hidden shrink-0 text-[11px] font-medium tabular-nums text-ink-3 sm:inline">
+          {formatTime(elapsedMs)}
+          <span className="text-ink-3/60"> / {formatTime(durationMs)}</span>
+        </span>
+
+        <div className="h-4 w-px shrink-0 bg-border-app" />
+
+        <button
+          type="button"
+          data-no-tts
+          onClick={onLang}
+          className="shrink-0 rounded-full px-2 py-0.5 font-mono text-[10px] font-semibold tracking-wide text-brand hover:bg-brand-soft"
+          title="Language"
+        >
+          {LANGS[langIdx].label}
+        </button>
+
+        <button
+          type="button"
+          data-no-tts
+          className="shrink-0 rounded-full px-2 py-0.5 font-mono text-[10px] font-semibold text-ink-2 hover:bg-brand-soft hover:text-brand"
+          onClick={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            setMenuPos({
+              top: rect.top - 200,
+              left: rect.left + rect.width / 2,
+            });
+            setShowMenu((v) => !v);
+          }}
+        >
+          {SPEEDS[speedIdx]}x
+        </button>
       </div>
       {menu}
     </div>,
@@ -580,6 +642,17 @@ export function StoryReader({
   const pausedAccumMsRef = useRef(0);
   const rafRef = useRef<number | null>(null);
   const playingRef = useRef(false);
+  // The paragraph/block currently being spoken — updated on every word
+  // boundary so click-to-pause always targets the block the cursor is
+  // actually in (no CSS styling attached; bookkeeping only).
+  const activeBlockRef = useRef<HTMLElement | null>(null);
+  // Bumped by finishSession() and by every fresh speakFromOffset() call.
+  // Chunk-chain callbacks (onboundary/onend/onerror) close over the value
+  // captured at chunk-start time and no-op if a newer session has since
+  // started — otherwise a stray onend firing after cancel()/seek() could
+  // resurrect a chunk chain that should have stopped (see round 2 notes on
+  // chunkArticleText).
+  const sessionIdRef = useRef(0);
 
   useEffect(() => {
     rateRef.current = SPEEDS[speedIdx];
@@ -609,9 +682,23 @@ export function StoryReader({
 
   const clearHighlight = useCallback(() => {
     clearWordHighlight(articleRef.current);
-    articleRef.current
-      ?.querySelectorAll(".speaking")
-      .forEach((el) => el.classList.remove("speaking"));
+  }, []);
+
+  // Track which block (p/li/h1-3/section) contains the offset currently
+  // being spoken — bookkeeping only, no styling attached to it. Used so
+  // click-to-pause always targets wherever the cursor actually is, instead
+  // of a block picked once at the start of a (potentially multi-paragraph)
+  // utterance.
+  const updateActiveBlock = useCallback((root: HTMLElement, absOffset: number) => {
+    try {
+      const range = rangeFromTextContentOffsets(root, absOffset, 1);
+      const block = range?.startContainer.parentElement?.closest(
+        "p, li, h1, h2, h3, section",
+      );
+      activeBlockRef.current = (block as HTMLElement) ?? null;
+    } catch {
+      /* ignore */
+    }
   }, []);
 
   // Repair any old DOM-splitting marks from previous TTS version
@@ -620,6 +707,8 @@ export function StoryReader({
   }, []);
 
   const finishSession = useCallback(() => {
+    // Invalidate any in-flight chunk-chain callbacks (see sessionIdRef).
+    sessionIdRef.current += 1;
     stopRaf();
     playingRef.current = false;
     setIsPlaying(false);
@@ -628,8 +717,34 @@ export function StoryReader({
     setElapsedMs(0);
     cursorPlainRef.current = 0;
     startOffsetRef.current = 0;
+    activeBlockRef.current = null;
     clearHighlight();
   }, [clearHighlight, stopRaf]);
+
+  // Single source of truth for the "estimate cursor position from wall clock,
+  // between boundary events" progress loop — used both when a new utterance
+  // starts and when resuming a paused one. (Previously duplicated verbatim
+  // in two places, which risked the two copies drifting apart.)
+  const startProgressRaf = useCallback(() => {
+    stopRaf();
+    const tick = () => {
+      if (!playingRef.current) return;
+      const fullLen = Math.max(1, fullTextRef.current.length);
+      const start = startOffsetRef.current;
+      const elapsedWall =
+        pausedAccumMsRef.current + (Date.now() - sessionStartMsRef.current);
+      const remainChars = fullLen - start;
+      const remainDur = estimateDurationMs(remainChars, rateRef.current);
+      const frac = remainDur > 0 ? Math.min(1, elapsedWall / remainDur) : 0;
+      const estimatedCursor = start + Math.floor(frac * remainChars);
+      if (estimatedCursor > cursorPlainRef.current) {
+        cursorPlainRef.current = estimatedCursor;
+        syncProgressFromCursor();
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+  }, [stopRaf, syncProgressFromCursor]);
 
   const speakFromOffset = useCallback(
     (plainOffset: number) => {
@@ -663,86 +778,98 @@ export function StoryReader({
       // Highlight first word immediately (CSS highlight only — no DOM split)
       const firstWord = remaining.match(/^\S+/)?.[0] ?? remaining.slice(0, 1);
       highlightWordAtOffset(root, start, firstWord.length);
+      updateActiveBlock(root, start);
 
-      // Soft paragraph context class only (no text mutation)
-      root.querySelectorAll(".speaking").forEach((el) => el.classList.remove("speaking"));
-      try {
-        const range = rangeFromTextContentOffsets(root, start, 1);
-        const block = range?.startContainer.parentElement?.closest(
-          "p, li, h1, h2, h3, section",
-        );
-        block?.classList.add("speaking");
-      } catch {
-        /* ignore */
-      }
+      // Round 2: speak `remaining` as a chain of short chunks (see
+      // chunkArticleText) instead of one long utterance, so Chromium's
+      // ~15s cutoff never comes into play and no pause()/resume()
+      // keep-alive nudge is needed (that nudge was the likely cause of the
+      // "highlight snaps back toward start" bug reported after round 1).
+      const chunks = chunkArticleText(remaining);
 
-      const utterance = new SpeechSynthesisUtterance(remaining);
-      utterance.lang = langRef.current;
-      utterance.rate = rateRef.current;
-
-      utterance.onboundary = (e: SpeechSynthesisEvent) => {
-        // charIndex is relative to `remaining`
-        if (e.name !== "word" && e.name !== "sentence") return;
-        const abs = startOffsetRef.current + (e.charIndex ?? 0);
-        cursorPlainRef.current = abs;
-        const len =
-          e.charLength && e.charLength > 0
-            ? e.charLength
-            : (full.slice(abs).match(/^\S+/)?.[0].length ?? 1);
-        if (articleRef.current) {
-          highlightWordAtOffset(articleRef.current, abs, len);
-        }
-        syncProgressFromCursor();
-      };
-
-      utterance.onstart = () => {
-        playingRef.current = true;
-        setIsPlaying(true);
-        setIsPaused(false);
-        sessionStartMsRef.current = Date.now();
-        pausedAccumMsRef.current = 0;
-        // progress RAF started below after startTTS — set flag for outer helper
-      };
-
-      utterance.onend = () => {
-        finishSession();
-      };
-
-      utterance.onerror = () => {
-        finishSession();
-      };
-
-      startTTS("story", utterance);
-      setIsPlaying(true);
-      setIsPaused(false);
-      // Start smooth scrubber RAF (boundaries also update cursor)
-      playingRef.current = true;
+      // sessionStartMsRef/pausedAccumMsRef anchor the WHOLE session's
+      // wall-clock estimate (used by startProgressRaf as a fallback for
+      // browsers that don't fire onboundary, e.g. Safari/Firefox) — set
+      // once here, and deliberately NOT reset per chunk, so the estimate
+      // keeps advancing smoothly across chunk boundaries instead of
+      // restarting every ~10s.
       sessionStartMsRef.current = Date.now();
       pausedAccumMsRef.current = 0;
-      stopRaf();
-      const tick = () => {
-        if (!playingRef.current) return;
-        const fullLen = Math.max(1, fullTextRef.current.length);
-        const start = startOffsetRef.current;
-        const elapsedWall =
-          pausedAccumMsRef.current + (Date.now() - sessionStartMsRef.current);
-        const remainChars = fullLen - start;
-        const remainDur = estimateDurationMs(remainChars, rateRef.current);
-        const frac = remainDur > 0 ? Math.min(1, elapsedWall / remainDur) : 0;
-        const estimatedCursor = start + Math.floor(frac * remainChars);
-        if (estimatedCursor > cursorPlainRef.current) {
-          cursorPlainRef.current = estimatedCursor;
-          syncProgressFromCursor();
+
+      const mySession = ++sessionIdRef.current;
+      let chunkIdx = 0;
+      let chunkAbsStart = start;
+
+      const speakChunk = () => {
+        if (sessionIdRef.current !== mySession) return; // superseded — stop chaining
+        if (chunkIdx >= chunks.length) {
+          finishSession();
+          return;
         }
-        rafRef.current = requestAnimationFrame(tick);
+        const chunkText = chunks[chunkIdx];
+        const thisChunkAbsStart = chunkAbsStart;
+
+        const utterance = new SpeechSynthesisUtterance(chunkText);
+        utterance.lang = langRef.current;
+        utterance.rate = rateRef.current;
+
+        utterance.onboundary = (e: SpeechSynthesisEvent) => {
+          if (sessionIdRef.current !== mySession) return;
+          // charIndex is relative to this chunk's own text
+          if (e.name !== "word" && e.name !== "sentence") return;
+          const abs = thisChunkAbsStart + (e.charIndex ?? 0);
+          cursorPlainRef.current = abs;
+          const fullNow = fullTextRef.current;
+          const len =
+            e.charLength && e.charLength > 0
+              ? e.charLength
+              : (fullNow.slice(abs).match(/^\S+/)?.[0].length ?? 1);
+          if (articleRef.current) {
+            highlightWordAtOffset(articleRef.current, abs, len);
+            updateActiveBlock(articleRef.current, abs);
+          }
+          syncProgressFromCursor();
+        };
+
+        utterance.onstart = () => {
+          if (sessionIdRef.current !== mySession) return;
+          playingRef.current = true;
+          setIsPlaying(true);
+          setIsPaused(false);
+        };
+
+        utterance.onend = () => {
+          if (sessionIdRef.current !== mySession) return;
+          chunkIdx += 1;
+          chunkAbsStart = thisChunkAbsStart + chunkText.length;
+          speakChunk();
+        };
+
+        utterance.onerror = () => {
+          if (sessionIdRef.current !== mySession) return;
+          finishSession();
+        };
+
+        startTTS("story", utterance);
       };
-      rafRef.current = requestAnimationFrame(tick);
+
+      setIsPlaying(true);
+      setIsPaused(false);
+      playingRef.current = true;
+      startProgressRaf();
+      speakChunk();
     },
-    [finishSession, stopRaf, syncProgressFromCursor],
+    [finishSession, startProgressRaf, syncProgressFromCursor, updateActiveBlock],
   );
 
   const playFrom = useCallback(
     (plainOffset: number) => {
+      // Invalidate the current chunk chain BEFORE cancel() runs — some
+      // engines fire the outgoing utterance's onend synchronously inside
+      // cancel(), which (without this) could race ahead and speak the old
+      // chain's next chunk a moment before speakFromOffset mints the new
+      // session id below.
+      sessionIdRef.current += 1;
       stopTTS("story");
       stopRaf();
       speakFromOffset(plainOffset);
@@ -750,44 +877,17 @@ export function StoryReader({
     [speakFromOffset, stopRaf],
   );
 
-  const startProgressRaf = useCallback(() => {
-    stopRaf();
-    const tick = () => {
-      if (!playingRef.current) return;
-      const fullLen = Math.max(1, fullTextRef.current.length);
-      const start = startOffsetRef.current;
-      const elapsedWall =
-        pausedAccumMsRef.current + (Date.now() - sessionStartMsRef.current);
-      const remainChars = fullLen - start;
-      const remainDur = estimateDurationMs(remainChars, rateRef.current);
-      const frac = remainDur > 0 ? Math.min(1, elapsedWall / remainDur) : 0;
-      const estimatedCursor = start + Math.floor(frac * remainChars);
-      if (estimatedCursor > cursorPlainRef.current) {
-        cursorPlainRef.current = estimatedCursor;
-        syncProgressFromCursor();
-      }
-      rafRef.current = requestAnimationFrame(tick);
-    };
-    rafRef.current = requestAnimationFrame(tick);
-  }, [stopRaf, syncProgressFromCursor]);
-
+  // Only called when nothing is currently playing (the pill routes to
+  // pauseResume instead whenever isPlaying is true) — so this always starts
+  // a fresh utterance from the last cursor position, never resumes.
   const play = useCallback(() => {
-    if (isPaused && isPlaying) {
-      resumeTTS();
-      sessionStartMsRef.current = Date.now();
-      setIsPaused(false);
-      playingRef.current = true;
-      startProgressRaf();
-      return;
-    }
-    // Resume from last cursor if mid-article, else from start
     const offset =
       cursorPlainRef.current > 0 &&
       cursorPlainRef.current < fullTextRef.current.length
         ? cursorPlainRef.current
         : 0;
     playFrom(offset);
-  }, [isPaused, isPlaying, playFrom, startProgressRaf]);
+  }, [playFrom]);
 
   const pauseResume = useCallback(() => {
     if (!isPlaying) {
@@ -810,6 +910,9 @@ export function StoryReader({
   }, [isPaused, isPlaying, play, startProgressRaf, stopRaf]);
 
   const stop = useCallback(() => {
+    // Bump before cancel() for the same reason as in playFrom — some
+    // engines fire onend synchronously inside cancel().
+    sessionIdRef.current += 1;
     stopTTS("story");
     finishSession();
   }, [finishSession]);
@@ -839,10 +942,14 @@ export function StoryReader({
     });
   }, [finishSession]);
 
-  const isPausedRef = useRef(false);
+  // pauseResume is the single source of truth for pause/resume state
+  // transitions. The click listener below is only bound once (see effect
+  // deps), so it reaches the latest pauseResume through this ref rather
+  // than re-implementing the same transitions a second time.
+  const pauseResumeRef = useRef(pauseResume);
   useEffect(() => {
-    isPausedRef.current = isPaused;
-  }, [isPaused]);
+    pauseResumeRef.current = pauseResume;
+  }, [pauseResume]);
 
   // Click anywhere in article → unified session from that point
   useEffect(() => {
@@ -856,23 +963,14 @@ export function StoryReader({
       const block = target.closest("p, li, h1, h2, h3") as HTMLElement | null;
       if (!block || !root!.contains(block)) return;
 
-      // Second click on the active speaking paragraph = pause/resume
-      if (playingRef.current && block.classList.contains("speaking")) {
-        if (isPausedRef.current) {
-          resumeTTS();
-          sessionStartMsRef.current = Date.now();
-          isPausedRef.current = false;
-          setIsPaused(false);
-          playingRef.current = true;
-          startProgressRaf();
-        } else {
-          pausedAccumMsRef.current += Date.now() - sessionStartMsRef.current;
-          pauseTTS();
-          isPausedRef.current = true;
-          setIsPaused(true);
-          playingRef.current = false;
-          stopRaf();
-        }
+      // Second click on the paragraph currently being spoken (whether
+      // actively playing or paused) = pause/resume. activeBlockRef tracks
+      // wherever the cursor actually is, updated on every word boundary —
+      // not a stale block picked once at the start of the session — and is
+      // cleared to null whenever there's no active session, so this check
+      // also naturally means "click elsewhere starts a new session".
+      if (activeBlockRef.current !== null && block === activeBlockRef.current) {
+        pauseResumeRef.current();
         return;
       }
 
@@ -900,6 +998,7 @@ export function StoryReader({
     root.addEventListener("click", onClick);
     return () => {
       root.removeEventListener("click", onClick);
+      sessionIdRef.current += 1; // invalidate any in-flight chunk chain
       stopTTS("story");
       clearHighlight();
       stopRaf();
@@ -940,8 +1039,11 @@ export function StoryReader({
         onSpeed={(i) => {
           setSpeedIdx(i);
           rateRef.current = SPEEDS[i];
-          // If currently playing, restart from cursor at new speed
-          if (playingRef.current || isPlaying) {
+          // Only restart if actually speaking right now — if paused, just
+          // remember the new speed for whenever the user presses resume
+          // (previously this checked `isPlaying`, which stays true while
+          // paused too, so changing speed while paused silently resumed).
+          if (playingRef.current) {
             playFrom(cursorPlainRef.current);
           }
         }}
@@ -949,7 +1051,7 @@ export function StoryReader({
           setLangIdx((i) => {
             const next = (i + 1) % LANGS.length;
             langRef.current = LANGS[next].code;
-            if (playingRef.current || isPlaying) {
+            if (playingRef.current) {
               // restart at cursor with new lang after state updates
               queueMicrotask(() => playFrom(cursorPlainRef.current));
             }

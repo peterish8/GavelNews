@@ -49,80 +49,62 @@ export function Sidebar({
       <aside
         data-collapsed={collapsed ? "true" : "false"}
         className={[
-          // Always viewport-height; never stretches with article content
           "flex h-dvh max-h-dvh shrink-0 flex-col overflow-hidden border-r border-border-app",
           "bg-[color-mix(in_srgb,var(--bg)_94%,#fff)] dark:bg-[color-mix(in_srgb,var(--bg)_98%,#000)]",
+          // Simple open/close — just width (and slide on mobile)
           "transition-[width,transform] duration-200 ease-out",
-          // mobile: fixed drawer
+          // mobile drawer
           "fixed inset-y-0 left-0 z-50 w-[16.5rem] shadow-xl",
           mobileOpen ? "translate-x-0" : "-translate-x-full",
-          // desktop: in-flow, fixed height, no page scroll on the rail
+          // desktop: open = full width, closed = 0 (opener moves to top bar)
           "lg:static lg:z-0 lg:translate-x-0 lg:shadow-none",
-          collapsed ? "lg:w-[4.25rem]" : "lg:w-[16.5rem]",
+          collapsed ? "lg:w-0 lg:border-r-0" : "lg:w-[16.5rem]",
         ].join(" ")}
         aria-label="Main navigation"
+        aria-hidden={collapsed ? true : undefined}
       >
-        {/* Header: brand + collapse toggle (Gavelogy-style) */}
-        <div
-          className={`flex h-14 shrink-0 items-center border-b border-border-app ${
-            collapsed ? "justify-center px-2" : "justify-between gap-2 px-3"
-          }`}
-        >
-          {!collapsed && (
-            <Link
-              href="/"
-              onClick={onMobileClose}
-              className="link-press flex min-w-0 items-center gap-2"
-            >
-              <Logo />
-              <span className="min-w-0">
-                <span className="block truncate font-ui text-[14px] font-bold tracking-tight text-ink">
-                  Gavel News
-                </span>
-                <span className="mt-0.5 block font-mono text-[9px] font-medium uppercase tracking-[0.12em] text-ink-3">
-                  CLAT brief
-                </span>
+        {/* Header: brand + INSIDE opener (only while open) */}
+        <div className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border-app px-3">
+          <Link
+            href="/"
+            onClick={onMobileClose}
+            className="link-press flex min-w-0 items-center gap-2"
+          >
+            <Logo />
+            <span className="min-w-0">
+              <span className="block truncate font-serif text-[17px] font-bold tracking-tight text-ink">
+                Gavel News
               </span>
-            </Link>
-          )}
+              <span className="mt-0.5 block font-mono text-[9px] font-medium uppercase tracking-[0.12em] text-ink-3">
+                CLAT brief
+              </span>
+            </span>
+          </Link>
 
-          {collapsed && (
-            <Link
-              href="/"
-              onClick={onMobileClose}
-              className="link-press"
-              title="Gavel News"
-            >
-              <Logo />
-            </Link>
-          )}
+          {/* Desktop: close control lives inside while open */}
+          <button
+            type="button"
+            onClick={onToggleCollapsed}
+            className="icon-btn hidden size-8 shrink-0 items-center justify-center rounded-lg border border-border-app text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand lg:inline-flex"
+            aria-label="Close sidebar"
+            title="Close sidebar"
+          >
+            <PanelLeftIcon flipped />
+          </button>
 
-          {/* Desktop collapse — panel-left icon (toggle also lives in top bar) */}
-          {!collapsed && (
-            <button
-              type="button"
-              onClick={onToggleCollapsed}
-              className="icon-btn hidden size-8 items-center justify-center rounded-lg border border-border-app text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand lg:inline-flex"
-              aria-label="Collapse sidebar"
-              title="Collapse sidebar"
-            >
-              <PanelLeftIcon />
-            </button>
-          )}
-
-          {/* Mobile close */}
+          {/* Mobile: close drawer */}
           <button
             type="button"
             onClick={onMobileClose}
-            className="icon-btn inline-flex size-8 items-center justify-center rounded-lg border border-border-app text-ink-2 lg:hidden"
+            className="icon-btn inline-flex size-8 shrink-0 items-center justify-center rounded-lg border border-border-app text-ink-2 lg:hidden"
             aria-label="Close menu"
           >
             <CloseIcon />
           </button>
         </div>
 
-        {/* Edition chip — full only */}
-        {!collapsed && (editionDate || typeof editionIndex === "number") && (
+        {/* Edition chip */}
+        {(editionDate || typeof editionIndex === "number") && (
           <div className="shrink-0 border-b border-border-app px-3 py-2.5">
             <div className="rounded-xl border border-border-app bg-elevated-muted/70 px-3 py-2">
               <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-ink-3">
@@ -148,29 +130,19 @@ export function Sidebar({
           </div>
         )}
 
-        {/* Nav — no auth benefits here */}
-        <nav
-          className={`min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain py-3 ${
-            collapsed ? "px-1.5" : "px-2.5"
-          }`}
-        >
+        <nav className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-2.5 py-3">
           {sections.map((section) => {
             const items = NAV_ITEMS.filter((i) => i.section === section);
             return (
-              <div key={section} className={collapsed ? "mb-2" : "mb-4"}>
-                {!collapsed && (
-                  <p className="mb-1 px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.16em] text-ink-3">
-                    {SECTION_LABELS[section]}
-                    {section === "account" && !signedIn && (
-                      <span className="ml-1 font-normal normal-case tracking-normal opacity-70">
-                        · sign in
-                      </span>
-                    )}
-                  </p>
-                )}
-                {collapsed && section !== "read" && (
-                  <div className="mx-2 my-2 h-px bg-border-app" aria-hidden />
-                )}
+              <div key={section} className="mb-4">
+                <p className="mb-1 px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.16em] text-ink-3">
+                  {SECTION_LABELS[section]}
+                  {section === "account" && !signedIn && (
+                    <span className="ml-1 font-normal normal-case tracking-normal opacity-70">
+                      · sign in
+                    </span>
+                  )}
+                </p>
                 <ul className="space-y-0.5">
                   {items.map((item) => (
                     <SidebarLink
@@ -178,7 +150,6 @@ export function Sidebar({
                       item={item}
                       active={item.match(pathname)}
                       signedIn={signedIn}
-                      collapsed={collapsed}
                       onNavigate={onMobileClose}
                     />
                   ))}
@@ -188,78 +159,43 @@ export function Sidebar({
           })}
         </nav>
 
-        {/* Footer — theme + account only */}
-        <div
-          className={`mt-auto shrink-0 space-y-2 border-t border-border-app ${
-            collapsed ? "p-2" : "p-3"
-          }`}
-        >
-          {collapsed ? (
-            <div className="flex flex-col items-center gap-2">
-              <ThemeToggle />
-              {signedIn ? (
-                <form action={signOut} title="Sign out">
-                  <input type="hidden" name="next" value="/" />
-                  <button
-                    type="submit"
-                    className="icon-btn flex size-9 items-center justify-center rounded-full bg-brand text-xs font-bold text-[var(--on-accent)]"
-                    aria-label="Sign out"
-                  >
-                    {(email?.[0] ?? "U").toUpperCase()}
-                  </button>
-                </form>
-              ) : (
-                <Link
-                  href={signInHref(pathname)}
-                  onClick={onMobileClose}
-                  className="icon-btn flex size-9 items-center justify-center rounded-full border border-brand-border bg-brand-soft text-brand"
-                  title="Sign in"
-                  aria-label="Sign in"
+        <div className="mt-auto shrink-0 space-y-2 border-t border-border-app p-3">
+          <div className="flex items-center justify-between gap-2 px-1">
+            <span className="text-xs font-medium text-ink-3">Theme</span>
+            <ThemeToggle />
+          </div>
+
+          {signedIn ? (
+            <div className="rounded-xl border border-border-app bg-elevated/80 p-3">
+              <div className="mb-2 flex items-center gap-2">
+                <span className="flex size-8 items-center justify-center rounded-full bg-brand text-xs font-bold text-[var(--on-accent)]">
+                  {(email?.[0] ?? "U").toUpperCase()}
+                </span>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-ink">
+                    {email?.split("@")[0] ?? "Account"}
+                  </p>
+                  <p className="truncate text-[11px] text-ink-3">{email}</p>
+                </div>
+              </div>
+              <form action={signOut}>
+                <input type="hidden" name="next" value="/" />
+                <button
+                  type="submit"
+                  className="btn-press w-full rounded-lg border border-border-app bg-elevated px-3 py-2 text-xs font-semibold text-ink-2 hover:border-brand-border hover:text-brand"
                 >
-                  <UserIcon />
-                </Link>
-              )}
+                  Sign out
+                </button>
+              </form>
             </div>
           ) : (
-            <>
-              <div className="flex items-center justify-between gap-2 px-1">
-                <span className="text-xs font-medium text-ink-3">Theme</span>
-                <ThemeToggle />
-              </div>
-
-              {signedIn ? (
-                <div className="rounded-xl border border-border-app bg-elevated/80 p-3">
-                  <div className="mb-2 flex items-center gap-2">
-                    <span className="flex size-8 items-center justify-center rounded-full bg-brand text-xs font-bold text-[var(--on-accent)]">
-                      {(email?.[0] ?? "U").toUpperCase()}
-                    </span>
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-ink">
-                        {email?.split("@")[0] ?? "Account"}
-                      </p>
-                      <p className="truncate text-[11px] text-ink-3">{email}</p>
-                    </div>
-                  </div>
-                  <form action={signOut}>
-                    <input type="hidden" name="next" value="/" />
-                    <button
-                      type="submit"
-                      className="btn-press w-full rounded-lg border border-border-app bg-elevated px-3 py-2 text-xs font-semibold text-ink-2 hover:border-brand-border hover:text-brand"
-                    >
-                      Sign out
-                    </button>
-                  </form>
-                </div>
-              ) : (
-                <Link
-                  href={signInHref(pathname)}
-                  onClick={onMobileClose}
-                  className="btn-press flex w-full items-center justify-center rounded-lg bg-brand px-3 py-2.5 text-xs font-semibold text-[var(--on-accent)] hover:bg-brand-hover"
-                >
-                  Sign in free
-                </Link>
-              )}
-            </>
+            <Link
+              href={signInHref(pathname)}
+              onClick={onMobileClose}
+              className="btn-press flex w-full items-center justify-center rounded-lg bg-brand px-3 py-2.5 text-xs font-semibold text-[var(--on-accent)] hover:bg-brand-hover"
+            >
+              Sign in free
+            </Link>
           )}
         </div>
       </aside>
@@ -271,17 +207,14 @@ function SidebarLink({
   item,
   active,
   signedIn,
-  collapsed,
   onNavigate,
 }: {
   item: NavItem;
   active: boolean;
   signedIn: boolean;
-  collapsed: boolean;
   onNavigate: () => void;
 }) {
   const locked = Boolean(item.requiresAuth) && !signedIn;
-  // Auth-required + guest → go to sign-in with benefits page (next=)
   const href = locked ? signInHref(item.href) : item.href;
 
   return (
@@ -290,17 +223,11 @@ function SidebarLink({
         href={href}
         onClick={onNavigate}
         title={
-          collapsed
-            ? locked
-              ? `${item.label} (sign in)`
-              : item.label
-            : locked
-              ? `${item.label} — requires sign in`
-              : item.description
+          locked
+            ? `${item.label} — requires sign in`
+            : item.description
         }
-        className={`group flex items-center rounded-xl transition-colors ${
-          collapsed ? "justify-center px-0 py-2" : "gap-2.5 px-2.5 py-2"
-        } ${
+        className={`group flex items-center gap-2.5 rounded-xl px-2.5 py-2 transition-colors ${
           active && !locked
             ? "bg-brand text-[var(--on-accent,#fff)] shadow-sm"
             : "text-ink-2 hover:bg-elevated-muted hover:text-ink"
@@ -315,23 +242,21 @@ function SidebarLink({
         >
           <NavIcon name={item.label} />
         </span>
-        {!collapsed && (
-          <span className="min-w-0 flex-1">
-            <span className="flex items-center gap-1.5">
-              <span className="block text-[13px] font-semibold leading-tight">
-                {item.label}
-              </span>
-              {locked && <LockIcon className="text-ink-3" />}
+        <span className="min-w-0 flex-1">
+          <span className="flex items-center gap-1.5">
+            <span className="block text-[13px] font-semibold leading-tight">
+              {item.label}
             </span>
-            <span
-              className={`mt-0.5 block truncate text-[11px] leading-tight ${
-                active && !locked ? "text-white/75" : "text-ink-3"
-              }`}
-            >
-              {locked ? "Sign in required" : item.description}
-            </span>
+            {locked && <LockIcon className="text-ink-3" />}
           </span>
-        )}
+          <span
+            className={`mt-0.5 block truncate text-[11px] leading-tight ${
+              active && !locked ? "text-white/75" : "text-ink-3"
+            }`}
+          >
+            {locked ? "Sign in required" : item.description}
+          </span>
+        </span>
       </Link>
     </li>
   );

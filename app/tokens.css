@@ -12,33 +12,33 @@
   --card-foreground: #130F2A;
   --popover: #FFFFFF;
   --popover-foreground: #130F2A;
-  --primary: #2563EB;
+  --primary: #DC2626;
   --primary-foreground: #ffffff;
-  --secondary: #EFF4FF;
+  --secondary: #FEF2F2;
   --secondary-foreground: #130F2A;
-  --muted: #EFF4FF;
+  --muted: #FEF2F2;
   --muted-foreground: #857FA0;
-  --accent: #EFF6FF;
+  --accent: #FEF2F2;
   --accent-foreground: #130F2A;
   --destructive: #A11D2E;
   --destructive-foreground: #ffffff;
-  --border: #C8D4E8;
-  --input: #C8D4E8;
-  --ring: #2563EB;
+  --border: #E8D4D4;
+  --input: #E8D4D4;
+  --ring: #DC2626;
   --radius: 0.625rem;
-  --chart-1: #2563EB;
+  --chart-1: #DC2626;
   --chart-2: #1F7A52;
   --chart-3: #A23268;
   --chart-4: #A36009;
   --chart-5: #148A88;
-  --sidebar: #F7F6FB;
+  --sidebar: #FBF6F6;
   --sidebar-foreground: #130F2A;
-  --sidebar-primary: #2563EB;
+  --sidebar-primary: #DC2626;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #EFF4FF;
+  --sidebar-accent: #FEF2F2;
   --sidebar-accent-foreground: #130F2A;
-  --sidebar-border: #C8D4E8;
-  --sidebar-ring: #BFDBFE;
+  --sidebar-border: #E8D4D4;
+  --sidebar-ring: #FECACA;
 
   /* ── Ink / text hierarchy ── */
   --ink:   #130F2A;
@@ -46,10 +46,10 @@
   --ink-3: #857FA0;
 
   /* ── Brand palette ── */
-  --brand:              #2563EB;
-  --brand-hover:        #1D4ED8;
-  --brand-soft:         #EFF6FF;
-  --brand-border:       #BFDBFE;
+  --brand:              #DC2626;
+  --brand-hover:        #B91C1C;
+  --brand-soft:         #FEF2F2;
+  --brand-border:       #FECACA;
   --brand-violet:       #6366F1;
   --brand-violet-soft:  #EEF2FF;
   --brand-violet-border:#C7D2FE;
@@ -57,8 +57,8 @@
   --brand-2-hover:      #812552;
   --brand-2-soft:       #F8E1EA;
   --brand-2-border:     #EECBDA;
-  --brand-blend:        linear-gradient(135deg, #2563eb 0%, #3b82f6 62%, #6366f1 100%);
-  --brand-blend-soft:   linear-gradient(145deg, rgba(37,99,235,0.10) 0%, rgba(59,130,246,0.08) 55%, rgba(99,102,241,0.04) 100%);
+  --brand-blend:        linear-gradient(135deg, #DC2626 0%, #EF4444 62%, #F87171 100%);
+  --brand-blend-soft:   linear-gradient(145deg, rgba(220,38,38,0.10) 0%, rgba(239,68,68,0.08) 55%, rgba(248,113,113,0.04) 100%);
   --brand-blue:         #2563eb;
   --brand-blue-hover:   #1d4ed8;
   --brand-blue-soft:    #dbeafe;
@@ -84,10 +84,10 @@
   --app-border-strong:   #c8d4e8;
 
   /* ── Gavelogy extended palette ── */
-  --gv-primary:       #2563EB;
-  --gv-primary-hover: #1D4ED8;
-  --gv-primary-soft:  #EFF6FF;
-  --gv-primary-border:#BFDBFE;
+  --gv-primary:       #DC2626;
+  --gv-primary-hover: #B91C1C;
+  --gv-primary-soft:  #FEF2F2;
+  --gv-primary-border:#FECACA;
   --gv-accent:        #A23268;
   --gv-accent-hover:  #812552;
   --gv-accent-soft:   #F8E1EA;
@@ -155,12 +155,12 @@
   --shadow-brand-lg: 0 8px 32px rgba(37, 99, 235, 0.22);
 
   /* ── Badges ── */
-  --badge-brand-bg:    #dbeafe;
-  --badge-brand-text:  #1d4ed8;
-  --badge-brand-border:#bfdbfe;
-  --badge-exam-bg:     rgba(37, 99, 235, 0.08);
-  --badge-exam-text:   #1e3a5f;
-  --badge-exam-border: rgba(13, 59, 102, 0.2);
+  --badge-brand-bg:    #fee2e2;
+  --badge-brand-text:  #b91c1c;
+  --badge-brand-border:#fecaca;
+  --badge-exam-bg:     rgba(220, 38, 38, 0.08);
+  --badge-exam-text:   #7f1d1d;
+  --badge-exam-border: rgba(127, 29, 29, 0.2);
 
   /* ── Arena ── */
   --arena-canvas-light: #e8e2f4;
@@ -180,12 +180,12 @@
   --dot-accent-light:        transparent;
   --dot-accent-violet-light: transparent;
   --dot-canvas-dark:         #050506;
-  --dot-accent-dark:         radial-gradient(ellipse 60% 35% at 50% 100%, rgba(37,99,235,0.06) 0%, transparent 70%);
+  --dot-accent-dark:         radial-gradient(ellipse 60% 35% at 50% 100%, rgba(220,38,38,0.06) 0%, transparent 70%);
 
   /* ── Gradients (auth, arena CTAs) ── */
-  --auth-hero-gradient:       linear-gradient(135deg, #1e40af 0%, #2563eb 48%, #4f46e5 100%);
-  --arena-cta-gradient:       linear-gradient(180deg, #3b82f6 0%, #2563eb 55%, #4f46e5 100%);
-  --arena-cta-gradient-hover: linear-gradient(180deg, #60a5fa 0%, #3b82f6 55%, #6366f1 100%);
+  --auth-hero-gradient:       linear-gradient(135deg, #7f1d1d 0%, #dc2626 48%, #ef4444 100%);
+  --arena-cta-gradient:       linear-gradient(180deg, #ef4444 0%, #dc2626 55%, #b91c1c 100%);
+  --arena-cta-gradient-hover: linear-gradient(180deg, #f87171 0%, #ef4444 55%, #dc2626 100%);
 
   /* ── Typography ── */
   --display-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
@@ -224,7 +224,7 @@
   --card-foreground: #E6E8EB;
   --popover: #171717;
   --popover-foreground: #E6E8EB;
-  --primary: #3B82F6;
+  --primary: #EF4444;
   --primary-foreground: #ffffff;
   --secondary: #171717;
   --secondary-foreground: #B7BBC4;
@@ -236,20 +236,20 @@
   --destructive-foreground: #f8fafc;
   --border: rgba(255, 255, 255, 0.08);
   --input: #262626;
-  --ring: #3B82F6;
-  --chart-1: #22d3ee;
+  --ring: #EF4444;
+  --chart-1: #ef4444;
   --chart-2: #2dd4bf;
   --chart-3: #60a5fa;
   --chart-4: #fb7185;
   --chart-5: #fbbf24;
   --sidebar: #171717;
   --sidebar-foreground: #E6E8EB;
-  --sidebar-primary: #3B82F6;
+  --sidebar-primary: #EF4444;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #262626;
   --sidebar-accent-foreground: #E6E8EB;
   --sidebar-border: rgba(255, 255, 255, 0.08);
-  --sidebar-ring: #3B82F6;
+  --sidebar-ring: #EF4444;
 
   /* ── Ink / text hierarchy ── */
   --ink:   #E6E8EB;
@@ -257,13 +257,13 @@
   --ink-3: #8A8F9C;
 
   /* ── Brand palette ── */
-  --brand:        #60A5FA;
-  --brand-hover:  #3B82F6;
-  --brand-soft:   rgba(59, 130, 246, 0.14);
-  --brand-border: rgba(96, 165, 250, 0.28);
+  --brand:        #F87171;
+  --brand-hover:  #EF4444;
+  --brand-soft:   rgba(239, 68, 68, 0.14);
+  --brand-border: rgba(248, 113, 113, 0.28);
   --brand-violet: #818CF8;
   --brand-violet-soft: rgba(99, 102, 241, 0.10);
-  --brand-blend:  linear-gradient(135deg, #2563eb 0%, #3b82f6 68%, #6366f1 100%);
+  --brand-blend:  linear-gradient(135deg, #dc2626 0%, #ef4444 68%, #f87171 100%);
   --brand-2:      #F472B6;
   --brand-2-hover:#EC4899;
   --brand-2-soft: rgba(244, 114, 182, 0.12);
@@ -327,12 +327,12 @@
   --shadow-brand-lg: 0 8px 32px rgba(37,99,235,0.32);
 
   /* ── Badges ── */
-  --badge-brand-bg:    rgba(37, 99, 235, 0.15);
-  --badge-brand-text:  #93c5fd;
-  --badge-brand-border:rgba(96, 165, 250, 0.28);
-  --badge-exam-bg:     rgba(37, 99, 235, 0.12);
-  --badge-exam-text:   #93c5fd;
-  --badge-exam-border: rgba(96, 165, 250, 0.22);
+  --badge-brand-bg:    rgba(220, 38, 38, 0.15);
+  --badge-brand-text:  #fca5a5;
+  --badge-brand-border:rgba(248, 113, 113, 0.28);
+  --badge-exam-bg:     rgba(220, 38, 38, 0.12);
+  --badge-exam-text:   #fca5a5;
+  --badge-exam-border: rgba(248, 113, 113, 0.22);
 
   /* ── Arena ── */
   --arena-hud-bg:       rgba(8, 12, 22, 0.82);
@@ -347,12 +347,12 @@
 
   /* ── Dot canvas ── */
   --dot-canvas-dark:  #050506;
-  --dot-accent-dark:  radial-gradient(ellipse 60% 35% at 50% 100%, rgba(37,99,235,0.07) 0%, transparent 70%);
+  --dot-accent-dark:  radial-gradient(ellipse 60% 35% at 50% 100%, rgba(220,38,38,0.07) 0%, transparent 70%);
 
   /* ── Gradients ── */
-  --auth-hero-gradient:       linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #4338ca 100%);
-  --arena-cta-gradient:       linear-gradient(180deg, #2563eb 0%, #1d4ed8 60%, #4338ca 100%);
-  --arena-cta-gradient-hover: linear-gradient(180deg, #3b82f6 0%, #2563eb 60%, #4f46e5 100%);
+  --auth-hero-gradient:       linear-gradient(135deg, #7f1d1d 0%, #dc2626 50%, #b91c1c 100%);
+  --arena-cta-gradient:       linear-gradient(180deg, #dc2626 0%, #b91c1c 60%, #7f1d1d 100%);
+  --arena-cta-gradient-hover: linear-gradient(180deg, #ef4444 0%, #dc2626 60%, #b91c1c 100%);
 
   --on-accent: #ffffff;
 }

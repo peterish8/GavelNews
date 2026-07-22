@@ -104,7 +104,7 @@ export default async function StoryPage({ params }: PageProps) {
           <span className="text-ink-3">{formatDate(story.editionDate)}</span>
         </div>
 
-        <h1 className="mb-4 font-ui text-3xl font-semibold tracking-tight text-ink md:text-4xl md:leading-[1.15]">
+        <h1 className="mb-4 font-serif text-3xl font-bold tracking-tight text-ink md:text-4xl md:leading-[1.15]">
           {story.title}
         </h1>
 

@@ -40,7 +40,7 @@ export function StoryCard({
           ))}
         </div>
 
-        <h2 className="mb-4 font-ui text-2xl font-bold leading-[1.15] tracking-tight text-ink transition-colors group-hover:text-brand md:text-[1.85rem] lg:text-[2.15rem]">
+        <h2 className="mb-4 font-serif text-2xl font-bold leading-[1.15] tracking-tight text-ink transition-colors group-hover:text-brand md:text-[1.85rem] lg:text-[2.15rem]">
           {story.title}
         </h2>
 
