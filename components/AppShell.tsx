@@ -67,9 +67,10 @@ export function AppShell({
     });
   }
 
+  // One control: outside only when desktop sidebar is closed
+  const showOutsideToggle = collapsed;
+
   return (
-    // Fixed viewport shell: sidebar never grows with article length.
-    // Only the right-hand main column scrolls.
     <div
       className={`flex h-dvh max-h-dvh overflow-hidden ${
         ready ? "" : "opacity-0 lg:opacity-100"
@@ -88,41 +89,50 @@ export function AppShell({
       />
 
       <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-        {/* Top chrome — fixed height, never scrolls away with content */}
-        <header className="flex h-14 shrink-0 items-center gap-2 border-b border-border-app bg-[color-mix(in_srgb,var(--bg)_94%,transparent)] px-3 backdrop-blur-xl sm:px-4">
+        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border-app bg-[color-mix(in_srgb,var(--bg)_94%,transparent)] px-3 backdrop-blur-xl sm:px-4">
+          {/* Mobile: open when drawer closed */}
           <button
             type="button"
             onClick={() => setMobileOpen(true)}
-            className="icon-btn inline-flex size-9 items-center justify-center rounded-xl border border-border-app bg-elevated text-ink lg:hidden"
+            className="icon-btn inline-flex size-7 shrink-0 items-center justify-center rounded-lg border border-border-app bg-elevated text-ink lg:hidden"
             aria-label="Open navigation"
             title="Open navigation"
           >
             <PanelLeftIcon />
           </button>
 
-          <button
-            type="button"
-            onClick={toggleCollapsed}
-            className="icon-btn hidden size-9 items-center justify-center rounded-xl border border-border-app bg-elevated text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand lg:inline-flex"
-            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          >
-            <PanelLeftIcon flipped={collapsed} />
-          </button>
+          {/* Desktop: outside only when closed (inside when open) */}
+          {showOutsideToggle && (
+            <button
+              type="button"
+              onClick={toggleCollapsed}
+              className="icon-btn hidden size-7 shrink-0 items-center justify-center rounded-lg border border-border-app bg-elevated text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand lg:inline-flex"
+              aria-label="Open sidebar"
+              title="Open sidebar"
+            >
+              <PanelLeftIcon />
+            </button>
+          )}
 
+          {/* Nameplate — centered within remaining space via flex-1 */}
           <Link
             href="/"
-            className="min-w-0 flex-1 truncate font-ui text-sm font-bold tracking-tight text-ink lg:flex-none"
+            className="link-press flex min-w-0 flex-1 items-center justify-center gap-1.5"
           >
-            Gavel News
+            <span className="truncate font-serif text-base font-bold tracking-tight text-ink sm:text-lg">
+              Gavel News
+            </span>
+            <span className="hidden shrink-0 font-mono text-[9px] font-medium uppercase tracking-[0.14em] text-ink-3 sm:inline">
+              · Daily Legal Brief
+            </span>
           </Link>
 
-          <div className="ml-auto flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             <NavSearch />
             {!signedIn && (
               <Link
                 href={signInHref(pathname)}
-                className="btn-press rounded-full bg-brand px-3 py-1.5 text-[11px] font-semibold text-[var(--on-accent)] sm:text-xs"
+                className="btn-press rounded-full bg-brand px-3 py-1 text-[11px] font-semibold text-[var(--on-accent)] sm:text-xs"
               >
                 Sign in
               </Link>
@@ -130,7 +140,6 @@ export function AppShell({
           </div>
         </header>
 
-        {/* ONLY this region scrolls */}
         <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain">
           <main className="min-h-full">{children}</main>
           <Footer />
