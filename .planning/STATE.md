@@ -58,6 +58,12 @@ None yet.
 - Watch item: Engine repo's actual field coverage for exam-relevance/category tagging is unverified — confirm `published_stories`' real field shape (via the engine repo's `editorial.py`/`supabase_sync.py`) before committing to filter UI in Phase 3.
 - DPDP Act consent guidance used in Phase 2 is based on MEDIUM-confidence secondary sources, not primary statute — flag for real legal review before public launch.
 
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260722-ur8 | Rewrite CLAUDE.md to be concise per best practices and create AGENTS.md | 2026-07-22 | b2e6eb9 | [260722-ur8-rewrite-claude-md-to-be-concise-per-best](./quick/260722-ur8-rewrite-claude-md-to-be-concise-per-best/) |
+
 ## Deferred Items
 
 Items acknowledged and carried forward from previous milestone close:
@@ -71,3 +77,5 @@ Items acknowledged and carried forward from previous milestone close:
 Last session: 2026-07-22
 Stopped at: ROADMAP.md and STATE.md created; REQUIREMENTS.md traceability confirmed
 Resume file: None
+
+Last activity: 2026-07-22 - Completed quick task 260722-ur8: Rewrite CLAUDE.md to be concise per best practices and create AGENTS.md
