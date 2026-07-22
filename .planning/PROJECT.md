@@ -58,6 +58,7 @@ This means two things pull in the same direction, not opposite ones: the reading
 
 - **Tech stack**: Next.js (App Router) + TypeScript + Tailwind CSS + Supabase (Auth, Postgres, Row Level Security) — chosen for SEO-capable server rendering, a mature auth+DB story, and to keep the door open for a future Expo mobile app sharing the same Supabase backend.
 - **Data source**: Supabase `published_stories` table, written by the separate `gavel-news` engine repo. Schema must stay in sync with what that repo's `supabase_sync.py` actually produces — don't design frontend fields the engine can't fill yet.
+- **Image storage (when added)**: Cloudflare R2, not Supabase Storage — text/JSON stays in Supabase, only the resulting image URL is stored there. See Key Decisions.
 - **No Supabase project exists yet** — needs to be created before any backend work lands.
 - **Separate repo from the engine** — explicit choice; this project does not import or depend on `gavel-news`'s Python code, only its Supabase output.
 
@@ -73,6 +74,7 @@ This means two things pull in the same direction, not opposite ones: the reading
 | Quiz, revision, planner, analytics, notifications, ads all deferred past v1 | None of them are needed to prove the core reading + signup loop; each is a substantial build on its own | — Pending |
 | Teaser pattern: story pages publicly readable in summary form, full depth gated behind signup | Original "reading requires an account" requirement directly conflicted with "public SEO pages drive the list" — a login wall can't be indexed or shared. Teaser serves both: crawlable/shareable content plus a real reason to sign up. Surfaced by pitfalls research. | — Pending |
 | Privacy Policy/Terms + explicit consent copy is a v1 deliverable, not later polish | Product's stated purpose (reading) diverges from its actual purpose (list-building for an undisclosed future product); India's DPDP Act 2023 treats that gap as a consent violation risk. Surfaced by pitfalls research. | — Pending |
+| Story images are optional and, when present, stored on Cloudflare R2 — not in Supabase | Text content (title, body fields, key points, sources) stays cheap in Supabase Postgres indefinitely at this content volume (~36 MB/year). Images are the actual storage risk: Supabase Storage's free tier is small and charges egress; R2 gives 10 GB free storage plus zero egress fees at any scale, which matters once real traffic exists. Only the R2 image URL is stored in `published_stories` — Supabase never holds image bytes. | Decided — deferred to v2 (no image field in the v1 schema; admin upload UI is a `gavel-news` engine-repo addition, not required for Phases 1-5 here) |
 
 ## Evolution
 

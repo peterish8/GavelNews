@@ -57,6 +57,10 @@ Deferred to future release. Tracked but not in current roadmap.
 - **QUIZ-02**: Quiz attempts, scores, and mistakes are tracked per user
 - **CONTENT-07**: Story relevance is split into separate UG and PG perspectives (blocked on the engine repo producing split content)
 
+### Media
+
+- **CONTENT-08**: Story can optionally have a header/thumbnail image. Admin uploads it from the `gavel-news` engine's admin-preview UI; the file is stored on Cloudflare R2 (not Supabase), and only the resulting R2 URL is written to `published_stories`. Blocked on: engine repo adding an optional image-upload field to `editorial.py` / admin-preview, plus an R2 upload step in `supabase_sync.py`.
+
 ### Retention & Habit
 
 - **STATE-03**: User sees a current streak

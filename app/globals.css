@@ -1,0 +1,186 @@
+/* ═══════════════════════════════════════════════════════════════════
+   GAVEL NEWS LEARNERS — Global stylesheet.
+   Tokens live in tokens.css (copied from Gavelogy, no edits).
+   This file: Tailwind v4 setup, font imports, minimal base reset,
+   and Tailwind → CSS-variable mappings so utility classes like
+   `bg-brand` / `text-ink` work directly.
+   ═══════════════════════════════════════════════════════════════════ */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap");
+
+@import "tailwindcss";
+@import "./tokens.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ── Tailwind theme bridge — expose tokens as utility classes ── */
+@theme inline {
+  --color-bg: var(--background);
+  --color-fg: var(--foreground);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-border: var(--brand-border);
+  --color-brand-2: var(--brand-2);
+  --color-brand-2-hover: var(--brand-2-hover);
+  --color-brand-2-soft: var(--brand-2-soft);
+  --color-accent: var(--gv-accent);
+  --color-accent-hover: var(--gv-accent-hover);
+  --color-accent-soft: var(--gv-accent-soft);
+  --color-success: var(--gv-success);
+  --color-success-soft: var(--gv-success-soft);
+  --color-warn: var(--gv-warn);
+  --color-warn-soft: var(--gv-warn-soft);
+  --color-danger: var(--gv-danger);
+  --color-danger-soft: var(--gv-danger-soft);
+  --color-gold: var(--gv-gold);
+  --color-gold-soft: var(--gv-gold-soft);
+  --color-support: var(--gv-support);
+  --color-support-soft: var(--gv-support-soft);
+  --color-surface: var(--app-surface);
+  --color-elevated: var(--app-elevated);
+  --color-elevated-muted: var(--app-elevated-muted);
+  --color-border-app: var(--app-border);
+  --color-border-app-strong: var(--app-border-strong);
+  --color-panel: var(--gv-panel);
+
+  --font-ui: var(--font-ui);
+  --font-serif: var(--font-serif);
+
+  --radius: var(--radius);
+}
+
+/* ── Minimal modern reset ──────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  font-family: var(--font-ui);
+  background: var(--app-surface);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition:
+    background-color var(--duration-hover) var(--ease-out-strong),
+    color var(--duration-hover) var(--ease-out-strong);
+}
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+#__next,
+#root {
+  isolation: isolate;
+}
+
+/* ── Focus rings ───────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Selection ─────────────────────────────────────────────────────── */
+::selection {
+  background: var(--brand-soft);
+  color: var(--brand-hover);
+}
+
+/* ── Reduced motion ────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Article prose ─────────────────────────────────────────────────── */
+.prose-article {
+  font-family: var(--font-serif);
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--ink);
+  max-width: 68ch;
+}
+.prose-article p {
+  margin-bottom: 1.1em;
+}
+.prose-article h2 {
+  font-family: var(--font-ui);
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 2em 0 0.6em;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.prose-article h3 {
+  font-family: var(--font-ui);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 1.6em 0 0.4em;
+  color: var(--ink);
+}
+.prose-article ul {
+  padding-left: 1.4em;
+  margin-bottom: 1.1em;
+}
+.prose-article li {
+  margin-bottom: 0.4em;
+}
+.prose-article strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+.prose-article a {
+  color: var(--brand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.prose-article a:hover {
+  color: var(--brand-hover);
+}
