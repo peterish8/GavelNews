@@ -5,6 +5,7 @@ import { getDataSource } from "@/lib/data";
 import { getCurrentUser } from "@/lib/auth";
 import { CATEGORY_META } from "@/lib/types";
 import { formatDate, formatReadingTime } from "@/lib/format";
+import { SITE_URL } from "@/lib/site";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { CompleteButton } from "@/components/CompleteButton";
 import { RelatedStories } from "@/components/RelatedStories";
@@ -23,14 +24,24 @@ export async function generateMetadata({
   const data = getDataSource();
   const story = await data.getStory(slug);
   if (!story) return { title: "Story not found — Gavel News" };
+  const description = story.summary ?? story.whatHappened.slice(0, 160);
+  const url = `${SITE_URL}/story/${story.slug}`;
   return {
     title: `${story.title} — Gavel News`,
-    description: story.summary ?? story.whatHappened.slice(0, 160),
+    description,
+    alternates: { canonical: url },
     openGraph: {
       title: story.title,
-      description: story.summary ?? story.whatHappened.slice(0, 160),
+      description,
       type: "article",
       publishedTime: story.publishedAt,
+      url,
+      siteName: "Gavel News",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: story.title,
+      description,
     },
   };
 }

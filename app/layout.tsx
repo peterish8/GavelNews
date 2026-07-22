@@ -3,12 +3,13 @@ import "./globals.css";
 import { AppShell } from "@/components/AppShell";
 import { getDataSource } from "@/lib/data";
 import { getCurrentUser } from "@/lib/auth";
+import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Gavel News — CLAT Current Affairs",
   description:
     "Daily CLAT current-affairs, written for UG and PG aspirants. Today's edition, archive, search.",
-  metadataBase: new URL("http://localhost:3000"),
+  metadataBase: new URL(SITE_URL),
   openGraph: {
     title: "Gavel News",
     description: "Daily CLAT current-affairs for UG and PG aspirants.",
