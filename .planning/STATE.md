@@ -69,6 +69,7 @@ None yet.
 | 260722-wgo | Add proper share button for story pages with Open Graph meta tags and Web Share API | 2026-07-22 | 4986528 | [260722-wgo-add-proper-share-button-for-story-pages-](./quick/260722-wgo-add-proper-share-button-for-story-pages-/) |
 | 260722-wmp | Redesign PYQSidebar (Past CLAT questions box) to be bigger and better UI | 2026-07-22 | 3dfaa71 | [260722-wmp-redesign-pyqsidebar-past-clat-questions-](./quick/260722-wmp-redesign-pyqsidebar-past-clat-questions-/) |
 | 260722-wzk | Upgrade Next.js 15.1.4 -> 15.5.21 to patch flagged CVEs (middleware auth bypass, React flight RCE, multiple DoS/XSS advisories) | 2026-07-22 | 54bdaf0 | [260722-wzk-upgrade-next-js-from-15-1-4-to-latest-pa](./quick/260722-wzk-upgrade-next-js-from-15-1-4-to-latest-pa/) |
+| 260723-0vx | Make the per-story OG preview card professional (Source Serif 4 + IBM Plex Mono fonts) | 2026-07-23 | fcf92d2 | [260723-0vx-make-the-per-story-og-preview-card-profe](./quick/260723-0vx-make-the-per-story-og-preview-card-profe/) |
 
 ## Deferred Items
 
