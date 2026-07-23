@@ -13,6 +13,7 @@ import { PYQSidebar } from "@/components/PYQSidebar";
 import { SignInGate } from "@/components/SignInGate";
 import { StoryReader } from "@/components/StoryReader";
 import { ShareButton } from "@/components/ShareButton";
+import { Markdown } from "@/components/Markdown";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -144,16 +145,12 @@ export default async function StoryPage({ params }: PageProps) {
           <div className="prose-article max-w-none">
             <section className="mb-10">
               <h2>What happened</h2>
-              {story.whatHappened.split("\n\n").map((para, i) => (
-                <p key={i}>{para}</p>
-              ))}
+              <Markdown>{story.whatHappened}</Markdown>
             </section>
 
             <section className="mb-10">
               <h2>Background</h2>
-              {story.background.split("\n\n").map((para, i) => (
-                <p key={i}>{para}</p>
-              ))}
+              <Markdown>{story.background}</Markdown>
             </section>
 
             {user.signedIn ? (
@@ -161,9 +158,7 @@ export default async function StoryPage({ params }: PageProps) {
                 {story.whatCourtHeld && (
                   <section className="mb-10">
                     <h2>What the court held</h2>
-                    {story.whatCourtHeld.split("\n\n").map((para, i) => (
-                      <p key={i}>{para}</p>
-                    ))}
+                    <Markdown>{story.whatCourtHeld}</Markdown>
                   </section>
                 )}
 
@@ -171,14 +166,18 @@ export default async function StoryPage({ params }: PageProps) {
                   <h2 className="!mt-0 !text-[var(--gv-warn)]">
                     Why it matters for CLAT
                   </h2>
-                  <p className="!mb-0">{story.whyItMatters}</p>
+                  <div className="[&>p:last-child]:!mb-0">
+                    <Markdown>{story.whyItMatters}</Markdown>
+                  </div>
                 </section>
 
                 <section className="mb-10">
                   <h2>Key points</h2>
                   <ul>
                     {story.keyPoints.map((kp, i) => (
-                      <li key={i}>{kp.text}</li>
+                      <li key={i}>
+                        <Markdown inline>{kp.text}</Markdown>
+                      </li>
                     ))}
                   </ul>
                 </section>

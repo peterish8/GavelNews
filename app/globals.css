@@ -556,16 +556,37 @@ body {
   margin: 1.6em 0 0.4em;
   color: var(--ink);
 }
-.prose-article ul {
+.prose-article ul,
+.prose-article ol {
   padding-left: 1.4em;
   margin-bottom: 1.1em;
 }
+.prose-article ol {
+  list-style: decimal;
+}
 .prose-article li {
+  margin-bottom: 0.4em;
+}
+.prose-article li > p {
   margin-bottom: 0.4em;
 }
 .prose-article strong {
   font-weight: 600;
   color: var(--ink);
+}
+.prose-article code {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.88em;
+  background: var(--elevated-muted, var(--panel));
+  padding: 0.15em 0.4em;
+  border-radius: 0.3em;
+}
+.prose-article blockquote {
+  margin: 1.1em 0;
+  padding-left: 1em;
+  border-left: 3px solid var(--border-app, var(--border-strong));
+  color: var(--ink-2);
+  font-style: italic;
 }
 .prose-article a {
   color: var(--brand);
