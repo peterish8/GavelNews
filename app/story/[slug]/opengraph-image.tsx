@@ -107,15 +107,12 @@ export default async function Image({
         style={{
           display: "flex",
           flexDirection: "column",
+          alignItems: "center",
           justifyContent: "space-between",
           width: "1200px",
           height: "630px",
-          padding: "64px",
-          // Mirrors --auth-hero-gradient in app/tokens.css — CSS custom
-          // properties aren't resolvable inside ImageResponse's renderer.
-          background:
-            "linear-gradient(135deg, #7f1d1d 0%, #dc2626 55%, #b91c1c 100%)",
-          color: "#ffffff",
+          padding: "72px",
+          background: "#F7F6FB",
           fontFamily: serifFamily,
         }}
       >
@@ -123,16 +120,18 @@ export default async function Image({
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: 6,
+            alignItems: "center",
+            gap: 12,
           }}
         >
           <div
             style={{
               display: "flex",
               fontFamily: serifFamily,
-              fontSize: 34,
+              fontSize: 52,
               fontWeight: 700,
               letterSpacing: -0.5,
+              color: "#130F2A",
             }}
           >
             Gavel News
@@ -145,13 +144,29 @@ export default async function Image({
               fontWeight: 500,
               textTransform: "uppercase",
               letterSpacing: 2.5,
-              opacity: 0.82,
+              color: "#857FA0",
             }}
           >
             DAILY LEGAL BRIEF
           </div>
+          <div
+            style={{
+              display: "flex",
+              width: "160px",
+              height: "2px",
+              background: "#E8D4D4",
+              marginTop: 28,
+            }}
+          />
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 24,
+          }}
+        >
           <div
             style={{
               display: "flex",
@@ -160,7 +175,7 @@ export default async function Image({
               fontWeight: 600,
               textTransform: "uppercase",
               letterSpacing: 2,
-              opacity: 0.85,
+              color: "#DC2626",
             }}
           >
             {kicker}
@@ -169,9 +184,12 @@ export default async function Image({
             style={{
               display: "flex",
               fontFamily: serifFamily,
-              fontSize: 56,
+              fontSize: 46,
               fontWeight: 700,
-              lineHeight: 1.15,
+              lineHeight: 1.2,
+              color: "#130F2A",
+              textAlign: "center",
+              width: "1040px",
             }}
           >
             {title}
@@ -181,8 +199,8 @@ export default async function Image({
           style={{
             display: "flex",
             fontFamily: monoFamily,
-            fontSize: 20,
-            opacity: 0.85,
+            fontSize: 18,
+            color: "#857FA0",
           }}
         >
           Daily CLAT Current Affairs
