@@ -1,13 +1,35 @@
 "use client";
 
 import { useState } from "react";
-import type { PYQQuestion } from "@/lib/types";
+import type { PYQPassage, PYQQuestion } from "@/lib/types";
 
 interface PYQSidebarProps {
   questions: PYQQuestion[];
 }
 
 const OPTION_LABELS = ["A", "B", "C", "D"] as const;
+
+interface PYQGroup {
+  passage: PYQPassage | undefined;
+  questions: PYQQuestion[];
+}
+
+/** Questions sharing the same passage (e.g. a 4-question CLAT set) get
+ * grouped so the passage renders once, not once per question. */
+function groupByPassage(questions: PYQQuestion[]): PYQGroup[] {
+  const groups: PYQGroup[] = [];
+  const indexByPassageId = new Map<string, number>();
+  for (const q of questions) {
+    const key = q.passage?.id;
+    if (key && indexByPassageId.has(key)) {
+      groups[indexByPassageId.get(key)!].questions.push(q);
+      continue;
+    }
+    if (key) indexByPassageId.set(key, groups.length);
+    groups.push({ passage: q.passage, questions: [q] });
+  }
+  return groups;
+}
 
 /**
  * Real, verified past-CLAT questions linked to this story (see
@@ -19,6 +41,9 @@ const OPTION_LABELS = ["A", "B", "C", "D"] as const;
  */
 export function PYQSidebar({ questions }: PYQSidebarProps) {
   if (!questions || questions.length === 0) return null;
+  const groups = groupByPassage(questions);
+
+  let runningIndex = 0;
 
   return (
     <div className="surface-hero p-6">
@@ -37,52 +62,93 @@ export function PYQSidebar({ questions }: PYQSidebarProps) {
           </p>
         </div>
       </div>
-      <ol className="space-y-3">
-        {questions.map((q, i) => (
-          <PYQCard key={q.id} index={i} question={q} />
+      <div className="flex flex-col gap-3">
+        {groups.map((group) => {
+          const startIndex = runningIndex;
+          runningIndex += group.questions.length;
+          return (
+            <PYQGroupCard
+              key={group.passage?.id ?? group.questions[0].id}
+              group={group}
+              startIndex={startIndex}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function PYQGroupCard({ group, startIndex }: { group: PYQGroup; startIndex: number }) {
+  const [passageOpen, setPassageOpen] = useState(false);
+  const first = group.questions[0];
+  const hasPassage = Boolean(group.passage?.text);
+
+  return (
+    <div className="rounded-xl border border-border-app/70 bg-elevated/70">
+      <div className="flex items-center justify-between gap-2 px-3.5 pt-3.5">
+        <span className="rounded-full bg-elevated-muted px-2 py-0.5 font-mono text-[10px] font-semibold text-ink-3">
+          {first.exam} {first.year}
+        </span>
+        {group.questions.length > 1 && (
+          <span className="text-[11px] text-ink-3">
+            {group.questions.length} questions, one passage
+          </span>
+        )}
+      </div>
+
+      {hasPassage && (
+        <div className="px-3.5 pt-2">
+          <button
+            type="button"
+            onClick={() => setPassageOpen((v) => !v)}
+            className="flex items-center gap-1.5 py-1 text-[12px] font-medium text-brand"
+            aria-expanded={passageOpen}
+          >
+            <ChevronIcon open={passageOpen} />
+            {passageOpen ? "Hide the passage" : "Read the passage"}
+          </button>
+          {passageOpen && (
+            <blockquote className="mb-1 rounded-md border-l-2 border-brand-border bg-elevated-muted/60 p-3 text-[12.5px] leading-relaxed text-ink-3 italic">
+              {group.passage!.text}
+            </blockquote>
+          )}
+        </div>
+      )}
+
+      <ol className="flex flex-col gap-2 p-3.5 pt-2">
+        {group.questions.map((q, i) => (
+          <PYQQuestionRow key={q.id} index={startIndex + i} question={q} />
         ))}
       </ol>
     </div>
   );
 }
 
-function PYQCard({ index, question }: { index: number; question: PYQQuestion }) {
+function PYQQuestionRow({ index, question }: { index: number; question: PYQQuestion }) {
   const [open, setOpen] = useState(false);
   const options = [question.optionA, question.optionB, question.optionC, question.optionD];
   const hasOptions = options.some(Boolean);
 
   return (
-    <li className="rounded-xl border border-border-app/70 bg-elevated/70 transition-colors hover:border-brand-border">
+    <li className="rounded-lg border border-border-app/60 bg-elevated/40 transition-colors hover:border-brand-border">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-start gap-2 p-3.5 text-left"
+        className="flex w-full items-start gap-2 p-3 text-left"
         aria-expanded={open}
       >
         <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-brand-soft text-[11px] font-bold text-brand">
           {index + 1}
         </span>
-        <span className="min-w-0 flex-1">
-          <span className="mb-1 flex items-center gap-2">
-            <span className="shrink-0 rounded-full bg-elevated-muted px-2 py-0.5 font-mono text-[10px] font-semibold text-ink-3">
-              {question.exam} {question.year}
-            </span>
-          </span>
-          <span className="block text-[13.5px] leading-relaxed text-ink-2">
-            {question.questionText}
-          </span>
+        <span className="block min-w-0 flex-1 text-[13.5px] leading-relaxed text-ink-2">
+          {question.questionText}
         </span>
         <ChevronIcon open={open} />
       </button>
 
       {open && (
-        <div className="border-t border-border-app/60 px-3.5 pb-4 pt-3">
-          {question.passage?.text && (
-            <blockquote className="mb-3 rounded-md border-l-2 border-brand-border bg-elevated-muted/60 p-3 text-[12.5px] leading-relaxed text-ink-3 italic">
-              {question.passage.text}
-            </blockquote>
-          )}
-
+        <div className="border-t border-border-app/60 px-3 pb-3.5 pt-2.5">
           {hasOptions && (
             <div className="mb-3 flex flex-col gap-1.5">
               {options.map((opt, i) => {
@@ -115,9 +181,7 @@ function PYQCard({ index, question }: { index: number; question: PYQQuestion }) 
           )}
 
           {question.explanation && (
-            <p className="text-[12.5px] leading-relaxed text-ink-3">
-              {question.explanation}
-            </p>
+            <p className="text-[12.5px] leading-relaxed text-ink-3">{question.explanation}</p>
           )}
         </div>
       )}
