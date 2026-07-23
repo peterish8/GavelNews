@@ -30,6 +30,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Every user-data table (`profiles`, `favourites`, `reading_progress`) has owner-only policies (including `WITH CHECK` on inserts) that are verified programmatically — not just assumed from the dashboard toggle.
   3. `published_stories` has a public-read policy scoped to published rows only, with no anon/authenticated write access — writes are documented as belonging solely to the sibling engine repo's service-role key, which this repo never holds.
   4. The public/gated reading-flow split (exactly which fields an anonymous visitor and Googlebot can see versus what requires sign-in) is explicitly decided, documented, and reflected in hand-seeded rows covering both the teaser and gated field sets.
+  5. `published_stories`' schema includes the full gated-content field set the `gavel-news` engine repo now produces — `what_actually_happening`, `why_did_this_happen`, `important_terms`, `law_behind_it`, `analogy`, `friend_explanation`, `common_confusions`, `pyq_keyword`, `exam_lens`, `quiz`, `before_you_leave` — matching the engine's `supabase_sync.py` payload field-for-field (not a renamed or narrower set), and seed data populates all of them for at least one story.
 **Plans**: TBD
 
 Plans:
@@ -57,14 +58,17 @@ Plans:
 **Goal**: Anyone can read a story's public teaser for SEO and shareability, signed-in users see the deeper content layer, and every visitor can browse, filter, and search the daily edition and archive.
 **Mode:** mvp
 **Depends on**: Phase 1 (schema, seed data, reading-flow decision), Phase 2 (auth, so the gated layer has something to gate on)
-**Requirements**: CONTENT-01, CONTENT-02, CONTENT-03, CONTENT-04, CONTENT-05, CONTENT-06
+**Requirements**: CONTENT-01, CONTENT-02, CONTENT-03, CONTENT-04, CONTENT-05, CONTENT-06, CONTENT-09, CONTENT-10, CONTENT-11
 **Success Criteria** (what must be TRUE):
-  1. Anyone, signed in or not, can open a story and read the public teaser: headline, summary, what happened, background, sources.
+  1. Anyone, signed in or not, can open a story and read the public teaser: headline, summary, what happened, background, sources — sources and related stories rendered at the end of the page, favorite/mark-complete actions rendered at the top, matching the existing page layout (no new gating decision, no layout rework).
   2. Signed-in users additionally see key points, one plain-English "why this matters" explanation, and its PYQ connection where one exists.
-  3. User can view today's edition as a feed showing headline, summary, category, date, and estimated reading time.
-  4. User can filter the feed by exam relevance and a small set of categories.
-  5. User can browse a basic chronological archive of past editions.
-  6. User can search stories by title or keyword.
+  3. Signed-in users additionally see the Legal Mentor deep-dive (what's actually happening, why it happened, important terms, law behind it, one analogy, friend explanation, common confusions) inside the existing gated block, immediately after why-it-matters/key-points.
+  4. Signed-in users additionally see the Exam Lens block (five things to remember, static law connection, expected question areas, difficulty, exam probability) alongside the PYQ connection.
+  5. Signed-in users can attempt the fixed Challenge + Answers quiz for a story when one exists (3-5 questions, reveal-on-answer, each with an explanation) — the UI degrades gracefully (section simply doesn't render) for older seed/synced stories that don't have a quiz yet.
+  6. User can view today's edition as a feed showing headline, summary, category, date, and estimated reading time.
+  7. User can filter the feed by exam relevance and a small set of categories.
+  8. User can browse a basic chronological archive of past editions.
+  9. User can search stories by title or keyword.
 **Plans**: TBD
 **UI hint**: yes
 

@@ -21,19 +21,17 @@ export function AuthBenefits({
   if (variant === "panel") {
     return (
       <div
-        className={`rounded-xl border border-brand-border bg-brand-soft/40 p-3 ${className}`}
+        className={`rounded-lg border border-brand-border bg-brand-soft/50 p-3.5 ${className}`}
       >
-        <p className="mb-0.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-brand">
-          Free account unlocks
-        </p>
-        <p className="mb-2.5 text-[11px] leading-snug text-ink-2">
+        <p className="label-law mb-0.5 text-brand">Free account unlocks</p>
+        <p className="mb-2.5 font-serif text-[12px] leading-snug text-ink-2">
           Reading stays free. Sign in for the exam layer:
         </p>
         <ul className="mb-3 space-y-1.5">
           {AUTH_BENEFITS.slice(0, 5).map((b) => (
             <li
               key={b.id}
-              className="flex items-start gap-1.5 text-[11px] leading-snug text-ink"
+              className="flex items-start gap-1.5 text-[12px] leading-snug text-ink"
             >
               <Check className="mt-0.5 text-brand" />
               <span>
@@ -42,14 +40,14 @@ export function AuthBenefits({
               </span>
             </li>
           ))}
-          <li className="pl-4 text-[10px] text-ink-3">
+          <li className="pl-4 font-serif text-[11px] italic text-ink-3">
             + {AUTH_BENEFITS.length - 5} more (settings, related, complete…)
           </li>
         </ul>
         {showCta && (
           <Link
             href={signInHref(nextPath)}
-            className="btn-press flex w-full items-center justify-center rounded-lg bg-brand px-3 py-2 text-xs font-semibold text-[var(--on-accent)] hover:bg-brand-hover"
+            className="btn-press flex w-full items-center justify-center rounded-md bg-brand px-3 py-2 text-xs font-semibold text-on-accent hover:bg-brand-hover"
           >
             See full list &amp; sign in
           </Link>
@@ -61,16 +59,16 @@ export function AuthBenefits({
   if (variant === "compact") {
     return (
       <div className={className}>
-        <p className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-3">
-          What you get when you sign in
-        </p>
+        <p className="label-law mb-3">What you get when you sign in</p>
         <ul className="space-y-2.5">
           {AUTH_BENEFITS.map((b) => (
             <li key={b.id} className="flex gap-2.5 text-sm text-ink-2">
               <Check className="mt-0.5 shrink-0 text-brand" />
               <span>
                 <span className="font-semibold text-ink">{b.title}</span>
-                <span className="block text-[13px] text-ink-3">{b.detail}</span>
+                <span className="block font-serif text-[13px] text-ink-3">
+                  {b.detail}
+                </span>
               </span>
             </li>
           ))}
@@ -83,13 +81,11 @@ export function AuthBenefits({
   return (
     <div className={className}>
       <div className="mb-6 text-center sm:text-left">
-        <p className="mb-1 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-3">
-          Free vs signed-in
-        </p>
-        <h2 className="font-ui text-xl font-bold tracking-tight text-ink md:text-2xl">
+        <p className="label-law mb-1.5">Free vs signed-in</p>
+        <h2 className="heading-law text-xl md:text-2xl">
           What you get with an account
         </h2>
-        <p className="mt-1.5 text-sm text-ink-2">
+        <p className="mt-2 font-serif text-sm leading-relaxed text-ink-2">
           Everyone can read the brief. A free account unlocks the exam layer.
         </p>
       </div>
@@ -114,13 +110,13 @@ export function AuthBenefits({
         <div className="mt-6 flex flex-wrap items-center gap-2">
           <Link
             href={signInHref(nextPath)}
-            className="btn-press inline-flex rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-[var(--on-accent)] hover:bg-brand-hover"
+            className="btn-press inline-flex rounded-md bg-brand px-5 py-2.5 text-sm font-semibold text-on-accent hover:bg-brand-hover"
           >
             Sign in free — unlock all of this
           </Link>
           <Link
             href="/"
-            className="btn-press inline-flex rounded-full border border-border-app bg-elevated px-4 py-2.5 text-sm font-semibold text-ink-2 hover:border-brand-border hover:text-brand"
+            className="btn-press inline-flex rounded-md border border-border-app bg-elevated px-4 py-2.5 text-sm font-medium text-ink-2 hover:border-brand-border hover:text-brand"
           >
             Keep reading free
           </Link>
@@ -145,18 +141,18 @@ function BenefitColumn({
 }) {
   return (
     <div
-      className={`rounded-2xl border p-5 ${
+      className={`rounded-lg border p-5 ${
         highlight
-          ? "border-brand-border bg-brand-soft/30 shadow-sm"
-          : "border-border-app bg-elevated/60"
+          ? "border-brand-border bg-brand-soft/35 shadow-sm"
+          : "border-border-app bg-elevated/70"
       }`}
     >
       <div className="mb-4 flex flex-wrap items-center gap-2">
-        <h3 className="font-ui text-sm font-bold text-ink">{label}</h3>
+        <h3 className="font-serif text-sm font-bold text-ink">{label}</h3>
         <span
-          className={`rounded-full px-2 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-[0.12em] ${
+          className={`rounded px-2 py-0.5 font-serif text-[10px] font-semibold tracking-wide ${
             badgeTone === "brand"
-              ? "bg-brand text-[var(--on-accent)]"
+              ? "bg-brand text-on-accent"
               : "bg-elevated-muted text-ink-3"
           }`}
         >
@@ -175,7 +171,7 @@ function BenefitColumn({
               <span className="block text-sm font-semibold text-ink">
                 {b.title}
               </span>
-              <span className="block text-[13px] leading-snug text-ink-3">
+              <span className="block font-serif text-[13px] leading-snug text-ink-3">
                 {b.detail}
               </span>
             </span>
@@ -208,9 +204,9 @@ function Check({ className = "" }: { className?: string }) {
 export function AuthUnlockedNote({ className = "" }: { className?: string }) {
   return (
     <div
-      className={`rounded-xl border border-border-app bg-elevated/80 p-3 ${className}`}
+      className={`rounded-lg border border-border-app bg-elevated/85 p-3 ${className}`}
     >
-      <p className="mb-1.5 text-[11px] font-semibold text-ink">
+      <p className="mb-1.5 font-serif text-[12px] font-semibold text-ink">
         Account active — unlocked
       </p>
       <ul className="space-y-1">
@@ -223,8 +219,8 @@ export function AuthUnlockedNote({ className = "" }: { className?: string }) {
             {b.title}
           </li>
         ))}
-        <li className="pl-4 text-[10px] text-ink-3">
-          + favorites, settings, related stories…
+        <li className="pl-4 font-serif text-[10px] italic text-ink-3">
+          + saves, settings, related stories…
         </li>
       </ul>
     </div>

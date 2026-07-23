@@ -7,14 +7,77 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap");
 
 /* Pure Tailwind v4 — no tailwindcss-animate / no JS config.
    Reference hybrid ships animate for shadcn accordion; we don't use those yet. */
 @import "tailwindcss" source(none);
 @source "../**/*.{ts,tsx,js,jsx,mdx}";
 @import "./tokens.css";
+
+/* ── Gavel News law-editorial overrides (keep tokens.css shared-source clean) ──
+   Warm parchment paper, court-ink type, seal-red brand. Not SaaS/tech glass. */
+:root {
+  --display-family: "Libre Baskerville", "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-ui: "Inter", "Source Serif 4", system-ui, sans-serif;
+  --font-serif: "Source Serif 4", "Libre Baskerville", Georgia, serif;
+  --bg: #f4efe6;
+  --ink: #1a1410;
+  --ink-2: #4a3f36;
+  --ink-3: #7a6b5d;
+  --gv-ink: #1a1410;
+  --gv-ink-2: #4a3f36;
+  --gv-ink-3: #7a6b5d;
+  --gv-bg: #f4efe6;
+  --panel: #ebe4d8;
+  --border: #e0d4c4;
+  --input: #e0d4c4;
+  --app-border: rgba(160, 140, 110, 0.38);
+  --app-border-strong: #c4b39a;
+  --app-elevated-muted: #f0e9dc;
+  --app-surface: #fffcf7;
+  --app-elevated: #fffcf7;
+  --card: #fffcf7;
+  --background: #f4efe6;
+  --foreground: #1a1410;
+  --muted: #f0e9dc;
+  --muted-foreground: #7a6b5d;
+  --secondary: #f8f1e6;
+  --secondary-foreground: #1a1410;
+  --accent: #f8f1e6;
+  --accent-foreground: #1a1410;
+  --sidebar: #f8f1e6;
+  --sidebar-border: #e0d4c4;
+  --brand-soft: #f8ebe6;
+  --brand-border: #e8c4b8;
+  --gv-primary-soft: #f8ebe6;
+  --gv-primary-border: #e8c4b8;
+  --bg-tint-a: rgba(138, 90, 10, 0.06);
+  --bg-tint-b: rgba(161, 29, 46, 0.04);
+  --bg-tint-c: rgba(138, 90, 10, 0.05);
+  --ambient-violet: rgba(138, 90, 10, 0.04);
+  --ambient-blue: rgba(161, 29, 46, 0.05);
+  --ambient-indigo: rgba(138, 90, 10, 0.04);
+  --glass-1: rgba(255, 252, 247, 0.78);
+  --glass-2: rgba(255, 252, 247, 0.9);
+  --glass-3: rgba(255, 252, 247, 0.96);
+  --glass-sidebar: rgba(248, 241, 230, 0.92);
+  --glass-border: rgba(255, 252, 247, 0.85);
+  --glass-border-subtle: rgba(180, 155, 120, 0.28);
+  --glass-shadow: 0 4px 24px rgba(40, 28, 16, 0.06), 0 1px 4px rgba(40, 28, 16, 0.04);
+  --glass-shadow-lg: 0 12px 40px rgba(40, 28, 16, 0.08), 0 2px 8px rgba(40, 28, 16, 0.04);
+  --shadow-md: 0 4px 24px rgba(40, 28, 16, 0.06), 0 1px 4px rgba(40, 28, 16, 0.04);
+  --shadow-lg: 0 12px 40px rgba(40, 28, 16, 0.08), 0 2px 8px rgba(40, 28, 16, 0.04);
+  --shadow-brand-sm: 0 2px 10px rgba(161, 29, 46, 0.12);
+  --shadow-brand-md: 0 4px 16px rgba(161, 29, 46, 0.16);
+  --shadow-brand-lg: 0 8px 28px rgba(161, 29, 46, 0.18);
+  --menu-item-hover: rgba(161, 29, 46, 0.06);
+  --menu-item-border: rgba(161, 29, 46, 0.16);
+  --btn-ghost-border: rgba(160, 140, 110, 0.4);
+  --btn-ghost-hover: rgba(161, 29, 46, 0.06);
+  --card-radius: 10px;
+}
 
 @custom-variant dark (&:is(.dark *));
 
@@ -64,11 +127,11 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
-  /* Fonts */
-  --font-sans: "Plus Jakarta Sans", "Inter", -apple-system, system-ui, sans-serif;
+  /* Fonts — law editorial: serif display, quiet Inter UI */
+  --font-sans: "Inter", "Source Serif 4", -apple-system, system-ui, sans-serif;
   --font-ui: var(--font-ui);
   --font-display: var(--display-family);
-  --font-mono: "IBM Plex Mono", "Fira Code", monospace;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
   --font-serif: var(--font-serif);
 
   /* Gavelogy brand / ink utilities used across this app */
@@ -81,6 +144,8 @@
   --color-brand-hover: var(--brand-hover);
   --color-brand-soft: var(--brand-soft);
   --color-brand-border: var(--brand-border);
+  /* Text/icon color on brand fills — was missing; text-[var(--on-accent)] never compiled */
+  --color-on-accent: var(--on-accent);
   --color-brand-2: var(--brand-2);
   --color-brand-2-hover: var(--brand-2-hover);
   --color-brand-2-soft: var(--brand-2-soft);
@@ -117,8 +182,8 @@ html {
 
 body {
   font-family: var(--font-ui, var(--font-sans));
-  background: var(--bg, #F7F6FB);
-  color: var(--ink, #130F2A);
+  background: var(--bg, #f4efe6);
+  color: var(--ink, #1a1410);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   transition: background-color 0.3s ease, color 0.3s ease;
@@ -133,9 +198,9 @@ body {
   border-radius: 4px;
 }
 
-/* Selection */
+/* Selection — seal red on parchment */
 ::selection {
-  background: var(--brand-soft);
+  background: color-mix(in srgb, var(--brand) 18%, transparent);
   color: var(--brand-hover);
 }
 
@@ -152,12 +217,12 @@ body {
   z-index: 0;
 
   background:
-    radial-gradient(ellipse 60% 50% at 50% 108%, rgba(37, 99, 235, 0.12) 0%, rgba(59, 130, 246, 0.07) 45%, transparent 64%),
-    radial-gradient(ellipse 38% 28% at 12% 112%, rgba(99, 102, 241, 0.04) 0%, transparent 58%),
-    radial-gradient(ellipse 44% 34% at 88% 112%, rgba(59, 130, 246, 0.11) 0%, transparent 58%);
+    radial-gradient(ellipse 60% 50% at 50% 108%, rgba(138, 90, 10, 0.08) 0%, rgba(161, 29, 46, 0.05) 45%, transparent 64%),
+    radial-gradient(ellipse 38% 28% at 12% 112%, rgba(138, 90, 10, 0.04) 0%, transparent 58%),
+    radial-gradient(ellipse 44% 34% at 88% 112%, rgba(161, 29, 46, 0.06) 0%, transparent 58%);
 }
 
-/* Light mode: no ambient horizon glow — plain white + dot canvas only */
+/* Light mode: no ambient horizon glow — warm paper only */
 :root:not(.dark) .ambient-sunrise {
   display: none;
 }
@@ -167,14 +232,30 @@ body {
   display: none;
 }
 
-/* ── Light mode: soft paper + fine dot canvas ── */
+/* ── Light mode: warm legal parchment (no tech blue grid) ── */
 :root:not(.dark) body {
-  background-color: #f7f8fc;
+  background-color: #f4efe6;
   background-image:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(37, 99, 235, 0.07), transparent 55%),
-    radial-gradient(circle, rgba(19, 15, 42, 0.055) 1px, transparent 1px);
-  background-size: auto, 22px 22px;
+    radial-gradient(ellipse 90% 55% at 50% -8%, rgba(161, 29, 46, 0.045), transparent 58%),
+    linear-gradient(180deg, rgba(255, 252, 247, 0.55) 0%, transparent 42%);
   background-attachment: fixed;
+}
+
+/* Editorial section labels — small-caps serif, not mono tech */
+.label-law {
+  font-family: var(--font-serif);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.heading-law {
+  font-family: var(--display-family);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--ink);
 }
 
 /* Clamp long card teasers cleanly */
@@ -185,13 +266,13 @@ body {
   overflow: hidden;
 }
 
-/* ── Dark mode body — deep void with bottom-center blue/violet orb ── */
+/* ── Dark mode body — deep ink with warm seal glow ── */
 :root.dark body {
   background:
-    radial-gradient(ellipse 70% 42% at 50% 108%, rgba(37, 99, 235, 0.07) 0%, transparent 58%),
-    radial-gradient(ellipse 50% 28% at 50% 0%, rgba(59, 130, 246, 0.04) 0%, transparent 62%),
-    radial-gradient(ellipse 40% 24% at 88% 100%, rgba(99, 102, 241, 0.03) 0%, transparent 55%),
-    #050506;
+    radial-gradient(ellipse 70% 42% at 50% 108%, rgba(161, 29, 46, 0.08) 0%, transparent 58%),
+    radial-gradient(ellipse 50% 28% at 50% 0%, rgba(138, 90, 10, 0.05) 0%, transparent 62%),
+    radial-gradient(ellipse 40% 24% at 88% 100%, rgba(161, 29, 46, 0.04) 0%, transparent 55%),
+    #0c0a09;
   background-attachment: fixed;
 }
 
@@ -283,7 +364,8 @@ body {
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(ellipse 70% 80% at 0% 0%, rgba(37, 99, 235, 0.10), transparent 55%),
+    radial-gradient(ellipse 70% 80% at 0% 0%, rgba(161, 29, 46, 0.07), transparent 55%),
+    radial-gradient(ellipse 50% 60% at 100% 100%, rgba(138, 90, 10, 0.05), transparent 50%),
     var(--glass-2);
   backdrop-filter: var(--glass-blur-sm);
   -webkit-backdrop-filter: var(--glass-blur-sm);
@@ -306,7 +388,8 @@ body {
 
 :root.dark .surface-gate {
   background:
-    radial-gradient(ellipse 70% 80% at 0% 0%, rgba(37, 99, 235, 0.16), transparent 55%),
+    radial-gradient(ellipse 70% 80% at 0% 0%, rgba(220, 38, 38, 0.12), transparent 55%),
+    radial-gradient(ellipse 50% 60% at 100% 100%, rgba(180, 130, 40, 0.06), transparent 50%),
     rgba(14, 14, 16, 0.94);
 }
 
@@ -317,28 +400,28 @@ body {
 
 } /* end @layer components — glass bases */
 
-/* ── Light mode: edge-to-centre gradient on glass surfaces ────────── */
+/* ── Light mode: warm paper wash on glass surfaces (no tech blue) ── */
 :root:not(.dark) .glass-card {
   background:
-    radial-gradient(ellipse 78% 52% at 50% 118%, rgba(37, 99, 235, 0.09) 0%, rgba(59, 130, 246, 0.05) 48%, transparent 58%),
-    radial-gradient(ellipse 42% 34% at 0% 100%, rgba(99, 102, 241, 0.03) 0%, transparent 52%),
-    radial-gradient(ellipse 50% 40% at 100% 100%, rgba(59, 130, 246, 0.07) 0%, transparent 52%),
-    rgba(255, 255, 255, 0.68);
+    radial-gradient(ellipse 78% 52% at 50% 118%, rgba(138, 90, 10, 0.05) 0%, rgba(161, 29, 46, 0.03) 48%, transparent 58%),
+    radial-gradient(ellipse 42% 34% at 0% 100%, rgba(138, 90, 10, 0.025) 0%, transparent 52%),
+    radial-gradient(ellipse 50% 40% at 100% 100%, rgba(161, 29, 46, 0.04) 0%, transparent 52%),
+    rgba(255, 252, 247, 0.82);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid rgba(191, 205, 250, 0.55);
+  border: 1px solid rgba(200, 180, 150, 0.45);
   box-shadow: var(--glass-shadow), var(--glass-inner-glow);
 }
 
 :root:not(.dark) .glass-panel {
   background:
-    radial-gradient(ellipse 78% 52% at 50% 118%, rgba(37, 99, 235, 0.07) 0%, rgba(59, 130, 246, 0.04) 48%, transparent 58%),
-    radial-gradient(ellipse 42% 34% at 0% 100%, rgba(99, 102, 241, 0.025) 0%, transparent 52%),
-    radial-gradient(ellipse 50% 40% at 100% 100%, rgba(59, 130, 246, 0.06) 0%, transparent 52%),
-    rgba(255, 255, 255, 0.82);
+    radial-gradient(ellipse 78% 52% at 50% 118%, rgba(138, 90, 10, 0.05) 0%, rgba(161, 29, 46, 0.03) 48%, transparent 58%),
+    radial-gradient(ellipse 42% 34% at 0% 100%, rgba(138, 90, 10, 0.02) 0%, transparent 52%),
+    radial-gradient(ellipse 50% 40% at 100% 100%, rgba(161, 29, 46, 0.04) 0%, transparent 52%),
+    rgba(255, 252, 247, 0.9);
   backdrop-filter: var(--glass-blur-sm);
   -webkit-backdrop-filter: var(--glass-blur-sm);
-  border: 1px solid rgba(191, 205, 250, 0.45);
+  border: 1px solid rgba(200, 180, 150, 0.4);
   box-shadow: var(--glass-shadow-lg), var(--glass-inner-glow);
 }
 
@@ -419,16 +502,16 @@ body {
     transform: translateY(-3px);
     box-shadow:
       var(--glass-shadow-lg),
-      0 0 0 1px rgba(37, 99, 235, 0.07),
-      0 16px 48px rgba(37, 99, 235, 0.10);
+      0 0 0 1px rgba(161, 29, 46, 0.08),
+      0 16px 40px rgba(40, 28, 16, 0.1);
   }
 
   :root.dark .card-interactive:hover {
     transform: translateY(-3px);
     box-shadow:
       0 8px 40px rgba(0, 0, 0, 0.55),
-      0 0 0 1px rgba(96, 165, 250, 0.14),
-      0 16px 48px rgba(37, 99, 235, 0.12);
+      0 0 0 1px rgba(248, 113, 113, 0.14),
+      0 16px 48px rgba(161, 29, 46, 0.12);
   }
 }
 
@@ -481,7 +564,7 @@ body {
   }
 
   .hover-glow:hover {
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);
+    box-shadow: 0 0 20px rgba(161, 29, 46, 0.14);
   }
 }
 
@@ -538,9 +621,9 @@ body {
   margin-bottom: 1.1em;
 }
 .prose-article h2 {
-  font-family: var(--font-ui);
-  font-size: 1.4rem;
-  font-weight: 600;
+  font-family: var(--display-family);
+  font-size: 1.35rem;
+  font-weight: 700;
   margin: 2em 0 0.6em;
   color: var(--ink);
   letter-spacing: -0.01em;
@@ -550,9 +633,9 @@ body {
   margin-top: 0.25em;
 }
 .prose-article h3 {
-  font-family: var(--font-ui);
+  font-family: var(--display-family);
   font-size: 1.1rem;
-  font-weight: 600;
+  font-weight: 700;
   margin: 1.6em 0 0.4em;
   color: var(--ink);
 }
@@ -588,14 +671,21 @@ body {
   color: var(--ink-2);
   font-style: italic;
 }
-.prose-article a {
+/* Content links only — exclude filled CTAs (btn-press / bg-brand / text-on-accent)
+   so they keep white-on-red instead of inheriting link-red (0,1,1 > utility). */
+.prose-article a:not(.btn-press):not(.bg-brand):not(.text-on-accent) {
   color: var(--brand);
   text-decoration: underline;
   text-underline-offset: 3px;
   text-decoration-thickness: 1px;
 }
-.prose-article a:hover {
+.prose-article a:not(.btn-press):not(.bg-brand):not(.text-on-accent):hover {
   color: var(--brand-hover);
+}
+.prose-article a.btn-press,
+.prose-article a.bg-brand,
+.prose-article a.text-on-accent {
+  text-decoration: none;
 }
 
 /* Scrollbar hide utility */
@@ -656,6 +746,7 @@ html[data-mobile-nav="open"] .gav-tts-dock {
     0 1px 0 rgba(255, 255, 255, 0.5) inset;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
+  transition: max-width 280ms cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 @media (min-width: 640px) {
@@ -664,6 +755,66 @@ html[data-mobile-nav="open"] .gav-tts-dock {
     gap: 0.5rem;
     padding: 0.4rem 0.6rem;
     justify-content: space-between;
+  }
+}
+
+/* Speed row open: the bar itself grows to make room (no second floating
+   box) — the collapsible scrubber/lang group shrinks out simultaneously. */
+.gav-reader-bar--expanded {
+  max-width: min(94vw, 520px);
+}
+
+@media (min-width: 640px) {
+  /* Desktop: nothing hides — the bar just grows wide enough to hold the
+     scrubber/time/lang AND the full speed row side by side. */
+  .gav-reader-bar--expanded {
+    max-width: min(92vw, 680px);
+    justify-content: flex-start;
+  }
+
+  /* While the bar's max-width is mid-transition (still catching up to its
+     new, wider target), don't let the scrubber/lang group compete for the
+     not-yet-available space — that's what made it visibly shrink and pop
+     back ("come and go") each time the speed row opened. Only the speed
+     row (which can scroll internally) should ever absorb that squeeze. */
+  .gav-reader-bar--expanded .gav-reader-collapsible {
+    flex-shrink: 0;
+  }
+}
+
+.gav-reader-collapsible {
+  flex: 1 1 auto;
+  max-width: 480px;
+  opacity: 1;
+  transition:
+    max-width 280ms cubic-bezier(0.32, 0.72, 0, 1),
+    opacity 160ms ease,
+    margin 280ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Mobile only: the scrubber/lang group shrinks out of the way to make room
+   for the speed row, since a phone screen can't fit everything at once.
+   Desktop never applies this — see .gav-reader-bar--expanded above instead. */
+@media (max-width: 639.98px) {
+  .gav-reader-collapsible--hidden {
+    /* Instant hide on open — the scrubber must never be visible even
+       transiently while the speed row is blooming open. Closing still
+       transitions smoothly (that's the base class's transition, which
+       applies once this modifier class is removed). */
+    transition: none;
+    flex: 0 1 auto;
+    max-width: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-right: -0.35rem;
+    pointer-events: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gav-reader-bar,
+  .gav-reader-collapsible {
+    transition: none;
   }
 }
 

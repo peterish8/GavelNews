@@ -57,7 +57,7 @@ export const AUTH_BENEFITS: Benefit[] = [
   },
   {
     id: "favorites",
-    title: "Favorites",
+    title: "Saved stories",
     detail: "Save stories and reopen them from Your library.",
     tier: "auth",
   },

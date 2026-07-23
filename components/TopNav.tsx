@@ -18,9 +18,12 @@ type NavItem = {
 const PRIMARY_NAV: NavItem[] = [
   { href: "/", label: "Today", match: (p) => p === "/" },
   {
-    href: "/archive",
+    href: "/calendar",
     label: "Calendar",
-    match: (p) => p.startsWith("/archive") || p.startsWith("/edition"),
+    match: (p) =>
+      p.startsWith("/calendar") ||
+      p.startsWith("/archive") ||
+      p.startsWith("/edition"),
   },
   {
     href: "/search",
@@ -94,10 +97,10 @@ export default function TopNav({
         >
           <Logo />
           <span className="flex min-w-0 flex-col leading-none">
-            <span className="font-ui text-[15px] font-bold tracking-tight text-ink">
+            <span className="font-serif text-[15px] font-bold tracking-tight text-ink">
               Gavel News
             </span>
-            <span className="mt-0.5 hidden font-mono text-[9px] font-medium uppercase tracking-[0.16em] text-ink-3 sm:block">
+            <span className="mt-0.5 hidden font-serif text-[10px] italic text-ink-3 sm:block">
               CLAT brief · free to read
             </span>
           </span>
@@ -117,7 +120,7 @@ export default function TopNav({
                   href={item.href}
                   className={`pressable rounded-full px-3.5 py-1.5 text-[13px] font-semibold transition-colors lg:px-4 ${
                     active
-                      ? "bg-brand text-[var(--on-accent,#fff)] shadow-sm"
+                      ? "bg-brand text-on-accent shadow-sm"
                       : "text-ink-2 hover:bg-brand-soft hover:text-brand"
                   }`}
                 >
@@ -141,7 +144,7 @@ export default function TopNav({
               className="btn-press hidden max-w-[10rem] items-center gap-2 rounded-full border border-border-app bg-elevated/90 px-2.5 py-1.5 text-[12px] font-semibold text-ink hover:border-brand-border hover:bg-brand-soft sm:inline-flex"
               title={email ?? "Account"}
             >
-              <span className="flex size-6 items-center justify-center rounded-full bg-brand text-[10px] font-bold text-[var(--on-accent)]">
+              <span className="flex size-6 items-center justify-center rounded-full bg-brand text-[10px] font-bold text-on-accent">
                 {(email?.[0] ?? "U").toUpperCase()}
               </span>
               <span className="truncate">{email?.split("@")[0] ?? "Account"}</span>
@@ -149,7 +152,7 @@ export default function TopNav({
           ) : (
             <Link
               href="/auth/signin"
-              className="btn-press inline-flex items-center gap-1.5 rounded-full bg-brand px-3 py-1.5 text-[12px] font-semibold text-[var(--on-accent,#fff)] hover:bg-brand-hover sm:px-3.5 sm:text-[13px]"
+              className="btn-press inline-flex items-center gap-1.5 rounded-full bg-brand px-3 py-1.5 text-[12px] font-semibold text-on-accent hover:bg-brand-hover sm:px-3.5 sm:text-[13px]"
             >
               Sign in
               <span className="hidden font-normal opacity-80 sm:inline">
@@ -204,16 +207,16 @@ export default function TopNav({
                 </>
               )}
             </div>
-            <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-3">
-              <Link href="/archive" className="hover:text-brand">
+            <div className="flex items-center gap-3 font-serif text-[11px] text-ink-3">
+              <Link href="/calendar" className="hover:text-brand">
                 Calendar
               </Link>
               {!signedIn && (
                 <>
-                  <span className="opacity-30" aria-hidden>
+                  <span className="opacity-40" aria-hidden>
                     ·
                   </span>
-                  <span className="hidden text-ink-3 xs:inline sm:inline">
+                  <span className="hidden italic text-ink-3 xs:inline sm:inline">
                     Teaser free · exam layer with account
                   </span>
                 </>
@@ -273,7 +276,7 @@ export default function TopNav({
                   </div>
                   <Link
                     href="/settings"
-                    className="btn-press shrink-0 rounded-full bg-brand px-3 py-1.5 text-xs font-semibold text-[var(--on-accent)]"
+                    className="btn-press shrink-0 rounded-full bg-brand px-3 py-1.5 text-xs font-semibold text-on-accent"
                   >
                     Settings
                   </Link>
@@ -284,12 +287,12 @@ export default function TopNav({
                     Reading is free
                   </p>
                   <p className="mb-3 text-xs leading-relaxed text-ink-2">
-                    Sign in for key points, why it matters, favorites, and past
-                    CLAT questions.
+                    Sign in for key points, why it matters, saved stories, and
+                    past CLAT questions.
                   </p>
                   <Link
                     href="/auth/signin"
-                    className="btn-press inline-flex w-full items-center justify-center rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-[var(--on-accent)] hover:bg-brand-hover"
+                    className="btn-press inline-flex w-full items-center justify-center rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-on-accent hover:bg-brand-hover"
                   >
                     Sign in — it&apos;s free
                   </Link>
@@ -323,7 +326,7 @@ function MobileSearchRow() {
       />
       <button
         type="submit"
-        className="shrink-0 rounded-lg bg-brand px-2.5 py-1 text-xs font-semibold text-[var(--on-accent)]"
+        className="shrink-0 rounded-lg bg-brand px-2.5 py-1 text-xs font-semibold text-on-accent"
       >
         Go
       </button>

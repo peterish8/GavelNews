@@ -11,7 +11,7 @@ export function PYQSidebar({ keyword }: PYQSidebarProps) {
   return (
     <div className="surface-hero p-6">
       <div className="mb-4 flex items-start gap-3">
-        <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-brand text-[var(--on-accent)]">
+        <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-brand text-on-accent">
           <PyqIcon />
         </span>
         <div className="min-w-0">

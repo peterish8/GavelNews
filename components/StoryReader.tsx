@@ -392,12 +392,24 @@ function NewsReaderPill({
   onLang: () => void;
 }) {
   const [showMenu, setShowMenu] = useState(false);
-  const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
+  const [menuMounted, setMenuMounted] = useState(false);
   const [isScrubbing, setIsScrubbing] = useState(false);
   const [scrubValue, setScrubValue] = useState(0);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
+
+  // Keep the speed popover mounted through its close transition instead of
+  // unmounting instantly, so it can animate out rather than just vanishing.
+  useEffect(() => {
+    if (showMenu) {
+      setMenuMounted(true);
+      return;
+    }
+    if (!menuMounted) return;
+    const t = setTimeout(() => setMenuMounted(false), 220);
+    return () => clearTimeout(t);
+  }, [showMenu, menuMounted]);
 
   const displayProgress = isScrubbing ? scrubValue : progress;
 
@@ -410,66 +422,18 @@ function NewsReaderPill({
 
   if (!mounted) return null;
 
-  const menu = showMenu
-    ? createPortal(
-        <>
-          <div
-            className="fixed inset-0 z-[9998]"
-            onClick={() => setShowMenu(false)}
-          />
-          <div
-            className="gav-dropdown gav-dropdown--portal fixed min-w-[170px]"
-            style={{
-              top: menuPos.top,
-              left: menuPos.left,
-              transform: "translateX(-50%)",
-            }}
-          >
-            <div className="gav-dropdown-label">Speed</div>
-            {SPEEDS.map((speed, i) => (
-              <button
-                key={speed}
-                type="button"
-                className={
-                  "gav-dropdown-item justify-between px-3 py-2" +
-                  (speedIdx === i ? " gav-dropdown-item--active" : "")
-                }
-                onClick={() => {
-                  onSpeed(i);
-                  setShowMenu(false);
-                }}
-              >
-                <span>{speed}x</span>
-              </button>
-            ))}
-            {isPlaying && (
-              <>
-                <div className="gav-dropdown-divider" />
-                <button
-                  type="button"
-                  className="gav-dropdown-item px-3 py-2 text-[var(--gv-danger,#A11D2E)]"
-                  onClick={() => {
-                    onStop();
-                    setShowMenu(false);
-                  }}
-                >
-                  Stop reading
-                </button>
-              </>
-            )}
-          </div>
-        </>,
-        document.body,
-      )
-    : null;
-
   return createPortal(
     <div
       className="gav-tts-dock pointer-events-none fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 flex justify-center px-2 sm:bottom-4 sm:px-3 md:bottom-5"
       role="group"
       aria-label={`Listen to ${title ?? "this story"}`}
     >
-      <div className="gav-reader-bar pointer-events-auto">
+      <div
+        className={
+          "gav-reader-bar pointer-events-auto" +
+          (menuMounted ? " gav-reader-bar--expanded" : "")
+        }
+      >
         <button
           type="button"
           data-no-tts
@@ -488,7 +452,15 @@ function NewsReaderPill({
           )}
         </button>
 
-        {/* Scrubber + time — always visible (incl. mobile). Grows to fill bar. */}
+        {/* Scrubber, time, divider, and language collapse out of the way while
+            the speed row is open — that's what makes room for it inside the
+            SAME pill instead of needing a second floating box. */}
+        <div
+          className={
+            "gav-reader-collapsible flex min-w-0 flex-1 items-center" +
+            (menuMounted ? " gav-reader-collapsible--hidden" : "")
+          }
+        >
         <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-2.5">
           <div
             data-no-tts
@@ -535,12 +507,7 @@ function NewsReaderPill({
               style={{ width: `${displayProgress}%` }}
             />
             <div
-              className={
-                "absolute top-1/2 z-10 h-3.5 w-3.5 rounded-full border-2 border-brand bg-elevated shadow transition-opacity sm:h-3 sm:w-3 " +
-                (isScrubbing
-                  ? "opacity-100"
-                  : "opacity-90 group-hover:opacity-100")
-              }
+              className="absolute top-1/2 z-10 h-3.5 w-3.5 rounded-full border-2 border-brand bg-elevated shadow opacity-100 sm:h-3 sm:w-3"
               style={{
                 left: `clamp(7px, ${displayProgress}%, calc(100% - 7px))`,
                 transform: "translate(-50%, -50%)",
@@ -569,27 +536,74 @@ function NewsReaderPill({
         >
           {LANGS[langIdx].label}
         </button>
+        </div>
 
-        <button
-          type="button"
-          data-no-tts
-          className="shrink-0 rounded-full px-1.5 py-1 font-mono text-[10px] font-semibold text-ink-2 hover:bg-brand-soft hover:text-brand sm:px-2 sm:py-0.5"
-          onClick={(e) => {
-            const rect = e.currentTarget.getBoundingClientRect();
-            setMenuPos({
-              top: rect.top - 200,
-              left: Math.min(
-                rect.left + rect.width / 2,
-                window.innerWidth - 100,
-              ),
-            });
-            setShowMenu((v) => !v);
-          }}
-        >
-          {SPEEDS[speedIdx]}x
-        </button>
+        {/* No separate popover surface — the speed control lives directly in
+            the bar's own flex row, so opening it grows the SAME pill instead
+            of spawning a second floating box beside it. */}
+        {!menuMounted ? (
+          <button
+            type="button"
+            data-no-tts
+            aria-haspopup="true"
+            aria-expanded={showMenu}
+            className="shrink-0 rounded-full px-1.5 py-1 font-ui text-[11px] font-semibold tabular-nums text-ink-2 hover:bg-brand-soft hover:text-brand sm:px-2 sm:py-0.5"
+            onClick={() => setShowMenu(true)}
+          >
+            {SPEEDS[speedIdx]}x
+          </button>
+        ) : (
+          <div
+            className="flex min-w-0 shrink items-center gap-0.5 overflow-x-auto whitespace-nowrap"
+            data-no-tts
+          >
+            {SPEEDS.map((speed, i) => (
+              <button
+                key={speed}
+                type="button"
+                data-no-tts
+                onClick={() => {
+                  onSpeed(i);
+                  setShowMenu(false);
+                }}
+                className={
+                  "shrink-0 rounded-full px-2 py-1 font-ui text-[11px] font-semibold tabular-nums transition-colors " +
+                  (speedIdx === i
+                    ? "bg-brand text-on-accent"
+                    : "text-ink-2 hover:bg-brand-soft hover:text-brand")
+                }
+              >
+                {speed}x
+              </button>
+            ))}
+            {isPlaying && (
+              <button
+                type="button"
+                data-no-tts
+                aria-label="Stop reading"
+                title="Stop reading"
+                onClick={() => {
+                  onStop();
+                  setShowMenu(false);
+                }}
+                className="ml-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full text-[var(--gv-danger,#A11D2E)] hover:bg-[var(--gv-danger,#A11D2E)]/10"
+              >
+                <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor">
+                  <rect x="4" y="4" width="16" height="16" rx="2" />
+                </svg>
+              </button>
+            )}
+          </div>
+        )}
+
+        {menuMounted && (
+          <div
+            className="fixed inset-0 z-[9998]"
+            data-no-tts
+            onClick={() => setShowMenu(false)}
+          />
+        )}
       </div>
-      {menu}
     </div>,
     document.body,
   );

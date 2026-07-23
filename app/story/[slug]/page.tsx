@@ -14,6 +14,10 @@ import { SignInGate } from "@/components/SignInGate";
 import { StoryReader } from "@/components/StoryReader";
 import { ShareButton } from "@/components/ShareButton";
 import { Markdown } from "@/components/Markdown";
+import { LegalMentorSection } from "@/components/LegalMentorSection";
+import { ExamLensSection } from "@/components/ExamLensSection";
+import { QuizSection } from "@/components/QuizSection";
+import { BeforeYouLeaveSection } from "@/components/BeforeYouLeaveSection";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -85,7 +89,7 @@ export default async function StoryPage({ params }: PageProps) {
             {meta.label}
           </span>
           {story.decision === "must_cover" && (
-            <span className="rounded-full border border-brand bg-brand px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--on-accent)]">
+            <span className="rounded-full border border-brand bg-brand px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-on-accent">
               Must cover
             </span>
           )}
@@ -121,7 +125,7 @@ export default async function StoryPage({ params }: PageProps) {
             </div>
           ) : (
             <SignInGate
-              benefit="Save favorites · Mark complete · Track reading"
+              benefit="Save stories · Mark complete · Track reading"
               context="actions"
               variant="compact"
             />
@@ -181,6 +185,24 @@ export default async function StoryPage({ params }: PageProps) {
                     ))}
                   </ul>
                 </section>
+
+                <LegalMentorSection
+                  whatActuallyHappening={story.whatActuallyHappening}
+                  whyDidThisHappen={story.whyDidThisHappen}
+                  importantTerms={story.importantTerms}
+                  lawBehindIt={story.lawBehindIt}
+                  analogy={story.analogy}
+                  friendExplanation={story.friendExplanation}
+                  commonConfusions={story.commonConfusions}
+                />
+
+                <ExamLensSection examLens={story.examLens} />
+
+                <QuizSection quiz={story.quiz} />
+
+                <div className="mb-10">
+                  <BeforeYouLeaveSection beforeYouLeave={story.beforeYouLeave} />
+                </div>
               </>
             ) : (
               <SignInGate

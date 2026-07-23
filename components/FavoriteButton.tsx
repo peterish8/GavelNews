@@ -80,7 +80,7 @@ export function FavoriteButton({ storyId }: FavoriteButtonProps) {
       type="button"
       onClick={toggle}
       aria-pressed={isFav}
-      aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
+      aria-label={isFav ? "Remove from saved" : "Save story"}
       layout
       transition={{ layout: layoutT }}
       whileTap={reduceMotion ? undefined : { scale: 0.98 }}
@@ -114,12 +114,12 @@ export function FavoriteButton({ storyId }: FavoriteButtonProps) {
               }
         }
       >
-        <HeartIcon filled={active} reduceMotion={!!reduceMotion} />
+        <BookmarkIcon filled={active} reduceMotion={!!reduceMotion} />
       </motion.span>
 
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.span
-          key={active ? "favorited" : "favorite"}
+          key={active ? "saved" : "save"}
           layout
           initial={reduceMotion ? false : { opacity: 0, x: 6 }}
           animate={{ opacity: 1, x: 0 }}
@@ -127,14 +127,14 @@ export function FavoriteButton({ storyId }: FavoriteButtonProps) {
           transition={t}
           className="inline-block"
         >
-          {active ? "Favorited" : "Favorite"}
+          {active ? "Saved" : "Save"}
         </motion.span>
       </AnimatePresence>
     </motion.button>
   );
 }
 
-function HeartIcon({
+function BookmarkIcon({
   filled,
   reduceMotion,
 }: {
@@ -144,7 +144,7 @@ function HeartIcon({
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden>
       <motion.path
-        d="M12 21s-7-4.5-9.5-9.5C.8 7.5 3.2 4 6.5 4c1.9 0 3.5 1 4.5 2.5 1-1.5 2.6-2.5 4.5-2.5 3.3 0 5.7 3.5 4 7.5C19 16.5 12 21 12 21z"
+        d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4-6.5 4V4.5a1 1 0 0 1 1-1z"
         stroke="currentColor"
         strokeWidth="1.6"
         strokeLinejoin="round"

@@ -63,7 +63,7 @@ export function SettingsForm() {
                     onClick={() => update("exam", opt as Exam)}
                     className={`flex-1 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all duration-[200ms] ease-out active:scale-[0.97] ${
                       active
-                        ? "border-brand bg-brand text-[var(--on-accent)]"
+                        ? "border-brand bg-brand text-on-accent"
                         : "border-border-app bg-elevated text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand"
                     }`}
                   >
@@ -113,7 +113,7 @@ export function SettingsForm() {
                     onClick={() => update("theme", opt)}
                     className={`flex-1 rounded-xl border px-4 py-2.5 text-sm font-medium capitalize transition-all duration-[200ms] ease-out active:scale-[0.97] ${
                       active
-                        ? "border-brand bg-brand text-[var(--on-accent)]"
+                        ? "border-brand bg-brand text-on-accent"
                         : "border-border-app bg-elevated text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand"
                     }`}
                   >
@@ -136,7 +136,7 @@ export function SettingsForm() {
                     onClick={() => update("fontSize", opt)}
                     className={`flex-1 rounded-xl border px-4 py-2.5 text-sm font-medium capitalize transition-all duration-[200ms] ease-out active:scale-[0.97] ${
                       active
-                        ? "border-brand bg-brand text-[var(--on-accent)]"
+                        ? "border-brand bg-brand text-on-accent"
                         : "border-border-app bg-elevated text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand"
                     }`}
                   >
@@ -160,7 +160,7 @@ export function SettingsForm() {
         <button
           type="button"
           onClick={save}
-          className="rounded-xl bg-brand px-5 py-2.5 text-sm font-medium text-[var(--on-accent)] transition-all duration-[200ms] ease-out hover:bg-brand-hover active:scale-[0.97]"
+          className="rounded-xl bg-brand px-5 py-2.5 text-sm font-medium text-on-accent transition-all duration-[200ms] ease-out hover:bg-brand-hover active:scale-[0.97]"
         >
           Save changes
         </button>

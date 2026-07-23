@@ -15,7 +15,7 @@ function safeNext(next?: string): string {
 
 /** Friendly label for what they tried to open */
 function destinationLabel(next: string): string {
-  if (next.startsWith("/favorites")) return "Favorites";
+  if (next.startsWith("/favorites")) return "Saved";
   if (next.startsWith("/settings")) return "Settings";
   if (next.startsWith("/story")) return "Exam layer on this story";
   return next;
@@ -32,15 +32,15 @@ export default async function SignInPage({ searchParams }: PageProps) {
   return (
     <div className="mx-auto max-w-3xl px-5 py-10 md:py-14">
       <div className="mb-8 text-center">
-        <p className="mb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-3">
+        <p className="label-law mb-2">
           {cameFromProtected ? "Sign in required" : "Free account"}
         </p>
-        <h1 className="font-ui text-3xl font-bold tracking-tight text-ink md:text-4xl">
+        <h1 className="heading-law text-3xl md:text-4xl">
           {cameFromProtected
             ? `Unlock ${destinationLabel(next)}`
             : "Sign in to unlock the exam layer"}
         </h1>
-        <p className="mx-auto mt-2 max-w-lg text-sm text-ink-2 md:text-base">
+        <p className="mx-auto mt-2 max-w-lg font-serif text-sm leading-relaxed text-ink-2 md:text-base">
           {cameFromProtected ? (
             <>
               <strong className="font-semibold text-ink">
@@ -76,7 +76,7 @@ export default async function SignInPage({ searchParams }: PageProps) {
           <input type="hidden" name="next" value={next} />
           <button
             type="submit"
-            className="btn-press inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-[var(--on-accent)] hover:bg-brand-hover"
+            className="btn-press inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-on-accent hover:bg-brand-hover"
           >
             Continue with free demo account
           </button>

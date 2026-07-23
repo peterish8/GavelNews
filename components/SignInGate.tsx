@@ -32,7 +32,7 @@ const CONTEXT_COPY: Record<
   },
   actions: {
     title: "Sign in to save and track",
-    sub: "Favorite stories to revisit, mark them complete to track your daily reading.",
+    sub: "Save stories to revisit, mark them complete to track your daily reading.",
   },
   "exam-layer": {
     title: "Unlock the exam layer",
@@ -49,14 +49,14 @@ export function SignInGate({
 
   if (variant === "compact") {
     return (
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border-app bg-elevated-muted/60 px-4 py-3">
-        <p className="text-sm text-ink-2">
-          <span className="font-medium text-ink">Sign in free</span>
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border-app bg-elevated-muted/70 px-4 py-3">
+        <p className="font-serif text-sm text-ink-2">
+          <span className="font-semibold text-ink">Sign in free</span>
           <span className="text-ink-3"> — {benefit}</span>
         </p>
         <Link
           href="/auth/signin?next=%2F"
-          className="btn-press shrink-0 rounded-full bg-brand px-3.5 py-1.5 text-xs font-semibold text-[var(--on-accent)] hover:bg-brand-hover"
+          className="btn-press shrink-0 rounded-md bg-brand px-3.5 py-1.5 text-xs font-semibold text-on-accent hover:bg-brand-hover"
         >
           Sign in
         </Link>
@@ -67,20 +67,18 @@ export function SignInGate({
   return (
     <div className="surface-gate my-8">
       <div className="px-6 py-7 sm:px-8 sm:py-9">
-        <div className="mb-4 inline-flex size-9 items-center justify-center rounded-full bg-brand text-[var(--on-accent)]">
-          <LockIcon />
-        </div>
-        <h2 className="mb-2 font-ui text-lg font-semibold tracking-tight text-ink sm:text-xl">
+        <p className="label-law mb-3 text-brand">Exam layer</p>
+        <h2 className="heading-law mb-2 text-lg sm:text-xl">
           {copy.title}
         </h2>
-        <p className="mb-4 max-w-lg text-sm text-ink-2 sm:text-[15px]">
+        <p className="mb-4 max-w-lg font-serif text-sm leading-relaxed text-ink-2 sm:text-[15px]">
           {copy.sub}
         </p>
-        <p className="mb-5 text-xs font-medium text-brand">{benefit}</p>
+        <p className="mb-5 font-serif text-xs italic text-brand">{benefit}</p>
         <div className="flex flex-wrap gap-2">
           <Link
             href="/auth/signin?next=%2F"
-            className="btn-press inline-flex items-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-medium text-[var(--on-accent)] hover:bg-brand-hover"
+            className="btn-press inline-flex items-center gap-2 rounded-md bg-brand px-4 py-2.5 text-sm font-semibold text-on-accent hover:bg-brand-hover"
           >
             Sign in — see what you unlock
             <ArrowIcon />

@@ -137,7 +137,7 @@ export function SearchResults({
                           <span className="mt-0.5 flex shrink-0 gap-1">
                             {isFav && (
                               <span className="rounded-full bg-accent-soft px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase text-accent">
-                                Fav
+                                Saved
                               </span>
                             )}
                             {isDone && (

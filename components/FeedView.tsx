@@ -77,12 +77,12 @@ export function FeedView({
         <div>
           <div className="mb-4 flex flex-wrap items-center gap-2">
             {typeof editionIndex === "number" && editionIndex > 0 && (
-              <span className="rounded-full border border-border-app bg-elevated/80 px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-3">
+              <span className="rounded border border-border-app bg-elevated/80 px-2.5 py-1 font-serif text-[11px] font-semibold text-ink-3">
                 Day {editionIndex}
               </span>
             )}
             {dateLabel && (
-              <span className="inline-flex items-center gap-2 rounded-full border border-brand-border bg-brand-soft px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-brand">
+              <span className="inline-flex items-center gap-2 rounded border border-brand-border bg-brand-soft px-2.5 py-1 font-serif text-[11px] font-semibold text-brand">
                 <span className="relative flex size-1.5">
                   <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand opacity-40" />
                   <span className="relative inline-flex size-1.5 rounded-full bg-brand" />
@@ -92,16 +92,16 @@ export function FeedView({
             )}
           </div>
 
-          <h1 className="max-w-xl font-ui text-[2.15rem] font-bold leading-[1.05] tracking-tight text-ink md:text-5xl lg:text-[3.25rem]">
+          <h1 className="heading-law max-w-xl text-[2.05rem] leading-[1.12] md:text-5xl lg:text-[3.1rem]">
             {heading}
           </h1>
           {subtitle && (
-            <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-ink-2 md:text-base">
+            <p className="mt-3 max-w-xl font-serif text-[15px] leading-relaxed text-ink-2 md:text-base">
               {subtitle}
             </p>
           )}
 
-          {/* One-click previous / next edition — not a trip through /archive */}
+          {/* One-click previous / next edition — not a trip through /calendar */}
           {(prevEditionDate || nextEditionDate) && (
             <div className="mt-5 flex flex-wrap items-center gap-2">
               {prevEditionDate ? (

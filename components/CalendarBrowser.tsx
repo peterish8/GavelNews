@@ -116,212 +116,244 @@ export function CalendarBrowser({ archive }: CalendarBrowserProps) {
     ? editionByDate.get(selectedDate) ?? null
     : null;
 
+  /** Must-cover first, then the rest — "important" articles surface on click. */
+  const dayStories = useMemo(() => {
+    if (!selectedEdition) return [];
+    return [...selectedEdition.stories].sort((a, b) => {
+      const aMust = a.decision === "must_cover" ? 0 : 1;
+      const bMust = b.decision === "must_cover" ? 0 : 1;
+      return aMust - bMust;
+    });
+  }, [selectedEdition]);
+
   if (!viewMonth || monthKeys.length === 0) {
     return null;
   }
 
   return (
     <section className="mb-10" aria-label="Browse editions by date">
-      {/* Mid-size calendar — uses available width, keeps row height compact */}
-      <div className="glass-card mx-auto w-full max-w-2xl overflow-hidden p-4 sm:p-5 md:max-w-3xl">
-        {/* Month header */}
-        <div className="mb-3.5 flex items-center justify-between gap-2">
-          <button
-            type="button"
-            onClick={goPrevMonth}
-            disabled={!canPrev}
-            aria-label="Previous month with editions"
-            className="btn-press inline-flex size-9 items-center justify-center rounded-full border border-border-app bg-elevated/90 text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand disabled:pointer-events-none disabled:opacity-30"
-          >
-            <Chevron dir="left" />
-          </button>
-
-          <h2 className="font-ui text-lg font-bold tracking-tight text-ink sm:text-xl">
-            {monthLabel}
-          </h2>
-
-          <button
-            type="button"
-            onClick={goNextMonth}
-            disabled={!canNext}
-            aria-label="Next month with editions"
-            className="btn-press inline-flex size-9 items-center justify-center rounded-full border border-border-app bg-elevated/90 text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand disabled:pointer-events-none disabled:opacity-30"
-          >
-            <Chevron dir="right" />
-          </button>
-        </div>
-
-        {/* Weekday row */}
-        <div className="mb-1.5 grid grid-cols-7 gap-1.5 sm:gap-2">
-          {WEEKDAYS.map((d) => (
-            <div
-              key={d}
-              className="py-0.5 text-center font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-ink-3 sm:text-[10px]"
+      {/* Split layout: same-height columns — calendar left, day list right */}
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(20rem,38rem)_minmax(0,1fr)] lg:items-stretch lg:gap-6 xl:grid-cols-[minmax(22rem,42rem)_minmax(0,1fr)]">
+        {/* ── Calendar panel (left) ── */}
+        <div className="glass-card flex h-full min-h-0 w-full max-w-2xl flex-col p-4 sm:p-5 lg:max-w-none lg:p-6">
+          {/* Month header */}
+          <div className="mb-4 flex items-center justify-between gap-2">
+            <button
+              type="button"
+              onClick={goPrevMonth}
+              disabled={!canPrev}
+              aria-label="Previous month with editions"
+              className="btn-press inline-flex size-9 items-center justify-center rounded-full border border-border-app bg-elevated/90 text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand disabled:pointer-events-none disabled:opacity-30"
             >
-              {d}
-            </div>
-          ))}
-        </div>
+              <Chevron dir="left" />
+            </button>
 
-        {/* Date grid — wide cells, short height (uses free width without towering) */}
-        <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
-          {cells.map((cell) => {
-            if (cell.day === null || !cell.iso) {
-              return <div key={cell.key} className="h-10 sm:h-11 md:h-12" aria-hidden />;
-            }
+            <h2 className="font-ui text-lg font-bold tracking-tight text-ink sm:text-xl">
+              {monthLabel}
+            </h2>
 
-            const edition = editionByDate.get(cell.iso);
-            const hasEdition = Boolean(edition);
-            const isSelected = selectedDate === cell.iso;
-            const count = edition?.stories.length ?? 0;
+            <button
+              type="button"
+              onClick={goNextMonth}
+              disabled={!canNext}
+              aria-label="Next month with editions"
+              className="btn-press inline-flex size-9 items-center justify-center rounded-full border border-border-app bg-elevated/90 text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand disabled:pointer-events-none disabled:opacity-30"
+            >
+              <Chevron dir="right" />
+            </button>
+          </div>
 
-            if (!hasEdition) {
+          {/* Weekday row */}
+          <div className="mb-2 grid grid-cols-7 gap-2">
+            {WEEKDAYS.map((d) => (
+              <div
+                key={d}
+                className="text-center font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-ink-3"
+              >
+                {d}
+              </div>
+            ))}
+          </div>
+
+          {/* Date grid — true square cells */}
+          <div className="grid grid-cols-7 gap-2 sm:gap-2.5">
+            {cells.map((cell) => {
+              if (cell.day === null || !cell.iso) {
+                return (
+                  <div
+                    key={cell.key}
+                    className="aspect-square w-full"
+                    aria-hidden
+                  />
+                );
+              }
+
+              const edition = editionByDate.get(cell.iso);
+              const hasEdition = Boolean(edition);
+              const isSelected = selectedDate === cell.iso;
+              const count = edition?.stories.length ?? 0;
+
+              if (!hasEdition) {
+                return (
+                  <div
+                    key={cell.key}
+                    className="flex aspect-square w-full cursor-default items-center justify-center rounded-md border border-transparent"
+                  >
+                    <span className="font-ui text-sm font-medium tabular-nums text-ink-3/45 sm:text-base">
+                      {cell.day}
+                    </span>
+                  </div>
+                );
+              }
+
               return (
-                <div
+                <motion.button
                   key={cell.key}
-                  className="flex h-10 cursor-default items-center justify-center rounded-xl border border-transparent sm:h-11 md:h-12"
+                  type="button"
+                  onClick={() => setSelectedDate(cell.iso)}
+                  aria-label={`${formatDate(cell.iso)} — ${count} ${count === 1 ? "story" : "stories"}`}
+                  aria-pressed={isSelected}
+                  whileHover={
+                    reduceMotion
+                      ? undefined
+                      : { scale: 1.04 }
+                  }
+                  whileTap={reduceMotion ? undefined : { scale: 0.94 }}
+                  transition={
+                    reduceMotion
+                      ? { duration: 0 }
+                      : { type: "spring", stiffness: 480, damping: 28 }
+                  }
+                  className={`relative flex aspect-square w-full flex-col items-center justify-center rounded-md border transition-shadow duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)] ${
+                    isSelected
+                      ? "border-brand bg-brand text-on-accent shadow-sm ring-2 ring-brand"
+                      : "border-brand-border bg-brand-soft text-brand hover:shadow-sm"
+                  }`}
                 >
-                  <span className="font-ui text-[13px] font-medium tabular-nums text-ink-3/45 sm:text-sm">
+                  <span
+                    className={`font-ui text-base font-bold tabular-nums sm:text-lg md:text-xl ${
+                      isSelected ? "text-on-accent" : "text-ink"
+                    }`}
+                  >
                     {cell.day}
                   </span>
-                </div>
+
+                  <span
+                    className={`absolute right-1 top-1 flex size-4 items-center justify-center rounded-full text-[9px] font-bold tabular-nums sm:size-5 sm:text-[10px] ${
+                      isSelected
+                        ? "bg-on-accent text-brand"
+                        : "bg-brand text-on-accent"
+                    }`}
+                  >
+                    {count}
+                  </span>
+                </motion.button>
               );
-            }
+            })}
+          </div>
+        </div>
 
-            return (
-              <motion.button
-                key={cell.key}
-                type="button"
-                onClick={() => setSelectedDate(cell.iso)}
-                aria-label={`${formatDate(cell.iso)} — ${count} ${count === 1 ? "story" : "stories"}`}
-                aria-pressed={isSelected}
-                whileHover={
-                  reduceMotion
-                    ? undefined
-                    : { scale: 1.03, y: -1 }
+        {/* ── Day articles panel (right) — same height as calendar ── */}
+        <div className="relative min-h-[18rem] min-w-0 self-stretch">
+          <AnimatePresence mode="wait" initial={false}>
+            {selectedEdition && selectedDate ? (
+              <motion.div
+                key={selectedDate}
+                initial={
+                  reduceMotion ? false : { opacity: 0, x: 10 }
                 }
-                whileTap={reduceMotion ? undefined : { scale: 0.95 }}
-                transition={
+                animate={{ opacity: 1, x: 0 }}
+                exit={
                   reduceMotion
-                    ? { duration: 0 }
-                    : { type: "spring", stiffness: 480, damping: 28 }
+                    ? { opacity: 0 }
+                    : { opacity: 0, x: -6 }
                 }
-                className={`relative flex h-10 flex-col items-center justify-center rounded-xl border transition-shadow duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)] sm:h-11 md:h-12 ${
-                  isSelected
-                    ? "border-brand bg-brand text-[var(--on-accent,#fff)] shadow-sm ring-2 ring-brand"
-                    : "border-brand-border bg-brand-soft text-brand hover:shadow-sm"
-                }`}
+                transition={reduceMotion ? { duration: 0 } : panelTransition}
+                className="flex flex-col lg:absolute lg:inset-0"
               >
-                <span
-                  className={`font-ui text-sm font-bold tabular-nums sm:text-[15px] ${
-                    isSelected ? "text-[var(--on-accent,#fff)]" : "text-ink"
-                  }`}
-                >
-                  {cell.day}
-                </span>
+                {/* Compact header */}
+                <div className="mb-2.5 flex shrink-0 flex-wrap items-center justify-between gap-2">
+                  <p className="font-mono text-[11px] text-ink-3">
+                    <span className="font-medium text-ink-2">
+                      {formatDate(selectedDate)}
+                    </span>
+                    <span className="mx-1.5 opacity-40">·</span>
+                    {selectedEdition.stories.length}{" "}
+                    {selectedEdition.stories.length === 1 ? "story" : "stories"}
+                  </p>
+                  <Link
+                    href={`/edition/${selectedDate}`}
+                    className="btn-press inline-flex items-center gap-1 text-[11px] font-medium text-ink-3 hover:text-brand"
+                  >
+                    Full edition
+                    <span aria-hidden>→</span>
+                  </Link>
+                </div>
 
-                <span
-                  className={`absolute right-0.5 top-0.5 flex size-4 items-center justify-center rounded-full text-[9px] font-bold tabular-nums sm:size-[1.125rem] sm:text-[10px] ${
-                    isSelected
-                      ? "bg-[var(--on-accent,#fff)] text-brand"
-                      : "bg-brand text-[var(--on-accent,#fff)]"
-                  }`}
-                >
-                  {count}
-                </span>
-              </motion.button>
-            );
-          })}
+                <div className="surface-standard flex min-h-0 flex-1 flex-col overflow-hidden">
+                  <ul className="min-h-0 flex-1 divide-y divide-border-app/80 overflow-y-auto overscroll-contain">
+                    {dayStories.map((story) => {
+                      const meta = CATEGORY_META[story.category];
+                      const isMust = story.decision === "must_cover";
+                      return (
+                        <li key={story.id}>
+                          <Link
+                            href={`/story/${story.slug}`}
+                            className="group flex gap-3 px-4 py-3.5 transition-colors hover:bg-elevated-muted/70 sm:px-5"
+                          >
+                            <div className="min-w-0 flex-1">
+                              <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
+                                <span className="rounded-full border border-brand-border bg-brand-soft px-2 py-0.5 text-[10px] font-medium text-brand">
+                                  {meta.shortLabel}
+                                </span>
+                                {isMust && (
+                                  <span className="rounded-full border border-border-app bg-elevated-muted px-2 py-0.5 text-[10px] font-medium text-ink-3">
+                                    Must cover
+                                  </span>
+                                )}
+                              </div>
+                              <h4 className="font-ui text-[15px] font-semibold leading-snug tracking-tight text-ink transition-colors group-hover:text-brand sm:truncate">
+                                {story.title}
+                              </h4>
+                              {story.summary && (
+                                <p className="mt-0.5 line-clamp-2 text-sm text-ink-2 sm:line-clamp-1">
+                                  {story.summary}
+                                </p>
+                              )}
+                              <p className="mt-1 font-mono text-[11px] text-ink-3">
+                                {formatReadingTime(story.readingTimeMin)}
+                              </p>
+                            </div>
+                            <span className="mt-1 shrink-0 self-center text-brand opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:opacity-100">
+                              <ArrowIcon />
+                            </span>
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="empty"
+                initial={reduceMotion ? false : { opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex min-h-[12rem] flex-col items-center justify-center rounded-2xl border border-dashed border-border-app bg-elevated-muted/40 px-6 py-10 text-center lg:absolute lg:inset-0"
+              >
+                <p className="font-ui text-sm font-medium text-ink-2">
+                  Pick a highlighted day
+                </p>
+                <p className="mt-1 max-w-xs text-sm text-ink-3">
+                  Days with an edition show a count badge. Click one to see that
+                  day&apos;s important stories here.
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
-
-      {/* Selected-day feed panel */}
-      <AnimatePresence mode="wait" initial={false}>
-        {selectedEdition && selectedDate && (
-          <motion.div
-            key={selectedDate}
-            initial={
-              reduceMotion ? false : { opacity: 0, y: 12 }
-            }
-            animate={{ opacity: 1, y: 0 }}
-            exit={
-              reduceMotion
-                ? { opacity: 0 }
-                : { opacity: 0, y: -8 }
-            }
-            transition={reduceMotion ? { duration: 0 } : panelTransition}
-            className="mt-6"
-          >
-            <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-              <div>
-                <p className="mb-1 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-3">
-                  Selected edition
-                </p>
-                <h3 className="font-ui text-lg font-bold tracking-tight text-ink md:text-xl">
-                  {formatDate(selectedDate)}
-                  <span className="ml-2 text-base font-medium text-ink-3">
-                    · {selectedEdition.stories.length}{" "}
-                    {selectedEdition.stories.length === 1 ? "story" : "stories"}
-                  </span>
-                </h3>
-              </div>
-              <Link
-                href={`/edition/${selectedDate}`}
-                className="btn-press inline-flex items-center gap-1.5 rounded-full border border-border-app bg-elevated/90 px-3.5 py-1.5 text-xs font-semibold text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand"
-              >
-                View full edition
-                <span aria-hidden>→</span>
-              </Link>
-            </div>
-
-            <div className="surface-standard overflow-hidden">
-              <ul className="divide-y divide-border-app/80">
-                {selectedEdition.stories.map((story) => {
-                  const meta = CATEGORY_META[story.category];
-                  return (
-                    <li key={story.id}>
-                      <Link
-                        href={`/story/${story.slug}`}
-                        className="group flex gap-3 px-4 py-3.5 transition-colors hover:bg-elevated-muted/70 sm:px-5"
-                      >
-                        <div className="min-w-0 flex-1">
-                          <div className="mb-1.5">
-                            <span className="rounded-full border border-brand-border bg-brand-soft px-2 py-0.5 text-[10px] font-medium text-brand">
-                              {meta.shortLabel}
-                            </span>
-                          </div>
-                          <h4 className="truncate font-ui text-[15px] font-semibold leading-snug tracking-tight text-ink transition-colors group-hover:text-brand">
-                            {story.title}
-                          </h4>
-                          {story.summary && (
-                            <p className="mt-0.5 line-clamp-1 text-sm text-ink-2">
-                              {story.summary}
-                            </p>
-                          )}
-                          <p className="mt-1 flex flex-wrap items-center gap-1.5 font-mono text-[11px] text-ink-3">
-                            <span>{formatReadingTime(story.readingTimeMin)}</span>
-                            {story.decision === "must_cover" && (
-                              <>
-                                <span className="opacity-40">·</span>
-                                <span className="rounded-full border border-border-app bg-elevated-muted px-2 py-0.5 text-[10px] font-medium text-ink-3">
-                                  Must cover
-                                </span>
-                              </>
-                            )}
-                          </p>
-                        </div>
-                        <span className="mt-1 shrink-0 self-center text-brand opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:opacity-100">
-                          <ArrowIcon />
-                        </span>
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </section>
   );
 }

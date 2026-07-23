@@ -24,7 +24,7 @@ export function StoryCard({
         className="surface-hero card-interactive group flex h-full flex-col overflow-hidden p-6 md:p-8"
       >
         <div className="mb-5 flex flex-wrap items-center gap-2 text-xs">
-          <span className="rounded-md bg-brand px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--on-accent,#fff)]">
+          <span className="rounded-md bg-brand px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-on-accent">
             Lead · must cover
           </span>
           <span className="rounded-full border border-brand-border bg-brand-soft px-2.5 py-0.5 font-medium text-brand">

@@ -28,6 +28,9 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **CONTENT-04**: User can filter the feed by exam relevance and a small set of categories
 - [ ] **CONTENT-05**: User can browse a basic chronological archive of past editions
 - [ ] **CONTENT-06**: User can search stories by title/keyword
+- [ ] **CONTENT-09**: Signed-in users see a Legal Mentor deep-dive beyond the existing key-points/why-it-matters layer: a plain-English reframe of what's actually happening, why it happened, important terms explained, the law behind it, one analogy, a conversational "friend explanation," and common confusions students mix up
+- [ ] **CONTENT-10**: Signed-in users see an Exam Lens block: five things worth remembering, the static-law connection, expected question areas, a difficulty rating, and an exam-probability rating, alongside the existing PYQ connection
+- [ ] **CONTENT-11**: Signed-in users can attempt a fixed, pre-authored Challenge + Answers quiz per story (3-5 mixed-type questions, each with a full explanation) — authored alongside the article, never generated dynamically at read time, never scored or tracked per user
 
 ### User State
 
@@ -53,8 +56,8 @@ Deferred to future release. Tracked but not in current roadmap.
 
 ### Learning Loop
 
-- **QUIZ-01**: Every story has a five-question mastery quiz
-- **QUIZ-02**: Quiz attempts, scores, and mistakes are tracked per user
+- ~~**QUIZ-01**: Every story has a five-question mastery quiz~~ — superseded 2026-07-23 by **CONTENT-11** (v1, fixed/pre-authored, not dynamic). Kept here struck through for history, not an open item.
+- **QUIZ-02**: Quiz attempts, scores, and mistakes are tracked per user — still deferred; needs new user-state schema this milestone doesn't build
 - **CONTENT-07**: Story relevance is split into separate UG and PG perspectives (blocked on the engine repo producing split content)
 
 ### Media
@@ -112,6 +115,9 @@ Which phases cover which requirements. Populated during roadmap creation.
 | CONTENT-04 | Phase 3 | Pending |
 | CONTENT-05 | Phase 3 | Pending |
 | CONTENT-06 | Phase 3 | Pending |
+| CONTENT-09 | Phase 3 | Pending |
+| CONTENT-10 | Phase 3 | Pending |
+| CONTENT-11 | Phase 3 | Pending |
 | STATE-01 | Phase 4 | Pending |
 | STATE-02 | Phase 4 | Pending |
 | SETTINGS-01 | Phase 4 | Pending |
@@ -122,10 +128,10 @@ Which phases cover which requirements. Populated during roadmap creation.
 | PLAT-04 | Phase 5 | Pending |
 
 **Coverage:**
-- v1 requirements: 22 total
-- Mapped to phases: 22
+- v1 requirements: 25 total
+- Mapped to phases: 25
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-07-22*
-*Last updated: 2026-07-22 after initial definition*
+*Last updated: 2026-07-23 — added CONTENT-09/10/11 (Legal Mentor deep-dive, Exam Lens, fixed quiz) to Phase 3; QUIZ-01 superseded by CONTENT-11*

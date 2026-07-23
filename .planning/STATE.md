@@ -45,6 +45,8 @@ Recent decisions affecting current work:
 - [Pre-Phase 1]: Teaser pattern chosen — story pages publicly readable in summary form (headline, summary, what happened, background, sources), full depth (key points, why it matters, PYQ) gated behind signup. Resolves the SEO-vs-login-wall tension research flagged as the top structural risk. Phase 1 must encode this in the `published_stories` RLS/read policy.
 - [Pre-Phase 1]: This repo never holds the Supabase service-role key — writes to `published_stories` belong solely to the sibling `gavel-news` engine repo.
 - [Pre-Phase 1]: Privacy Policy/Terms + explicit DPDP-compliant consent copy is a Phase 2 (v1) deliverable, not post-launch polish.
+- [2026-07-23, Pre-Phase 1]: Folded the GavelNews Content Architecture (Legal Mentor deep-dive, Exam Lens, fixed pre-authored quiz) into Phase 1 (schema) and Phase 3 (rendering) rather than opening a new milestone — v1.0 hadn't started executing yet, so there was nothing shipped to avoid disrupting. Added CONTENT-09/10/11 to REQUIREMENTS.md and a Phase 1 success criterion for the matching schema fields. Moved the "five-question mastery quiz" Out-of-Scope entry in PROJECT.md to Active — the deferral was about a dynamic/scored/tracked quiz specifically; this fixed, stateless, pre-authored version isn't that build. Scored/tracked quiz attempts and revision-queue features remain deferred.
+- [2026-07-23]: The sibling `gavel-news` engine repo's `editorial.py`/`db.py`/`mcp_server.py`/`supabase_sync.py`/`CLAUDE.md`/admin-preview were updated to produce and store the new fields (verified via the engine's own smoke test + a manual round-trip check). Phase 1's `published_stories` schema must match those exact snake_case field names.
 
 ### Pending Todos
 
@@ -54,7 +56,7 @@ None yet.
 
 - Supabase project "GavelNews" (ref `fewdjzjkdblnvzvtjzgz`) now exists and is linked via the CLI; anon URL/key are in local `.env.local` (260723-kv7). Schema/RLS/seed data still not shipped — Phase 1 work remains.
 - Watch item (MEDIUM confidence per research): Next.js 16 renamed `middleware.ts`/`middleware()` to `proxy.ts`/`proxy()` — verify against the pinned Next.js version when Phase 2 (auth/session) is planned, not from tutorial code.
-- Watch item (MEDIUM confidence per research): Supabase is rolling out new `sb_publishable_...`/`sb_secret_...` key formats replacing legacy `anon`/`service_role` — confirm the current dashboard default at Supabase project-creation time in Phase 1.
+- [RESOLVED 2026-07-23]: Confirmed the "GavelNews" project exposes both legacy (`anon`/`service_role` JWTs) and new (`sb_publishable_...`/`sb_secret_...`) key formats side by side. `gavel-news-web`'s `.env.local` uses the legacy `anon` JWT (pulled 260723-kv7); the sibling `gavel-news` engine repo's new `.env` (2026-07-23, gitignored) uses the new `sb_secret_...` key for `SUPABASE_KEY` — verified working against the live project (auth succeeds; only error is "table not found", expected since Phase 1 schema isn't built yet). Formats don't need to match between anon/service sides; no action required, but worth switching `gavel-news-web` to `sb_publishable_...` for consistency if convenient during Phase 1.
 - Watch item: Engine repo's actual field coverage for exam-relevance/category tagging is unverified — confirm `published_stories`' real field shape (via the engine repo's `editorial.py`/`supabase_sync.py`) before committing to filter UI in Phase 3.
 - DPDP Act consent guidance used in Phase 2 is based on MEDIUM-confidence secondary sources, not primary statute — flag for real legal review before public launch.
 
@@ -79,7 +81,7 @@ None yet.
 | 260723-o65 | Fix low-contrast nav item titles in Sidebar - make them black/ink instead of muted ink-2 | 2026-07-23 | cebacf8 | [260723-o65-fix-low-contrast-nav-item-titles-in-side](./quick/260723-o65-fix-low-contrast-nav-item-titles-in-side/) |
 | 260723-oan | Add Markdown rendering support for story body content (react-markdown + remark-gfm) instead of plain text | 2026-07-23 | c0b89f0 | [260723-oan-add-markdown-rendering-support-for-story](./quick/260723-oan-add-markdown-rendering-support-for-story/) |
 | 260723-ox4 | Fix mismatched sidebar-header and top-header heights so their border lines align (both now h-16) | 2026-07-23 | d2418b1 | [260723-ox4-fix-mismatched-sidebar-header-and-top-he](./quick/260723-ox4-fix-mismatched-sidebar-header-and-top-he/) |
-| 260723-pos | Redesign per-story OG image into a newspaper-masthead layout (masthead bar, brand panel + headline row, dark footer bar) | 2026-07-23 | faa8c88 | [260723-pos-redesign-per-story-og-image-into-a-newsp](./quick/260723-pos-redesign-per-story-og-image-into-a-newsp/) |
+| 260723-pos | Redesign per-story OG image into a newspaper-masthead layout (masthead bar, brand panel + headline row, dark footer bar) | 2026-07-23 | (pending) | [260723-pos-redesign-per-story-og-image-into-a-newsp](./quick/260723-pos-redesign-per-story-og-image-into-a-newsp/) |
 
 ## Deferred Items
 

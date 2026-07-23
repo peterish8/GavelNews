@@ -23,7 +23,7 @@ export function FavoritesList() {
   if (ids === null) {
     return (
       <p className="text-sm text-ink-3" aria-live="polite">
-        Loading favorites…
+        Loading saved stories…
       </p>
     );
   }
@@ -31,12 +31,12 @@ export function FavoritesList() {
   if (ids.length === 0) {
     return (
       <EmptyState
-        title="No favorites yet"
-        body="When you favorite a story, it shows up here for quick revision."
+        title="Nothing saved yet"
+        body="When you save a story, it shows up here for quick revision."
         action={
           <Link
             href="/"
-            className="btn-press inline-flex rounded-full bg-brand px-4 py-2 text-sm font-semibold text-[var(--on-accent)]"
+            className="btn-press inline-flex rounded-full bg-brand px-4 py-2 text-sm font-semibold text-on-accent"
           >
             Open today&apos;s edition
           </Link>

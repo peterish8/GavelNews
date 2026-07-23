@@ -13,10 +13,10 @@ export default async function FavoritesPage() {
           Your library
         </p>
         <h1 className="mb-2 font-ui text-3xl font-bold tracking-tight text-ink md:text-4xl">
-          Favorites
+          Saved
         </h1>
         <p className="text-ink-2">
-          Stories you saved while reading. Open any story and tap Favorite to
+          Stories you saved while reading. Open any story and tap Save to
           add it here.{" "}
           <Link href="/" className="font-medium text-brand hover:underline">
             Browse today

@@ -299,9 +299,9 @@ export function NavSearch({
                                   {isFav && (
                                     <span
                                       className="rounded-full bg-accent-soft px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wide text-accent"
-                                      title="Favorited"
+                                      title="Saved"
                                     >
-                                      Fav
+                                      Saved
                                     </span>
                                   )}
                                   {isDone && (

@@ -26,6 +26,52 @@ export interface KeyPoint {
   text: string;
 }
 
+// ── Legal Mentor deep-dive + Exam Lens + quiz (gated content) ──────────
+// Field names mirror the gavel-news engine's supabase_sync.py payload and
+// published_stories schema exactly (snake_case in Postgres, camelCase here).
+
+export interface ImportantTerm {
+  term: string;
+  whatIsIt: string;
+  whyItMatters: string;
+}
+
+export interface CommonConfusion {
+  a: string;
+  b: string;
+  explanation: string;
+}
+
+export type QuizQuestionType =
+  | "passage"
+  | "conceptual"
+  | "application"
+  | "static_law"
+  | "inference";
+
+export interface QuizQuestion {
+  question: string;
+  type: QuizQuestionType;
+  options: string[];
+  correctIndex: number;
+  explanation: string;
+}
+
+export interface ExamLens {
+  fiveThings: string[];
+  pyqConnection?: string;
+  staticLawConnection?: string;
+  expectedQuestionAreas?: string;
+  difficulty?: "Easy" | "Medium" | "Hard";
+  examProbability?: number; // 1-5
+}
+
+export interface BeforeYouLeave {
+  oneLiner: string;
+  threeBullets: string[];
+  examTip: string;
+}
+
 export interface PublishedStory {
   id: string;
   editionDate: string; // ISO date "2026-07-22"
@@ -44,6 +90,26 @@ export interface PublishedStory {
   pyqKeyword?: string; // optional, for PYQ sidebar lookup
   decision: "must_cover" | "maybe"; // admin-set
   publishedAt: string; // ISO datetime
+
+  // Legal Mentor deep-dive (gated behind sign-in in the story page)
+  whatActuallyHappening?: string;
+  whyDidThisHappen?: string;
+  importantTerms?: ImportantTerm[];
+  lawBehindIt?: string;
+  analogy?: string;
+  friendExplanation?: string;
+  commonConfusions?: CommonConfusion[];
+
+  // Exam Lens (gated behind sign-in in the story page)
+  examLens?: ExamLens;
+
+  // Challenge + Answers: fixed, pre-authored quiz (gated). Absent/empty for
+  // older stories synced before the quiz feature existed - UI must degrade
+  // gracefully (section simply doesn't render).
+  quiz?: QuizQuestion[];
+
+  // Before You Leave (gated behind sign-in in the story page)
+  beforeYouLeave?: BeforeYouLeave;
 }
 
 export interface Edition {

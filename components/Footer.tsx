@@ -2,22 +2,20 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="border-t border-border-app bg-[color-mix(in_srgb,var(--app-elevated)_70%,transparent)]">
+    <footer className="border-t border-border-app bg-[color-mix(in_srgb,var(--app-elevated)_82%,#f0e9dc)] dark:border-white/10 dark:bg-[color-mix(in_srgb,var(--app-elevated)_92%,#050506)]">
       <div className="mx-auto grid max-w-6xl gap-6 px-5 py-8 sm:grid-cols-2 lg:grid-cols-4 md:py-9">
         <div className="sm:col-span-2 lg:col-span-1">
-          <p className="font-ui text-sm font-bold tracking-tight text-ink">
+          <p className="font-serif text-base font-bold tracking-tight text-ink">
             Gavel News
           </p>
-          <p className="mt-2 max-w-sm text-sm leading-relaxed text-ink-3">
-            Daily legal brief for CLAT UG & PG. Read free — sign in for the exam
-            layer.
+          <p className="mt-2 max-w-sm font-serif text-[13.5px] leading-relaxed text-ink-2 dark:text-ink-3">
+            Daily legal brief for CLAT UG &amp; PG. Read free — sign in for the
+            exam layer.
           </p>
         </div>
 
         <div>
-          <p className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-3">
-            Read
-          </p>
+          <p className="label-law mb-3">Read</p>
           <ul className="space-y-2 text-sm text-ink-2">
             <li>
               <Link href="/" className="link-press hover:text-brand">
@@ -25,7 +23,7 @@ export function Footer() {
               </Link>
             </li>
             <li>
-              <Link href="/archive" className="link-press hover:text-brand">
+              <Link href="/calendar" className="link-press hover:text-brand">
                 Calendar
               </Link>
             </li>
@@ -38,9 +36,7 @@ export function Footer() {
         </div>
 
         <div>
-          <p className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-3">
-            Account
-          </p>
+          <p className="label-law mb-3">Account</p>
           <ul className="space-y-2 text-sm text-ink-2">
             <li>
               <Link href="/auth/signin" className="link-press hover:text-brand">
@@ -67,9 +63,7 @@ export function Footer() {
         </div>
 
         <div>
-          <p className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-3">
-            Meta
-          </p>
+          <p className="label-law mb-3">Meta</p>
           <ul className="space-y-2 text-sm text-ink-2">
             <li>
               <Link href="/about" className="link-press hover:text-brand">
@@ -88,10 +82,12 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-border-app/70">
-        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-2 px-5 py-4 font-mono text-[11px] text-ink-3 sm:flex-row sm:items-center">
-          <p>© 2026 Gavel News</p>
-          <p className="uppercase tracking-[0.14em]">
+      <div className="border-t border-border-app/70 dark:border-white/10">
+        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-2 px-5 py-4 sm:flex-row sm:items-center">
+          <p className="font-serif text-[12px] text-ink-2 dark:text-ink-3">
+            © 2026 Gavel News
+          </p>
+          <p className="font-serif text-[12px] italic text-ink-3">
             Public teaser · exam layer with free account
           </p>
         </div>

@@ -22,10 +22,13 @@ export const NAV_ITEMS: NavItem[] = [
     section: "read",
   },
   {
-    href: "/archive",
+    href: "/calendar",
     label: "Calendar",
     description: "Browse editions by date",
-    match: (p) => p.startsWith("/archive") || p.startsWith("/edition"),
+    match: (p) =>
+      p.startsWith("/calendar") ||
+      p.startsWith("/archive") ||
+      p.startsWith("/edition"),
     section: "read",
   },
   {
@@ -39,7 +42,7 @@ export const NAV_ITEMS: NavItem[] = [
   // ── Account (auth required) ────────────────────────────────────
   {
     href: "/favorites",
-    label: "Favorites",
+    label: "Saved",
     description: "Stories you saved",
     match: (p) => p.startsWith("/favorites"),
     requiresAuth: true,
