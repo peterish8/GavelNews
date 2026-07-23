@@ -71,59 +71,66 @@ export function Sidebar({
         aria-hidden={collapsed ? true : undefined}
       >
         {/* Header: brand + edition dateline + INSIDE opener (only while open) */}
-        <div className="flex h-16 shrink-0 items-center justify-between gap-2 border-b border-border-app px-3">
-          <Link
-            href="/"
-            onClick={onMobileClose}
-            className="link-press flex min-w-0 items-center gap-2"
-          >
-            <Logo />
-            <span className="min-w-0">
-              <span className="block truncate font-serif text-[17px] font-bold tracking-tight text-ink">
-                Gavel News
-              </span>
-              {(editionDate || typeof editionIndex === "number") && (
-                <span className="mt-0.5 block truncate text-[11px] text-ink-3">
-                  {typeof editionIndex === "number" && editionIndex > 0 && (
-                    <span className="font-medium text-brand">Day {editionIndex}</span>
-                  )}
-                  {editionDate && (
-                    <>
-                      {typeof editionIndex === "number" ? " · " : ""}
-                      {formatDate(editionDate)}
-                    </>
-                  )}
-                  {typeof storyCount === "number" && (
-                    <>
-                      {" · "}
-                      {storyCount} {storyCount === 1 ? "story" : "stories"}
-                    </>
-                  )}
+        <div className="shrink-0 border-b border-border-app">
+          <div
+            className="h-[2px] w-full"
+            style={{ background: "var(--brand-blend)" }}
+            aria-hidden
+          />
+          <div className="flex h-16 items-center justify-between gap-2 px-3">
+            <Link
+              href="/"
+              onClick={onMobileClose}
+              className="link-press flex min-w-0 items-center gap-2"
+            >
+              <Logo />
+              <span className="min-w-0">
+                <span className="block truncate font-serif text-[17px] font-bold tracking-tight text-ink">
+                  Gavel News
                 </span>
-              )}
-            </span>
-          </Link>
+                {(editionDate || typeof editionIndex === "number") && (
+                  <span className="mt-0.5 block truncate text-[11px] text-ink-3">
+                    {typeof editionIndex === "number" && editionIndex > 0 && (
+                      <span className="font-medium text-brand">Day {editionIndex}</span>
+                    )}
+                    {editionDate && (
+                      <>
+                        {typeof editionIndex === "number" ? " · " : ""}
+                        {formatDate(editionDate)}
+                      </>
+                    )}
+                    {typeof storyCount === "number" && (
+                      <>
+                        {" · "}
+                        {storyCount} {storyCount === 1 ? "story" : "stories"}
+                      </>
+                    )}
+                  </span>
+                )}
+              </span>
+            </Link>
 
-          {/* Desktop: close control lives inside while open */}
-          <button
-            type="button"
-            onClick={onToggleCollapsed}
-            className="icon-btn hidden size-8 shrink-0 items-center justify-center rounded-lg border border-border-app text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand lg:inline-flex"
-            aria-label="Close sidebar"
-            title="Close sidebar"
-          >
-            <PanelLeftIcon flipped />
-          </button>
+            {/* Desktop: close control lives inside while open */}
+            <button
+              type="button"
+              onClick={onToggleCollapsed}
+              className="icon-btn hidden size-8 shrink-0 items-center justify-center rounded-lg border border-border-app text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand lg:inline-flex"
+              aria-label="Close sidebar"
+              title="Close sidebar"
+            >
+              <PanelLeftIcon flipped />
+            </button>
 
-          {/* Mobile: close drawer */}
-          <button
-            type="button"
-            onClick={onMobileClose}
-            className="icon-btn inline-flex size-8 shrink-0 items-center justify-center rounded-lg border border-border-app text-ink-2 lg:hidden"
-            aria-label="Close menu"
-          >
-            <CloseIcon />
-          </button>
+            {/* Mobile: close drawer */}
+            <button
+              type="button"
+              onClick={onMobileClose}
+              className="icon-btn inline-flex size-8 shrink-0 items-center justify-center rounded-lg border border-border-app text-ink-2 lg:hidden"
+              aria-label="Close menu"
+            >
+              <CloseIcon />
+            </button>
+          </div>
         </div>
 
         <nav className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-2.5 py-3">

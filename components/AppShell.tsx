@@ -97,76 +97,83 @@ export function AppShell({
         data-sidebar-collapsed={collapsed ? "true" : "false"}
         className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden"
       >
-        <header className="relative flex h-16 shrink-0 items-center gap-2 border-b border-border-app bg-[color-mix(in_srgb,var(--bg)_94%,transparent)] px-2.5 backdrop-blur-xl sm:px-4">
-          {/* Mobile: open drawer */}
-          <button
-            type="button"
-            onClick={() => setMobileOpen(true)}
-            className="icon-btn inline-flex size-8 shrink-0 items-center justify-center rounded-lg border border-border-app bg-elevated text-ink lg:hidden"
-            aria-label="Open navigation"
-            title="Open navigation"
-          >
-            <PanelLeftIcon />
-          </button>
-
-          {/* Desktop: outside only when closed (inside when open) */}
-          {showOutsideToggle && (
+        <header className="relative shrink-0 border-b border-border-app bg-[color-mix(in_srgb,var(--bg)_94%,transparent)] backdrop-blur-xl">
+          <div
+            className="h-[2px] w-full"
+            style={{ background: "var(--brand-blend)" }}
+            aria-hidden
+          />
+          <div className="relative flex h-16 items-center gap-2 px-2.5 sm:px-4">
+            {/* Mobile: open drawer */}
             <button
               type="button"
-              onClick={toggleCollapsed}
-              className="icon-btn hidden size-7 shrink-0 items-center justify-center rounded-lg border border-border-app bg-elevated text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand lg:inline-flex"
-              aria-label="Open sidebar"
-              title="Open sidebar"
+              onClick={() => setMobileOpen(true)}
+              className="icon-btn inline-flex size-8 shrink-0 items-center justify-center rounded-lg border border-border-app bg-elevated text-ink lg:hidden"
+              aria-label="Open navigation"
+              title="Open navigation"
             >
               <PanelLeftIcon />
             </button>
-          )}
 
-          {/* Brand — inline on mobile (no absolute collision), centered on lg+ */}
-          <Link
-            href="/"
-            className="link-press flex min-w-0 flex-1 flex-col items-start gap-0 leading-none lg:absolute lg:left-1/2 lg:top-1/2 lg:flex-none lg:-translate-x-1/2 lg:-translate-y-1/2 lg:items-center lg:gap-0.5"
-          >
-            <span className="truncate font-serif text-base font-bold tracking-tight text-ink sm:text-lg lg:text-xl">
-              Gavel News
-            </span>
-            <span className="hidden font-serif text-[10px] italic text-ink-3 sm:block">
-              Daily Legal Brief
-            </span>
-          </Link>
-
-          {/* ── Mobile: search + sign-in — full nav lives in the drawer ── */}
-          <div
-            className="flex shrink-0 items-center gap-1.5 md:hidden"
-            role="group"
-            aria-label="Quick actions"
-          >
-            <NavSearch
-              compact
-              open={mobileSearchOpen}
-              onOpenChange={setMobileSearchOpen}
-            />
-            {!signedIn && (
-              <Link
-                href={signInHref(pathname)}
-                className="btn-press rounded-full bg-brand px-2.5 py-1 text-[10px] font-semibold text-on-accent"
+            {/* Desktop: outside only when closed (inside when open) */}
+            {showOutsideToggle && (
+              <button
+                type="button"
+                onClick={toggleCollapsed}
+                className="icon-btn hidden size-7 shrink-0 items-center justify-center rounded-lg border border-border-app bg-elevated text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand lg:inline-flex"
+                aria-label="Open sidebar"
+                title="Open sidebar"
               >
-                Sign in
-              </Link>
+                <PanelLeftIcon />
+              </button>
             )}
-          </div>
 
-          {/* ── Desktop / tablet: search + sign-in only — full nav lives in the sidebar ── */}
-          <div className="ml-auto hidden shrink-0 items-center gap-2 md:flex">
-            <NavSearch />
-            {!signedIn && (
-              <Link
-                href={signInHref(pathname)}
-                className="btn-press rounded-full bg-brand px-3 py-1 text-[11px] font-semibold text-on-accent sm:text-xs"
-              >
-                Sign in
-              </Link>
-            )}
+            {/* Brand — inline on mobile (no absolute collision), centered on lg+ */}
+            <Link
+              href="/"
+              className="link-press flex min-w-0 flex-1 flex-col items-start gap-0 leading-none lg:absolute lg:left-1/2 lg:top-1/2 lg:flex-none lg:-translate-x-1/2 lg:-translate-y-1/2 lg:items-center lg:gap-0.5"
+            >
+              <span className="truncate font-serif text-base font-bold tracking-tight text-ink sm:text-lg lg:text-xl">
+                Gavel News
+              </span>
+              <span className="hidden font-serif text-[10px] italic text-ink-3 sm:block">
+                Daily Legal Brief
+              </span>
+            </Link>
+
+            {/* ── Mobile: search + sign-in — full nav lives in the drawer ── */}
+            <div
+              className="flex shrink-0 items-center gap-1.5 md:hidden"
+              role="group"
+              aria-label="Quick actions"
+            >
+              <NavSearch
+                compact
+                open={mobileSearchOpen}
+                onOpenChange={setMobileSearchOpen}
+              />
+              {!signedIn && (
+                <Link
+                  href={signInHref(pathname)}
+                  className="btn-press rounded-full bg-brand px-2.5 py-1 text-[10px] font-semibold text-on-accent"
+                >
+                  Sign in
+                </Link>
+              )}
+            </div>
+
+            {/* ── Desktop / tablet: search + sign-in only — full nav lives in the sidebar ── */}
+            <div className="ml-auto hidden shrink-0 items-center gap-2 md:flex">
+              <NavSearch />
+              {!signedIn && (
+                <Link
+                  href={signInHref(pathname)}
+                  className="btn-press rounded-full bg-brand px-3 py-1 text-[11px] font-semibold text-on-accent sm:text-xs"
+                >
+                  Sign in
+                </Link>
+              )}
+            </div>
           </div>
         </header>
 
