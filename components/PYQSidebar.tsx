@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Markdown } from "@/components/Markdown";
 import type { PYQPassage, PYQQuestion } from "@/lib/types";
 
 interface PYQSidebarProps {
@@ -133,7 +134,7 @@ function PYQGroupCard({
           </button>
           {passageOpen && (
             <blockquote className="mb-1 rounded-md border-l-2 border-brand-border bg-elevated-muted/60 p-3 text-[12.5px] leading-relaxed text-ink-3 italic">
-              {group.passage!.text}
+              <Markdown>{group.passage!.text}</Markdown>
             </blockquote>
           )}
         </div>
@@ -174,7 +175,7 @@ function PYQQuestionRow({
           {index + 1}
         </span>
         <span className="block min-w-0 flex-1 text-[13.5px] leading-relaxed text-ink-2">
-          {question.questionText}
+          <Markdown inline>{question.questionText}</Markdown>
         </span>
         <ChevronIcon open={false} />
       </button>
@@ -235,11 +236,13 @@ function PYQQuestionModal({
 
         {passage?.text && (
           <blockquote className="mb-4 rounded-md border-l-2 border-brand-border bg-elevated-muted/60 p-3 text-[13px] leading-relaxed text-ink-3 italic">
-            {passage.text}
+            <Markdown>{passage.text}</Markdown>
           </blockquote>
         )}
 
-        <p className="mb-4 text-[15px] leading-relaxed text-ink">{question.questionText}</p>
+        <p className="mb-4 text-[15px] leading-relaxed text-ink">
+          <Markdown inline>{question.questionText}</Markdown>
+        </p>
 
         {hasOptions && (
           <div className="mb-4 flex flex-col gap-2">
@@ -260,7 +263,9 @@ function PYQQuestionModal({
                   <span className="shrink-0 font-mono text-[11px] font-semibold text-ink-3">
                     {label}
                   </span>
-                  <span className="min-w-0 flex-1">{opt}</span>
+                  <span className="min-w-0 flex-1">
+                    <Markdown inline>{opt}</Markdown>
+                  </span>
                   {isCorrect && (
                     <span className="ml-auto shrink-0 text-[10px] font-semibold uppercase tracking-wide text-[var(--gv-ok,#16a34a)]">
                       Correct
@@ -274,7 +279,7 @@ function PYQQuestionModal({
 
         {question.explanation && (
           <div className="border-t border-border-app/60 pt-3 text-[13.5px] leading-relaxed text-ink-3">
-            {question.explanation}
+            <Markdown>{question.explanation}</Markdown>
           </div>
         )}
       </div>
