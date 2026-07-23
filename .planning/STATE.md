@@ -52,7 +52,7 @@ None yet.
 
 ### Blockers/Concerns
 
-- No Supabase project exists yet — must be created in Phase 1 before any backend work lands.
+- Supabase project "GavelNews" (ref `fewdjzjkdblnvzvtjzgz`) now exists and is linked via the CLI; anon URL/key are in local `.env.local` (260723-kv7). Schema/RLS/seed data still not shipped — Phase 1 work remains.
 - Watch item (MEDIUM confidence per research): Next.js 16 renamed `middleware.ts`/`middleware()` to `proxy.ts`/`proxy()` — verify against the pinned Next.js version when Phase 2 (auth/session) is planned, not from tutorial code.
 - Watch item (MEDIUM confidence per research): Supabase is rolling out new `sb_publishable_...`/`sb_secret_...` key formats replacing legacy `anon`/`service_role` — confirm the current dashboard default at Supabase project-creation time in Phase 1.
 - Watch item: Engine repo's actual field coverage for exam-relevance/category tagging is unverified — confirm `published_stories`' real field shape (via the engine repo's `editorial.py`/`supabase_sync.py`) before committing to filter UI in Phase 3.
@@ -70,6 +70,7 @@ None yet.
 | 260722-wmp | Redesign PYQSidebar (Past CLAT questions box) to be bigger and better UI | 2026-07-22 | 3dfaa71 | [260722-wmp-redesign-pyqsidebar-past-clat-questions-](./quick/260722-wmp-redesign-pyqsidebar-past-clat-questions-/) |
 | 260722-wzk | Upgrade Next.js 15.1.4 -> 15.5.21 to patch flagged CVEs (middleware auth bypass, React flight RCE, multiple DoS/XSS advisories) | 2026-07-22 | 54bdaf0 | [260722-wzk-upgrade-next-js-from-15-1-4-to-latest-pa](./quick/260722-wzk-upgrade-next-js-from-15-1-4-to-latest-pa/) |
 | 260723-0vx | Make the per-story OG preview card professional (Source Serif 4 + IBM Plex Mono fonts) | 2026-07-23 | 849531d | [260723-0vx-make-the-per-story-og-preview-card-profe](./quick/260723-0vx-make-the-per-story-og-preview-card-profe/) |
+| 260723-kv7 | Pull Supabase project credentials via CLI (project URL + anon key) and write them to .env.local, excluding service_role key | 2026-07-23 | (docs-only, .env.local is git-ignored) | [260723-kv7-pull-supabase-project-credentials-via-cl](./quick/260723-kv7-pull-supabase-project-credentials-via-cl/) |
 
 ## Deferred Items
 
@@ -85,4 +86,4 @@ Last session: 2026-07-22
 Stopped at: ROADMAP.md and STATE.md created; REQUIREMENTS.md traceability confirmed
 Resume file: None
 
-Last activity: 2026-07-22 - Completed quick task 260722-wzk: Upgrade Next.js 15.1.4 -> 15.5.21 to patch flagged CVEs
+Last activity: 2026-07-23 - Completed quick task 260723-kv7: Pull Supabase project credentials via CLI and write to .env.local
