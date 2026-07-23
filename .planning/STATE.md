@@ -77,7 +77,7 @@ None yet.
 | 260723-nmi | Make story TTS click-to-seek word-precise instead of sentence-precise | 2026-07-23 | 98bfe02 | [260723-nmi-make-story-tts-click-to-seek-word-precis](./quick/260723-nmi-make-story-tts-click-to-seek-word-precis/) |
 | 260723-nwa | Re-skin sidebar/app-shell nav to remove AI-slop tells (boxed edition widget, repeated eyebrow, nested mobile pill) while preserving IA | 2026-07-23 | 66dc992 | [260723-nwa-re-skin-the-sidebar-app-shell-navigation](./quick/260723-nwa-re-skin-the-sidebar-app-shell-navigation/) |
 | 260723-o65 | Fix low-contrast nav item titles in Sidebar - make them black/ink instead of muted ink-2 | 2026-07-23 | cebacf8 | [260723-o65-fix-low-contrast-nav-item-titles-in-side](./quick/260723-o65-fix-low-contrast-nav-item-titles-in-side/) |
-| 260723-oan | Add Markdown rendering support for story body content (react-markdown + remark-gfm) instead of plain text | 2026-07-23 | (pending) | [260723-oan-add-markdown-rendering-support-for-story](./quick/260723-oan-add-markdown-rendering-support-for-story/) |
+| 260723-oan | Add Markdown rendering support for story body content (react-markdown + remark-gfm) instead of plain text | 2026-07-23 | c0b89f0 | [260723-oan-add-markdown-rendering-support-for-story](./quick/260723-oan-add-markdown-rendering-support-for-story/) |
 
 ## Deferred Items
 
