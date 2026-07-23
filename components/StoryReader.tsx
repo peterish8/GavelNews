@@ -280,23 +280,6 @@ function snapToWordStart(text: string, offset: number): number {
   return i;
 }
 
-function snapToSentenceStart(text: string, offset: number): number {
-  if (offset <= 0) return 0;
-  // Prefer sentence boundary before offset
-  const before = text.slice(0, offset);
-  const m = before.match(/[.!?]["']?\s+(?=[A-Z0-9])/g);
-  if (!m) return snapToWordStart(text, offset);
-  let last = 0;
-  let idx = 0;
-  const re = /[.!?]["']?\s+(?=[A-Z0-9])/g;
-  let match: RegExpExecArray | null;
-  while ((match = re.exec(before)) !== null) {
-    last = match.index + match[0].length;
-    idx = last;
-  }
-  return idx > 0 ? idx : snapToWordStart(text, offset);
-}
-
 function estimateDurationMs(charCount: number, rate: number): number {
   const words = Math.max(1, charCount / 5);
   return Math.round((words / WPM) * 60_000 / rate);
@@ -491,7 +474,7 @@ function NewsReaderPill({
           type="button"
           data-no-tts
           onClick={isPlaying ? onPauseResume : onPlay}
-          className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand text-[var(--on-accent)] shadow-sm hover:bg-brand-hover active:scale-95 sm:h-8 sm:w-8"
+          className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand text-on-accent shadow-sm hover:bg-brand-hover active:scale-95 sm:h-8 sm:w-8"
           aria-label={isPlaying && !isPaused ? "Pause" : "Play"}
         >
           {isPlaying && !isPaused ? (
@@ -1053,8 +1036,8 @@ export function StoryReader({
         }
       }
 
-      // Natural start at sentence; highlight still walks word-by-word
-      const start = snapToSentenceStart(full, localOffset);
+      // Start from the exact word clicked, not the start of its sentence
+      const start = snapToWordStart(full, localOffset);
       playFrom(start);
     }
 

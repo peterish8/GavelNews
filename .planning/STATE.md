@@ -74,6 +74,7 @@ None yet.
 | 260723-l3i | Fix dark-theme color issues: why-it-matters box, TTS pink accent -> red, footer invisible background | 2026-07-23 | 455ab82 | [260723-l3i-fix-dark-theme-color-issues-on-the-story](./quick/260723-l3i-fix-dark-theme-color-issues-on-the-story/) |
 | 260723-krt | Redesign OG preview card into centered light-theme masthead (Gavel News wordmark + Daily Legal Brief tagline, mirroring the real site header) | 2026-07-23 | 76f3c2b | [260723-krt-redesign-og-card-into-centered-light-the](./quick/260723-krt-redesign-og-card-into-centered-light-the/) |
 | 260723-m87 | Update CLAUDE.md and AGENTS.md to reflect current Next.js version (15.5.21), Supabase link status, and new components/lib files | 2026-07-23 | (pending) | [260723-m87-update-claude-md-and-agents-md-to-reflec](./quick/260723-m87-update-claude-md-and-agents-md-to-reflec/) |
+| 260723-nmi | Make story TTS click-to-seek word-precise instead of sentence-precise | 2026-07-23 | (pending) | [260723-nmi-make-story-tts-click-to-seek-word-precis](./quick/260723-nmi-make-story-tts-click-to-seek-word-precis/) |
 
 ## Deferred Items
 
