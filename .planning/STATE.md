@@ -79,6 +79,7 @@ None yet.
 | 260723-o65 | Fix low-contrast nav item titles in Sidebar - make them black/ink instead of muted ink-2 | 2026-07-23 | cebacf8 | [260723-o65-fix-low-contrast-nav-item-titles-in-side](./quick/260723-o65-fix-low-contrast-nav-item-titles-in-side/) |
 | 260723-oan | Add Markdown rendering support for story body content (react-markdown + remark-gfm) instead of plain text | 2026-07-23 | c0b89f0 | [260723-oan-add-markdown-rendering-support-for-story](./quick/260723-oan-add-markdown-rendering-support-for-story/) |
 | 260723-ox4 | Fix mismatched sidebar-header and top-header heights so their border lines align (both now h-16) | 2026-07-23 | d2418b1 | [260723-ox4-fix-mismatched-sidebar-header-and-top-he](./quick/260723-ox4-fix-mismatched-sidebar-header-and-top-he/) |
+| 260723-pos | Redesign per-story OG image into a newspaper-masthead layout (masthead bar, brand panel + headline row, dark footer bar) | 2026-07-23 | (pending) | [260723-pos-redesign-per-story-og-image-into-a-newsp](./quick/260723-pos-redesign-per-story-og-image-into-a-newsp/) |
 
 ## Deferred Items
 

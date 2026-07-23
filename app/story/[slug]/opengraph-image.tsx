@@ -1,6 +1,8 @@
 import { ImageResponse } from "next/og";
 import { getDataSource } from "@/lib/data";
 import { CATEGORY_META } from "@/lib/types";
+import { formatDate } from "@/lib/format";
+import { SITE_URL } from "@/lib/site";
 
 export const runtime = "edge";
 export const alt = "Gavel News story preview";
@@ -40,6 +42,26 @@ async function loadGoogleFont(
   throw new Error(`failed to load font data for ${fontFamily}`);
 }
 
+/** Brand gavel-shield mark — same path data as components/Sidebar.tsx's Logo. */
+function BrandMark({ size, stroke = "#ffffff" }: { size: number; stroke?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <path
+        d="M12 2L4 6v6c0 5 3.4 9.4 8 10 4.6-.6 8-5 8-10V6l-8-4z"
+        stroke={stroke}
+        strokeWidth={1.4}
+        fill={stroke}
+        fillOpacity={0.16}
+      />
+      <path
+        d="M9.5 12.5l1.8 1.8 3.5-3.6"
+        stroke={stroke}
+        strokeWidth={1.8}
+      />
+    </svg>
+  );
+}
+
 export default async function Image({
   params,
 }: {
@@ -51,13 +73,22 @@ export default async function Image({
 
   const kicker = story ? CATEGORY_META[story.category].label : "Gavel News";
   const title = story
-    ? story.title.length > 110
-      ? `${story.title.slice(0, 110)}…`
+    ? story.title.length > 92
+      ? `${story.title.slice(0, 92)}…`
       : story.title
     : "Daily CLAT Current Affairs";
+  const dek = story?.summary
+    ? story.summary.length > 130
+      ? `${story.summary.slice(0, 130)}…`
+      : story.summary
+    : null;
+  const dateLabel = formatDate(
+    story?.editionDate ?? new Date().toISOString().slice(0, 10),
+  ).toUpperCase();
+  const domain = SITE_URL.replace(/^https?:\/\//, "");
 
   // Subset text for each face — keeps the Google Fonts response small/correct
-  const serifText = `${title} Gavel News…`;
+  const serifText = `${title}${dek ?? ""}Gavel News…`;
   const monoText = [
     "DAILY LEGAL BRIEF",
     "Daily CLAT Current Affairs",
@@ -65,6 +96,8 @@ export default async function Image({
     "Criminal Law",
     "Legal Current Affairs",
     "Bare Acts Update",
+    dateLabel,
+    domain,
   ].join(" ");
 
   type OgFont = {
@@ -107,31 +140,156 @@ export default async function Image({
         style={{
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "space-between",
           width: "1200px",
           height: "630px",
-          padding: "72px",
           background: "#F7F6FB",
           fontFamily: serifFamily,
         }}
       >
+        {/* ── Masthead bar ─────────────────────────────────────────── */}
         <div
           style={{
             display: "flex",
-            flexDirection: "column",
             alignItems: "center",
-            gap: 12,
+            justifyContent: "space-between",
+            padding: "40px 64px",
+            borderBottom: "2px solid #E8D4D4",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: 60,
+                height: 60,
+                borderRadius: 16,
+                background: "#FEF2F2",
+                border: "2px solid #FECACA",
+              }}
+            >
+              <BrandMark size={30} stroke="#DC2626" />
+            </div>
+            <div
+              style={{
+                display: "flex",
+                fontFamily: serifFamily,
+                fontSize: 46,
+                fontWeight: 700,
+                letterSpacing: -0.5,
+                color: "#130F2A",
+              }}
+            >
+              Gavel News
+            </div>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              fontFamily: monoFamily,
+              fontSize: 17,
+              fontWeight: 500,
+              letterSpacing: 1.5,
+              color: "#857FA0",
+            }}
+          >
+            {dateLabel}
+          </div>
+        </div>
+
+        {/* ── Body: brand panel + headline block ──────────────────── */}
+        <div
+          style={{
+            display: "flex",
+            flex: 1,
+            alignItems: "center",
+            gap: 48,
+            padding: "0 64px",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: 300,
+              height: 300,
+              borderRadius: 24,
+              flexShrink: 0,
+              background:
+                "linear-gradient(135deg, #DC2626 0%, #EF4444 62%, #F87171 100%)",
+            }}
+          >
+            <BrandMark size={130} stroke="#ffffff" />
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 20,
+              flex: 1,
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                fontFamily: monoFamily,
+                fontSize: 20,
+                fontWeight: 600,
+                textTransform: "uppercase",
+                letterSpacing: 2,
+                color: "#DC2626",
+              }}
+            >
+              {kicker}
+            </div>
+            <div
+              style={{
+                display: "flex",
+                fontFamily: serifFamily,
+                fontSize: 42,
+                fontWeight: 700,
+                lineHeight: 1.2,
+                color: "#130F2A",
+              }}
+            >
+              {title}
+            </div>
+            {dek && (
+              <div
+                style={{
+                  display: "flex",
+                  fontFamily: serifFamily,
+                  fontSize: 19,
+                  lineHeight: 1.5,
+                  color: "#434056",
+                }}
+              >
+                {dek}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ── Footer bar ───────────────────────────────────────────── */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "28px 64px",
+            background: "#130F2A",
           }}
         >
           <div
             style={{
               display: "flex",
               fontFamily: serifFamily,
-              fontSize: 52,
+              fontSize: 30,
               fontWeight: 700,
-              letterSpacing: -0.5,
-              color: "#130F2A",
+              color: "#ffffff",
             }}
           >
             Gavel News
@@ -140,70 +298,12 @@ export default async function Image({
             style={{
               display: "flex",
               fontFamily: monoFamily,
-              fontSize: 15,
-              fontWeight: 500,
-              textTransform: "uppercase",
-              letterSpacing: 2.5,
-              color: "#857FA0",
+              fontSize: 19,
+              color: "rgba(255,255,255,0.55)",
             }}
           >
-            DAILY LEGAL BRIEF
+            {domain}
           </div>
-          <div
-            style={{
-              display: "flex",
-              width: "160px",
-              height: "2px",
-              background: "#E8D4D4",
-              marginTop: 28,
-            }}
-          />
-        </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 24,
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              fontFamily: monoFamily,
-              fontSize: 22,
-              fontWeight: 600,
-              textTransform: "uppercase",
-              letterSpacing: 2,
-              color: "#DC2626",
-            }}
-          >
-            {kicker}
-          </div>
-          <div
-            style={{
-              display: "flex",
-              fontFamily: serifFamily,
-              fontSize: 46,
-              fontWeight: 700,
-              lineHeight: 1.2,
-              color: "#130F2A",
-              textAlign: "center",
-              width: "1040px",
-            }}
-          >
-            {title}
-          </div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            fontFamily: monoFamily,
-            fontSize: 18,
-            color: "#857FA0",
-          }}
-        >
-          Daily CLAT Current Affairs
         </div>
       </div>
     ),
