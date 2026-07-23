@@ -9,7 +9,7 @@
 
 ### Constraints
 - **Separate repo from the `gavel-news` engine** — no import of its Python code, only its Supabase output.
-- **This repo never holds the Supabase `service_role` key** — writes to `published_stories` belong solely to the engine repo. Only the anon/publishable key lives here.
+- **Writes to `published_stories` belong solely to the engine repo** — this repo never writes to Supabase. It does hold the `service_role` key (`SUPABASE_SERVICE_ROLE_KEY`), but **read-only, server-only, never `NEXT_PUBLIC_`** — added to close a real gap where the anon key exposed every gated column (Legal Mentor/Exam Lens/quiz/PYQ) to direct API calls with no sign-in. See `lib/supabase/serviceRole.ts` (has `import "server-only"`) and `supabase/migrations/20260723185522_gate_full_story_content.sql`. Anon/authenticated can only read `published_stories_teaser`, a column-limited view — never the base table.
 - Full product context, requirements, and phase plan: `.planning/PROJECT.md`, `.planning/ROADMAP.md`.
 <!-- GSD:project-end -->
 

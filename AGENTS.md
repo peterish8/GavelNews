@@ -6,7 +6,7 @@ Project context for AI coding agents (Codex, Cursor, Gemini CLI, etc.). Claude C
 
 Gavel News Web — a free current-affairs reading site for CLAT PG aspirants. Reads published stories from Supabase, synced by a separate `gavel-news` engine repo. Story pages are publicly readable as a teaser (headline, summary, what happened, background, sources); deeper content (why it matters, key points, PYQ connection) plus favorite/mark-complete requires a free account.
 
-This repo never holds the Supabase `service_role` key — writes to `published_stories` belong solely to the sibling engine repo.
+Writes to `published_stories` belong solely to the sibling engine repo — this repo never writes to Supabase. It does hold the `service_role` key as `SUPABASE_SERVICE_ROLE_KEY`, read-only and server-only (never `NEXT_PUBLIC_`, only used in `lib/supabase/serviceRole.ts` which has `import "server-only"`), to read gated content (Legal Mentor/Exam Lens/quiz/PYQ) that the anon role's RLS policies no longer expose. anon/authenticated can only read `published_stories_teaser`, a column-limited public view.
 
 ## Stack
 
@@ -50,5 +50,5 @@ Recent additions worth knowing about: `components/ShareButton.tsx` (Web Share AP
 
 - Don't add a Prisma/Drizzle ORM layer — use `supabase-js` + CLI-generated types.
 - Don't add ads, a quiz/mastery feature, revision/planner/analytics, or UG/PG split content — explicitly out of scope for v1.
-- Don't put a Supabase `service_role` key anywhere in this repo, including as an empty placeholder.
+- Don't prefix the service_role key with `NEXT_PUBLIC_`, and don't import `lib/supabase/serviceRole.ts` from a `"use client"` component or anything it transitively imports.
 - Don't assume `zod`, `next-themes`, `lucide-react`, or shadcn/ui are installed — they aren't yet; check `package.json`.

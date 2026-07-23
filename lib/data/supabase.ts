@@ -14,6 +14,7 @@ import type {
   PYQPassage,
 } from "@/lib/types";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceRoleClient } from "@/lib/supabase/serviceRole";
 
 // ────────────────────────────────────────────────────────────────────
 // Supabase-backed DataSource (Phase 1/5). Reads the `published_stories`
@@ -103,11 +104,13 @@ function mapPYQQuestion(q: Row): PYQQuestion {
  * bulk read of it.
  */
 async function resolvePYQQuestions(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  // service-role client (see getStory) - pyq_questions/pyq_passages have no
+  // anon-readable policy at all now, so this always needs the elevated client.
+  service: ReturnType<typeof createServiceRoleClient>,
   ids: string[],
 ): Promise<PYQQuestion[]> {
   if (!ids || ids.length === 0) return [];
-  const { data } = await supabase
+  const { data } = await service
     .from("pyq_questions")
     .select("*, pyq_passages(*)")
     .in("id", ids);
@@ -159,13 +162,18 @@ function sortByDateDesc(stories: PublishedStory[]): PublishedStory[] {
   return [...stories].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
 }
 
+// anon/authenticated can only ever read the teaser view (see
+// supabase/migrations/20260723185522_gate_full_story_content.sql) - exactly
+// what an unauthenticated visitor already sees rendered on the site. Full
+// rows (gated content) are only readable via the service-role client below.
+const TEASER_TABLE = "published_stories_teaser";
 const STORY_COLUMNS = "*";
 
 export const supabaseDataSource: DataSource = {
   async getTodayEdition(): Promise<Edition> {
     const supabase = await createClient();
     const { data: latest } = await supabase
-      .from("published_stories")
+      .from(TEASER_TABLE)
       .select("edition_date")
       .order("edition_date", { ascending: false })
       .limit(1)
@@ -173,7 +181,7 @@ export const supabaseDataSource: DataSource = {
 
     const date = latest?.edition_date ?? new Date().toISOString().slice(0, 10);
     const { data } = await supabase
-      .from("published_stories")
+      .from(TEASER_TABLE)
       .select(STORY_COLUMNS)
       .eq("edition_date", date);
 
@@ -183,7 +191,7 @@ export const supabaseDataSource: DataSource = {
   async getEdition(date: string): Promise<Edition | null> {
     const supabase = await createClient();
     const { data } = await supabase
-      .from("published_stories")
+      .from(TEASER_TABLE)
       .select(STORY_COLUMNS)
       .eq("edition_date", date);
 
@@ -192,8 +200,15 @@ export const supabaseDataSource: DataSource = {
   },
 
   async getStory(slug: string): Promise<PublishedStory | null> {
-    const supabase = await createClient();
-    const { data } = await supabase
+    // Full row (Legal Mentor / Exam Lens / quiz / PYQ ids), not just the
+    // teaser - requires the service-role client since anon can no longer
+    // read these columns at all. Safe here specifically because this is a
+    // Server Component: React only serializes to the browser whatever the
+    // page actually renders, and app/story/[slug]/page.tsx still gates the
+    // gated JSX behind user.signedIn - so a guest's HTML/RSC payload never
+    // contains this data even though the server fetched it.
+    const service = createServiceRoleClient();
+    const { data } = await service
       .from("published_stories")
       .select(STORY_COLUMNS)
       .eq("slug", slug)
@@ -201,16 +216,14 @@ export const supabaseDataSource: DataSource = {
 
     if (!data) return null;
     const story = rowToStory(data);
-    // Resolved on the detail page only (where PYQSidebar renders) - list
-    // views (edition/archive/search/related) don't need the extra join.
-    story.pyqQuestions = await resolvePYQQuestions(supabase, story.pyqQuestionIds ?? []);
+    story.pyqQuestions = await resolvePYQQuestions(service, story.pyqQuestionIds ?? []);
     return story;
   },
 
   async getArchive(): Promise<ArchiveMonth[]> {
     const supabase = await createClient();
     const { data } = await supabase
-      .from("published_stories")
+      .from(TEASER_TABLE)
       .select(STORY_COLUMNS)
       .order("edition_date", { ascending: false });
 
@@ -243,7 +256,7 @@ export const supabaseDataSource: DataSource = {
     opts?: { category?: Category; exam?: Exam },
   ): Promise<PublishedStory[]> {
     const supabase = await createClient();
-    let q = supabase.from("published_stories").select(STORY_COLUMNS);
+    let q = supabase.from(TEASER_TABLE).select(STORY_COLUMNS);
     if (opts?.category) q = q.eq("category", opts.category);
     if (opts?.exam) q = q.contains("exam_tags", [opts.exam]);
 
@@ -261,14 +274,14 @@ export const supabaseDataSource: DataSource = {
   async getRelatedStories(storyId: string): Promise<PublishedStory[]> {
     const supabase = await createClient();
     const { data: current } = await supabase
-      .from("published_stories")
+      .from(TEASER_TABLE)
       .select("id, category")
       .eq("id", storyId)
       .maybeSingle();
     if (!current) return [];
 
     const { data } = await supabase
-      .from("published_stories")
+      .from(TEASER_TABLE)
       .select(STORY_COLUMNS)
       .eq("category", current.category)
       .neq("id", storyId)
