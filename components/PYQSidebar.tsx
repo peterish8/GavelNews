@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Markdown } from "@/components/Markdown";
 import type { PYQPassage, PYQQuestion } from "@/lib/types";
 
 interface PYQSidebarProps {
@@ -40,10 +41,17 @@ function groupByPassage(questions: PYQQuestion[]): PYQGroup[] {
  * linked questions, rather than fabricating a generic one.
  */
 export function PYQSidebar({ questions }: PYQSidebarProps) {
+  const [activeQuestionId, setActiveQuestionId] = useState<string | null>(null);
+
   if (!questions || questions.length === 0) return null;
   const groups = groupByPassage(questions);
 
   let runningIndex = 0;
+
+  const activeGroup = activeQuestionId
+    ? groups.find((g) => g.questions.some((q) => q.id === activeQuestionId))
+    : undefined;
+  const activeQuestion = activeGroup?.questions.find((q) => q.id === activeQuestionId);
 
   return (
     <div className="surface-hero p-6">
@@ -71,15 +79,31 @@ export function PYQSidebar({ questions }: PYQSidebarProps) {
               key={group.passage?.id ?? group.questions[0].id}
               group={group}
               startIndex={startIndex}
+              onSelectQuestion={setActiveQuestionId}
             />
           );
         })}
       </div>
+      {activeQuestion && (
+        <PYQQuestionModal
+          question={activeQuestion}
+          passage={activeGroup?.passage}
+          onClose={() => setActiveQuestionId(null)}
+        />
+      )}
     </div>
   );
 }
 
-function PYQGroupCard({ group, startIndex }: { group: PYQGroup; startIndex: number }) {
+function PYQGroupCard({
+  group,
+  startIndex,
+  onSelectQuestion,
+}: {
+  group: PYQGroup;
+  startIndex: number;
+  onSelectQuestion: (id: string) => void;
+}) {
   const [passageOpen, setPassageOpen] = useState(false);
   const first = group.questions[0];
   const hasPassage = Boolean(group.passage?.text);
@@ -110,7 +134,7 @@ function PYQGroupCard({ group, startIndex }: { group: PYQGroup; startIndex: numb
           </button>
           {passageOpen && (
             <blockquote className="mb-1 rounded-md border-l-2 border-brand-border bg-elevated-muted/60 p-3 text-[12.5px] leading-relaxed text-ink-3 italic">
-              {group.passage!.text}
+              <Markdown>{group.passage!.text}</Markdown>
             </blockquote>
           )}
         </div>
@@ -118,74 +142,148 @@ function PYQGroupCard({ group, startIndex }: { group: PYQGroup; startIndex: numb
 
       <ol className="flex flex-col gap-2 p-3.5 pt-2">
         {group.questions.map((q, i) => (
-          <PYQQuestionRow key={q.id} index={startIndex + i} question={q} />
+          <PYQQuestionRow
+            key={q.id}
+            index={startIndex + i}
+            question={q}
+            onSelect={onSelectQuestion}
+          />
         ))}
       </ol>
     </div>
   );
 }
 
-function PYQQuestionRow({ index, question }: { index: number; question: PYQQuestion }) {
-  const [open, setOpen] = useState(false);
-  const options = [question.optionA, question.optionB, question.optionC, question.optionD];
-  const hasOptions = options.some(Boolean);
-
+function PYQQuestionRow({
+  index,
+  question,
+  onSelect,
+}: {
+  index: number;
+  question: PYQQuestion;
+  onSelect: (id: string) => void;
+}) {
   return (
     <li className="rounded-lg border border-border-app/60 bg-elevated/40 transition-colors hover:border-brand-border">
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => onSelect(question.id)}
         className="flex w-full items-start gap-2 p-3 text-left"
-        aria-expanded={open}
+        aria-haspopup="dialog"
       >
         <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-brand-soft text-[11px] font-bold text-brand">
           {index + 1}
         </span>
         <span className="block min-w-0 flex-1 text-[13.5px] leading-relaxed text-ink-2">
-          {question.questionText}
+          <Markdown inline>{question.questionText}</Markdown>
         </span>
-        <ChevronIcon open={open} />
+        <ChevronIcon open={false} />
       </button>
-
-      {open && (
-        <div className="border-t border-border-app/60 px-3 pb-3.5 pt-2.5">
-          {hasOptions && (
-            <div className="mb-3 flex flex-col gap-1.5">
-              {options.map((opt, i) => {
-                if (!opt) return null;
-                const label = OPTION_LABELS[i];
-                const isCorrect = question.correctAnswer === label;
-                return (
-                  <div
-                    key={label}
-                    className={
-                      "flex items-start gap-2 rounded-md border px-2.5 py-2 text-[13px] leading-snug " +
-                      (isCorrect
-                        ? "border-[var(--gv-ok,#16a34a)] bg-[var(--gv-ok,#16a34a)]/10 text-ink"
-                        : "border-border-app text-ink-2")
-                    }
-                  >
-                    <span className="shrink-0 font-mono text-[11px] font-semibold text-ink-3">
-                      {label}
-                    </span>
-                    <span>{opt}</span>
-                    {isCorrect && (
-                      <span className="ml-auto shrink-0 text-[10px] font-semibold uppercase tracking-wide text-[var(--gv-ok,#16a34a)]">
-                        Correct
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {question.explanation && (
-            <p className="text-[12.5px] leading-relaxed text-ink-3">{question.explanation}</p>
-          )}
-        </div>
-      )}
     </li>
+  );
+}
+
+function PYQQuestionModal({
+  question,
+  passage,
+  onClose,
+}: {
+  question: PYQQuestion;
+  passage: PYQPassage | undefined;
+  onClose: () => void;
+}) {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [onClose]);
+
+  const options = [question.optionA, question.optionB, question.optionC, question.optionD];
+  const hasOptions = options.some(Boolean);
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        className="surface-hero relative max-h-[90vh] w-full max-w-2xl overflow-y-auto p-6"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full bg-elevated-muted text-ink-3 hover:text-ink"
+        >
+          <CloseIcon />
+        </button>
+
+        <div className="mb-3 flex items-center gap-2 pr-10">
+          <span className="rounded-full bg-elevated-muted px-2 py-0.5 font-mono text-[10px] font-semibold text-ink-3">
+            {question.exam} {question.year}
+          </span>
+        </div>
+
+        {passage?.text && (
+          <blockquote className="mb-4 rounded-md border-l-2 border-brand-border bg-elevated-muted/60 p-3 text-[13px] leading-relaxed text-ink-3 italic">
+            <Markdown>{passage.text}</Markdown>
+          </blockquote>
+        )}
+
+        <p className="mb-4 text-[15px] leading-relaxed text-ink">
+          <Markdown inline>{question.questionText}</Markdown>
+        </p>
+
+        {hasOptions && (
+          <div className="mb-4 flex flex-col gap-2">
+            {options.map((opt, i) => {
+              if (!opt) return null;
+              const label = OPTION_LABELS[i];
+              const isCorrect = question.correctAnswer === label;
+              return (
+                <div
+                  key={label}
+                  className={
+                    "flex items-start gap-2 rounded-md border px-3 py-2.5 text-[14px] leading-snug " +
+                    (isCorrect
+                      ? "border-[var(--gv-ok,#16a34a)] bg-[var(--gv-ok,#16a34a)]/10 text-ink"
+                      : "border-border-app text-ink-2")
+                  }
+                >
+                  <span className="shrink-0 font-mono text-[11px] font-semibold text-ink-3">
+                    {label}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <Markdown inline>{opt}</Markdown>
+                  </span>
+                  {isCorrect && (
+                    <span className="ml-auto shrink-0 text-[10px] font-semibold uppercase tracking-wide text-[var(--gv-ok,#16a34a)]">
+                      Correct
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {question.explanation && (
+          <div className="border-t border-border-app/60 pt-3 text-[13.5px] leading-relaxed text-ink-3">
+            <Markdown>{question.explanation}</Markdown>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -213,6 +311,14 @@ function PyqIcon() {
         strokeWidth="1.8"
         strokeLinecap="round"
       />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 }
