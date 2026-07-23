@@ -71,59 +71,66 @@ export function Sidebar({
         aria-hidden={collapsed ? true : undefined}
       >
         {/* Header: brand + edition dateline + INSIDE opener (only while open) */}
-        <div className="flex h-16 shrink-0 items-center justify-between gap-2 border-b border-border-app px-3">
-          <Link
-            href="/"
-            onClick={onMobileClose}
-            className="link-press flex min-w-0 items-center gap-2"
-          >
-            <Logo />
-            <span className="min-w-0">
-              <span className="block truncate font-serif text-[17px] font-bold tracking-tight text-ink">
-                Gavel News
-              </span>
-              {(editionDate || typeof editionIndex === "number") && (
-                <span className="mt-0.5 block truncate text-[11px] text-ink-3">
-                  {typeof editionIndex === "number" && editionIndex > 0 && (
-                    <span className="font-medium text-brand">Day {editionIndex}</span>
-                  )}
-                  {editionDate && (
-                    <>
-                      {typeof editionIndex === "number" ? " · " : ""}
-                      {formatDate(editionDate)}
-                    </>
-                  )}
-                  {typeof storyCount === "number" && (
-                    <>
-                      {" · "}
-                      {storyCount} {storyCount === 1 ? "story" : "stories"}
-                    </>
-                  )}
+        <div className="shrink-0 border-b border-border-app">
+          <div
+            className="h-[2px] w-full"
+            style={{ background: "var(--brand-blend)" }}
+            aria-hidden
+          />
+          <div className="flex h-16 items-center justify-between gap-2 px-3">
+            <Link
+              href="/"
+              onClick={onMobileClose}
+              className="link-press flex min-w-0 items-center gap-2"
+            >
+              <Logo />
+              <span className="min-w-0">
+                <span className="block truncate font-serif text-[17px] font-bold tracking-tight text-ink">
+                  Gavel News
                 </span>
-              )}
-            </span>
-          </Link>
+                {(editionDate || typeof editionIndex === "number") && (
+                  <span className="mt-0.5 block truncate text-[11px] text-ink-3">
+                    {typeof editionIndex === "number" && editionIndex > 0 && (
+                      <span className="font-medium text-brand">Day {editionIndex}</span>
+                    )}
+                    {editionDate && (
+                      <>
+                        {typeof editionIndex === "number" ? " · " : ""}
+                        {formatDate(editionDate)}
+                      </>
+                    )}
+                    {typeof storyCount === "number" && (
+                      <>
+                        {" · "}
+                        {storyCount} {storyCount === 1 ? "story" : "stories"}
+                      </>
+                    )}
+                  </span>
+                )}
+              </span>
+            </Link>
 
-          {/* Desktop: close control lives inside while open */}
-          <button
-            type="button"
-            onClick={onToggleCollapsed}
-            className="icon-btn hidden size-8 shrink-0 items-center justify-center rounded-lg border border-border-app text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand lg:inline-flex"
-            aria-label="Close sidebar"
-            title="Close sidebar"
-          >
-            <PanelLeftIcon flipped />
-          </button>
+            {/* Desktop: close control lives inside while open */}
+            <button
+              type="button"
+              onClick={onToggleCollapsed}
+              className="icon-btn hidden size-8 shrink-0 items-center justify-center rounded-lg border border-border-app text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand lg:inline-flex"
+              aria-label="Close sidebar"
+              title="Close sidebar"
+            >
+              <PanelLeftIcon flipped />
+            </button>
 
-          {/* Mobile: close drawer */}
-          <button
-            type="button"
-            onClick={onMobileClose}
-            className="icon-btn inline-flex size-8 shrink-0 items-center justify-center rounded-lg border border-border-app text-ink-2 lg:hidden"
-            aria-label="Close menu"
-          >
-            <CloseIcon />
-          </button>
+            {/* Mobile: close drawer */}
+            <button
+              type="button"
+              onClick={onMobileClose}
+              className="icon-btn inline-flex size-8 shrink-0 items-center justify-center rounded-lg border border-border-app text-ink-2 lg:hidden"
+              aria-label="Close menu"
+            >
+              <CloseIcon />
+            </button>
+          </div>
         </div>
 
         <nav className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-2.5 py-3">
@@ -131,10 +138,10 @@ export function Sidebar({
             const items = NAV_ITEMS.filter((i) => i.section === section);
             return (
               <div key={section} className="mb-4">
-                <p className="mb-1 px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.16em] text-ink-3">
-                  {SECTION_LABELS[section]}
+                <p className="mb-1.5 border-b border-border-app/50 px-2 pb-1.5 font-serif text-[11px] italic tracking-[0.01em] text-ink-3">
+                  § {SECTION_LABELS[section]}
                   {section === "account" && !signedIn && (
-                    <span className="ml-1 font-normal normal-case tracking-normal opacity-70">
+                    <span className="ml-1 not-italic opacity-70">
                       · sign in
                     </span>
                   )}
@@ -212,6 +219,7 @@ function SidebarLink({
 }) {
   const locked = Boolean(item.requiresAuth) && !signedIn;
   const href = locked ? signInHref(item.href) : item.href;
+  const index = String(NAV_ITEMS.indexOf(item) + 1).padStart(2, "0");
 
   return (
     <li>
@@ -223,26 +231,24 @@ function SidebarLink({
             ? `${item.label} — requires sign in`
             : item.description
         }
-        className={`group flex items-center gap-2.5 rounded-xl px-2.5 py-2 transition-colors ${
+        className={`group flex items-center gap-2.5 rounded-lg border-l-[3px] px-2.5 py-2 transition-colors ${
           active && !locked
-            ? "bg-brand text-on-accent shadow-sm"
-            : "text-ink-2 hover:bg-elevated-muted hover:text-ink"
+            ? "border-brand bg-brand-soft pl-[calc(0.625rem-3px)]"
+            : "border-transparent text-ink-2 hover:bg-elevated-muted hover:text-ink"
         }`}
       >
         <span
-          className={`flex size-8 shrink-0 items-center justify-center rounded-lg ${
-            active && !locked
-              ? "bg-white/15"
-              : "bg-elevated-muted text-ink-3 group-hover:text-brand"
+          className={`flex size-8 shrink-0 items-center justify-center font-mono text-[13px] font-semibold tabular-nums ${
+            active && !locked ? "text-brand" : "text-ink-3"
           }`}
         >
-          <NavIcon name={item.label} />
+          {index}
         </span>
         <span className="min-w-0 flex-1">
           <span className="flex items-center gap-1.5">
             <span
               className={`block text-[13px] font-semibold leading-tight ${
-                active && !locked ? "" : "text-ink"
+                active && !locked ? "text-brand" : "text-ink"
               }`}
             >
               {item.label}
@@ -251,7 +257,7 @@ function SidebarLink({
           </span>
           <span
             className={`mt-0.5 block truncate text-[11px] leading-tight ${
-              active && !locked ? "text-white/75" : "text-ink-3"
+              active && !locked ? "text-ink-2" : "text-ink-3"
             }`}
           >
             {locked ? "Sign in required" : item.description}
@@ -287,111 +293,6 @@ function PanelLeftIcon({ flipped = false }: { flipped?: boolean }) {
       <path d="M9 4v16" stroke="currentColor" strokeWidth="1.7" />
     </svg>
   );
-}
-
-function NavIcon({ name }: { name: string }) {
-  const common = {
-    width: 15,
-    height: 15,
-    viewBox: "0 0 24 24",
-    fill: "none",
-    "aria-hidden": true as const,
-  };
-  switch (name) {
-    case "Today":
-      return (
-        <svg {...common}>
-          <rect
-            x="3"
-            y="5"
-            width="18"
-            height="16"
-            rx="2"
-            stroke="currentColor"
-            strokeWidth="1.7"
-          />
-          <path
-            d="M3 10h18M8 3v4M16 3v4"
-            stroke="currentColor"
-            strokeWidth="1.7"
-            strokeLinecap="round"
-          />
-        </svg>
-      );
-    case "Calendar":
-      return (
-        <svg {...common}>
-          <rect
-            x="3"
-            y="5"
-            width="18"
-            height="16"
-            rx="2"
-            stroke="currentColor"
-            strokeWidth="1.7"
-          />
-          <path
-            d="M3 10h18M8 3v4M16 3v4"
-            stroke="currentColor"
-            strokeWidth="1.7"
-            strokeLinecap="round"
-          />
-          <path
-            d="M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01"
-            stroke="currentColor"
-            strokeWidth="2.2"
-            strokeLinecap="round"
-          />
-        </svg>
-      );
-    case "Search":
-      return (
-        <svg {...common}>
-          <circle cx="11" cy="11" r="6.5" stroke="currentColor" strokeWidth="1.7" />
-          <path
-            d="m20 20-3.5-3.5"
-            stroke="currentColor"
-            strokeWidth="1.7"
-            strokeLinecap="round"
-          />
-        </svg>
-      );
-    case "Saved":
-      return (
-        <svg {...common}>
-          <path
-            d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4-6.5 4V4.5a1 1 0 0 1 1-1z"
-            stroke="currentColor"
-            strokeWidth="1.6"
-            strokeLinejoin="round"
-          />
-        </svg>
-      );
-    case "Settings":
-      return (
-        <svg {...common}>
-          <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.7" />
-          <path
-            d="M12 2v2.5M12 19.5V22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M2 12h2.5M19.5 12H22M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"
-            stroke="currentColor"
-            strokeWidth="1.7"
-            strokeLinecap="round"
-          />
-        </svg>
-      );
-    default:
-      return (
-        <svg {...common}>
-          <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.7" />
-          <path
-            d="M12 11v5M12 8h.01"
-            stroke="currentColor"
-            strokeWidth="1.7"
-            strokeLinecap="round"
-          />
-        </svg>
-      );
-  }
 }
 
 function LockIcon({ className = "" }: { className?: string }) {
