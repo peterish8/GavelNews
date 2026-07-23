@@ -73,6 +73,7 @@ None yet.
 | 260723-kv7 | Pull Supabase project credentials via CLI (project URL + anon key) and write them to .env.local, excluding service_role key | 2026-07-23 | (docs-only, .env.local is git-ignored) | [260723-kv7-pull-supabase-project-credentials-via-cl](./quick/260723-kv7-pull-supabase-project-credentials-via-cl/) |
 | 260723-l3i | Fix dark-theme color issues: why-it-matters box, TTS pink accent -> red, footer invisible background | 2026-07-23 | 455ab82 | [260723-l3i-fix-dark-theme-color-issues-on-the-story](./quick/260723-l3i-fix-dark-theme-color-issues-on-the-story/) |
 | 260723-krt | Redesign OG preview card into centered light-theme masthead (Gavel News wordmark + Daily Legal Brief tagline, mirroring the real site header) | 2026-07-23 | 76f3c2b | [260723-krt-redesign-og-card-into-centered-light-the](./quick/260723-krt-redesign-og-card-into-centered-light-the/) |
+| 260723-m87 | Update CLAUDE.md and AGENTS.md to reflect current Next.js version (15.5.21), Supabase link status, and new components/lib files | 2026-07-23 | (pending) | [260723-m87-update-claude-md-and-agents-md-to-reflec](./quick/260723-m87-update-claude-md-and-agents-md-to-reflec/) |
 
 ## Deferred Items
 
@@ -88,4 +89,4 @@ Last session: 2026-07-22
 Stopped at: ROADMAP.md and STATE.md created; REQUIREMENTS.md traceability confirmed
 Resume file: None
 
-Last activity: 2026-07-23 - Completed quick task 260723-krt: Redesign OG preview card into centered light-theme masthead
+Last activity: 2026-07-23 - Completed quick task 260723-m87: Update CLAUDE.md and AGENTS.md to reflect current state

@@ -12,7 +12,7 @@ This repo never holds the Supabase `service_role` key — writes to `published_s
 
 Check `package.json` for exact versions — it is the source of truth, not this file.
 
-- Next.js 15.1.4 (App Router), React 19.0.0, TypeScript 5.7.3
+- Next.js 15.5.21 (App Router), React 19.0.0, TypeScript 5.7.3
 - Tailwind CSS 4.x, CSS-first config — no `tailwind.config.js`
 - Supabase (`@supabase/supabase-js` + `@supabase/ssr`) for Postgres + Auth + RLS — not yet wired into the app (see Current State)
 - pnpm package manager
@@ -20,7 +20,7 @@ Check `package.json` for exact versions — it is the source of truth, not this 
 
 ## Current State
 
-The app currently runs entirely on mock data (`DATA_SOURCE=mock`, see `lib/data/index.ts`) — there is no live Supabase querying yet. A Supabase CLI project is linked locally, but schema/RLS/seed data have not shipped (`.planning/ROADMAP.md` Phase 1). Don't assume any Supabase table exists.
+The app currently runs entirely on mock data (`DATA_SOURCE=mock`, see `lib/data/index.ts`) — there is no live Supabase querying yet. A real Supabase project ("GavelNews") is linked via the CLI, with anon URL/key in local `.env.local` (gitignored). Schema/RLS/seed data have not shipped (`.planning/ROADMAP.md` Phase 1). Don't assume any Supabase table exists.
 
 ## Commands
 
@@ -37,6 +37,8 @@ The app currently runs entirely on mock data (`DATA_SOURCE=mock`, see `lib/data/
 - `lib/` — data access, auth, formatting, types
 - `supabase/` — CLI project (linked, no migrations yet)
 - `.planning/` — project/requirements/roadmap docs (read `PROJECT.md` and `ROADMAP.md` for full product context)
+
+Recent additions worth knowing about: `components/ShareButton.tsx` (Web Share API + clipboard-copy fallback), `components/CalendarBrowser.tsx`, `lib/site.ts` (`SITE_URL` constant), and `app/story/[slug]/opengraph-image.tsx` (per-story branded OG preview image route).
 
 ## Conventions
 

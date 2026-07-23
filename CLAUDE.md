@@ -20,7 +20,7 @@ Versions below are what's actually pinned in `package.json` — check there befo
 
 | Layer | Choice | Note |
 |---|---|---|
-| Framework | Next.js 15.1.4, App Router | Not yet on Next 16 — `middleware.ts` is still correct; the `proxy.ts` rename only applies from Next 16 onward |
+| Framework | Next.js 15.5.21, App Router | Not yet on Next 16 — `middleware.ts` is still correct; the `proxy.ts` rename only applies from Next 16 onward |
 | UI | React 19.0.0 | |
 | Language | TypeScript 5.7.3 | |
 | Styling | Tailwind CSS 4.x, CSS-first config (`@import "tailwindcss"` in `app/globals.css`, tokens in `app/tokens.css`) | No `tailwind.config.js` — don't add one |
@@ -32,7 +32,7 @@ Versions below are what's actually pinned in `package.json` — check there befo
 
 **Not installed**, despite appearing in earlier drafts of this doc: `zod`, `next-themes`, `lucide-react`, shadcn/ui. Check `package.json` before importing any of these.
 
-**Current state:** the app runs entirely on `DATA_SOURCE=mock` (`lib/data/index.ts`, 12 mock stories) — no live Supabase queries yet. A Supabase CLI project is linked locally (`supabase/config.toml`), but per `.planning/ROADMAP.md` Phase 1, schema/RLS/seed data have not shipped — don't assume any table exists.
+**Current state:** the app runs entirely on `DATA_SOURCE=mock` (`lib/data/index.ts`, 12 mock stories) — no live Supabase queries yet. A real Supabase project ("GavelNews", ref `fewdjzjkdblnvzvtjzgz`) now exists and is linked via the CLI, with the anon URL/key written to local `.env.local` (gitignored, not committed). Per `.planning/ROADMAP.md` Phase 1, schema/RLS/seed data still have not shipped — don't assume any table exists.
 <!-- GSD:stack-end -->
 
 <!-- GSD:conventions-start source:CONVENTIONS.md -->
@@ -47,9 +47,9 @@ Versions below are what's actually pinned in `package.json` — check there befo
 <!-- GSD:architecture-start source:ARCHITECTURE.md -->
 ## Architecture
 
-- `app/` — Next.js App Router routes: `/`, `story/[slug]`, `edition/[date]`, `archive`, `search`, `favorites`, `settings`, `auth/signin`, `about`.
-- `components/` — shared UI: story reader, feed view, nav/search, auth gate, favorites, settings form, theme toggle.
-- `lib/` — `data/` (mock source + env switch), `auth.ts` / `auth-actions.ts`, `editions.ts`, `format.ts`, `types.ts`, `tts-manager.ts`.
+- `app/` — Next.js App Router routes: `/`, `story/[slug]`, `edition/[date]`, `archive`, `search`, `favorites`, `settings`, `auth/signin`, `about`. `story/[slug]/opengraph-image.tsx` is a Next.js file-convention route (edge runtime) that renders a per-story branded OG preview image via `next/og`'s `ImageResponse`, fetching Source Serif 4 + IBM Plex Mono from Google Fonts at request time with a fallback to generic sans-serif if that fetch fails.
+- `components/` — shared UI: story reader, feed view, nav/search, auth gate, favorites, settings form, theme toggle, `ShareButton.tsx` (client component — Web Share API with clipboard-copy fallback), `CalendarBrowser.tsx`.
+- `lib/` — `data/` (mock source + env switch), `auth.ts` / `auth-actions.ts`, `editions.ts`, `format.ts`, `types.ts`, `tts-manager.ts`, `site.ts` (`SITE_URL` constant, env-driven via `NEXT_PUBLIC_SITE_URL` — single source of truth for `metadataBase`/canonical URLs/share links).
 - `supabase/` — CLI-linked project, no migrations yet (Phase 1 builds schema/RLS).
 <!-- GSD:architecture-end -->
 
