@@ -83,7 +83,7 @@ None yet.
 | 260723-ox4 | Fix mismatched sidebar-header and top-header heights so their border lines align (both now h-16) | 2026-07-23 | d2418b1 | [260723-ox4-fix-mismatched-sidebar-header-and-top-he](./quick/260723-ox4-fix-mismatched-sidebar-header-and-top-he/) |
 | 260723-pos | Redesign per-story OG image into a newspaper-masthead layout (masthead bar, brand panel + headline row, dark footer bar) | 2026-07-23 | (pending) | [260723-pos-redesign-per-story-og-image-into-a-newsp](./quick/260723-pos-redesign-per-story-og-image-into-a-newsp/) |
 | 260723-ua1 | Give the nav a distinctive legal-editorial identity: brand-blend masthead rule, docket-index nav markers, § serif-italic section labels, left-rule active state | 2026-07-23 | ad2f4e9 | [260723-ua1-make-the-nav-bar-ui-look-better-and-more](./quick/260723-ua1-make-the-nav-bar-ui-look-better-and-more/) |
-| 260723-vk1 | Fix PYQSidebar: render markdown in question/options/explanation text, and replace inline accordion with a full-screen modal on question click | 2026-07-23 | (pending) | [260723-vk1-fix-pyqsidebar-render-markdown-in-questi](./quick/260723-vk1-fix-pyqsidebar-render-markdown-in-questi/) |
+| 260723-vk1 | Fix PYQSidebar: render markdown in question/options/explanation text, and replace inline accordion with a full-screen modal on question click | 2026-07-23 | f1fc2e3, bd266d9 | [260723-vk1-fix-pyqsidebar-render-markdown-in-questi](./quick/260723-vk1-fix-pyqsidebar-render-markdown-in-questi/) |
 
 ## Deferred Items
 
