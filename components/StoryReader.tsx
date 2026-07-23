@@ -470,11 +470,10 @@ function NewsReaderPill({
             SAME pill instead of needing a second floating box. */}
         <div
           className={
-            "gav-reader-collapsible flex min-w-0 flex-1 items-center" +
+            "gav-reader-collapsible flex min-w-0 flex-1 items-center gap-2 sm:gap-2.5" +
             (menuMounted ? " gav-reader-collapsible--hidden" : "")
           }
         >
-        <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-2.5">
           <div
             data-no-tts
             className="group relative h-8 min-w-0 flex-1 cursor-pointer touch-none select-none sm:h-5 sm:max-w-[160px] sm:flex-none sm:w-[110px] lg:w-[160px]"
@@ -536,19 +535,18 @@ function NewsReaderPill({
               {formatTime(durationMs)}
             </span>
           </span>
-        </div>
 
-        <div className="h-4 w-px shrink-0 bg-border-app" aria-hidden />
+          <div className="h-4 w-px shrink-0 bg-border-app" aria-hidden />
 
-        <button
-          type="button"
-          data-no-tts
-          onClick={onLang}
-          className="shrink-0 rounded-full px-1.5 py-1 font-mono text-[10px] font-semibold tracking-wide text-brand hover:bg-brand-soft sm:px-2 sm:py-0.5"
-          title="Language"
-        >
-          {LANGS[langIdx].label}
-        </button>
+          <button
+            type="button"
+            data-no-tts
+            onClick={onLang}
+            className="shrink-0 rounded-full px-1.5 py-1 font-mono text-[10px] font-semibold tracking-wide text-brand hover:bg-brand-soft sm:px-2 sm:py-0.5"
+            title="Language"
+          >
+            {LANGS[langIdx].label}
+          </button>
         </div>
 
         {/* No separate popover surface — the speed control lives directly in
