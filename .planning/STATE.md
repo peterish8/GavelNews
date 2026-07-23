@@ -71,6 +71,8 @@ None yet.
 | 260722-wzk | Upgrade Next.js 15.1.4 -> 15.5.21 to patch flagged CVEs (middleware auth bypass, React flight RCE, multiple DoS/XSS advisories) | 2026-07-22 | 54bdaf0 | [260722-wzk-upgrade-next-js-from-15-1-4-to-latest-pa](./quick/260722-wzk-upgrade-next-js-from-15-1-4-to-latest-pa/) |
 | 260723-0vx | Make the per-story OG preview card professional (Source Serif 4 + IBM Plex Mono fonts) | 2026-07-23 | 849531d | [260723-0vx-make-the-per-story-og-preview-card-profe](./quick/260723-0vx-make-the-per-story-og-preview-card-profe/) |
 | 260723-kv7 | Pull Supabase project credentials via CLI (project URL + anon key) and write them to .env.local, excluding service_role key | 2026-07-23 | (docs-only, .env.local is git-ignored) | [260723-kv7-pull-supabase-project-credentials-via-cl](./quick/260723-kv7-pull-supabase-project-credentials-via-cl/) |
+| 260723-l3i | Fix dark-theme color issues: why-it-matters box, TTS pink accent -> red, footer invisible background | 2026-07-23 | (pending) | [260723-l3i-fix-dark-theme-color-issues-on-the-story](./quick/260723-l3i-fix-dark-theme-color-issues-on-the-story/) |
+| 260723-krt | Redesign OG preview card into centered light-theme masthead (Gavel News wordmark + Daily Legal Brief tagline, mirroring the real site header) | 2026-07-23 | 76f3c2b | [260723-krt-redesign-og-card-into-centered-light-the](./quick/260723-krt-redesign-og-card-into-centered-light-the/) |
 
 ## Deferred Items
 
@@ -86,4 +88,4 @@ Last session: 2026-07-22
 Stopped at: ROADMAP.md and STATE.md created; REQUIREMENTS.md traceability confirmed
 Resume file: None
 
-Last activity: 2026-07-23 - Completed quick task 260723-kv7: Pull Supabase project credentials via CLI and write to .env.local
+Last activity: 2026-07-23 - Completed quick task 260723-krt: Redesign OG preview card into centered light-theme masthead
