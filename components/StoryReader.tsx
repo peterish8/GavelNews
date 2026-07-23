@@ -423,8 +423,21 @@ function NewsReaderPill({
   if (!mounted) return null;
 
   return createPortal(
+    <>
+    {/* Backdrop must be a SIBLING behind the dock, not a child of the bar.
+        When it lived inside the bar with z-[9998] it covered the speed chips
+        and ate their clicks — so picking 1.15x only closed the menu and left
+        playback at 1x. */}
+    {menuMounted && (
+      <div
+        className="fixed inset-0 z-40"
+        data-no-tts
+        aria-hidden
+        onClick={() => setShowMenu(false)}
+      />
+    )}
     <div
-      className="gav-tts-dock pointer-events-none fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 flex justify-center px-2 sm:bottom-4 sm:px-3 md:bottom-5"
+      className="gav-tts-dock pointer-events-none fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-50 flex justify-center px-2 sm:bottom-4 sm:px-3 md:bottom-5"
       role="group"
       aria-label={`Listen to ${title ?? "this story"}`}
     >
@@ -562,7 +575,9 @@ function NewsReaderPill({
                 key={speed}
                 type="button"
                 data-no-tts
-                onClick={() => {
+                aria-pressed={speedIdx === i}
+                onClick={(e) => {
+                  e.stopPropagation();
                   onSpeed(i);
                   setShowMenu(false);
                 }}
@@ -582,7 +597,8 @@ function NewsReaderPill({
                 data-no-tts
                 aria-label="Stop reading"
                 title="Stop reading"
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   onStop();
                   setShowMenu(false);
                 }}
@@ -595,16 +611,9 @@ function NewsReaderPill({
             )}
           </div>
         )}
-
-        {menuMounted && (
-          <div
-            className="fixed inset-0 z-[9998]"
-            data-no-tts
-            onClick={() => setShowMenu(false)}
-          />
-        )}
       </div>
-    </div>,
+    </div>
+    </>,
     document.body,
   );
 }
@@ -1145,8 +1154,21 @@ export function StoryReader({
         onStop={stop}
         onSeekPct={seekPct}
         onSpeed={(i) => {
+          const nextRate = SPEEDS[i] ?? SPEEDS[1];
           setSpeedIdx(i);
-          rateRef.current = SPEEDS[i];
+          rateRef.current = nextRate;
+          // Duration scales with rate — refresh estimate so the pill clock
+          // matches the speed the user just picked.
+          const full = fullTextRef.current;
+          if (full) {
+            const d = estimateDurationMs(full.length, nextRate);
+            totalDurationRef.current = d;
+            setDurationMs(d);
+            const cur = cursorPlainRef.current;
+            setElapsedMs(
+              Math.round((Math.min(cur, full.length) / Math.max(1, full.length)) * d),
+            );
+          }
           // Only restart if actually speaking right now — if paused, just
           // remember the new speed for whenever the user presses resume
           // (previously this checked `isPlaying`, which stays true while

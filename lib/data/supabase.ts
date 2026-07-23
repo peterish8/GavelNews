@@ -10,6 +10,8 @@ import type {
   QuizQuestion,
   ExamLens,
   BeforeYouLeave,
+  PYQQuestion,
+  PYQPassage,
 } from "@/lib/types";
 import { createClient } from "@/lib/supabase/server";
 
@@ -63,6 +65,59 @@ function mapBeforeYouLeave(b: Row | null | undefined): BeforeYouLeave | undefine
   };
 }
 
+function mapPYQPassage(p: Row): PYQPassage {
+  return {
+    id: p.id,
+    exam: p.exam ?? "",
+    year: p.year ?? 0,
+    passageNumber: p.passage_number ?? undefined,
+    text: p.text ?? "",
+    topic: p.topic ?? undefined,
+    concept: p.concept ?? undefined,
+  };
+}
+
+function mapPYQQuestion(q: Row): PYQQuestion {
+  return {
+    id: q.id,
+    exam: q.exam ?? "",
+    year: q.year ?? 0,
+    questionNumber: q.question_number ?? undefined,
+    questionText: q.question_text ?? "",
+    optionA: q.option_a ?? undefined,
+    optionB: q.option_b ?? undefined,
+    optionC: q.option_c ?? undefined,
+    optionD: q.option_d ?? undefined,
+    correctAnswer: q.correct_answer ?? undefined,
+    explanation: q.explanation ?? undefined,
+    topic: q.topic ?? undefined,
+    difficulty: q.difficulty ?? undefined,
+    passage: q.pyq_passages ? mapPYQPassage(q.pyq_passages) : undefined,
+  };
+}
+
+/**
+ * Resolve a story's linked pyq_question_ids into full question (+ passage)
+ * objects. Only ever fetches the specific IDs a story actually links to -
+ * this is a lookup into the shared, incrementally-grown PYQ store, never a
+ * bulk read of it.
+ */
+async function resolvePYQQuestions(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  ids: string[],
+): Promise<PYQQuestion[]> {
+  if (!ids || ids.length === 0) return [];
+  const { data } = await supabase
+    .from("pyq_questions")
+    .select("*, pyq_passages(*)")
+    .in("id", ids);
+  if (!data) return [];
+  // Preserve the order the story authored them in (e.g. a 4-question set
+  // in sequence), not whatever order Postgres happens to return.
+  const byId = new Map(data.map((row) => [row.id, mapPYQQuestion(row)]));
+  return ids.map((id) => byId.get(id)).filter((q): q is PYQQuestion => Boolean(q));
+}
+
 function rowToStory(row: Row): PublishedStory {
   return {
     id: row.id,
@@ -80,6 +135,7 @@ function rowToStory(row: Row): PublishedStory {
     keyPoints: (row.key_points ?? []).map((text: string) => ({ text })),
     sources: row.sources ?? [],
     pyqKeyword: row.pyq_keyword || undefined,
+    pyqQuestionIds: row.pyq_question_ids ?? undefined,
     decision: row.decision ?? "must_cover",
     publishedAt: row.published_at ?? row.created_at,
 
@@ -143,7 +199,12 @@ export const supabaseDataSource: DataSource = {
       .eq("slug", slug)
       .maybeSingle();
 
-    return data ? rowToStory(data) : null;
+    if (!data) return null;
+    const story = rowToStory(data);
+    // Resolved on the detail page only (where PYQSidebar renders) - list
+    // views (edition/archive/search/related) don't need the extra join.
+    story.pyqQuestions = await resolvePYQQuestions(supabase, story.pyqQuestionIds ?? []);
+    return story;
   },
 
   async getArchive(): Promise<ArchiveMonth[]> {

@@ -26,6 +26,40 @@ export interface KeyPoint {
   text: string;
 }
 
+// ── Real, verified past-CLAT-question store (shared across stories) ────
+// Rows in Supabase's pyq_passages/pyq_questions tables, synced one
+// verified question at a time by the gavel-news engine (never a bulk
+// dump) whenever a story's search_pyqs check confirms a genuine match.
+// A story only ever carries IDs (see PublishedStory.pyqQuestionIds); the
+// DataSource resolves those into the full objects below at read time.
+
+export interface PYQPassage {
+  id: string;
+  exam: string;
+  year: number;
+  passageNumber?: number;
+  text: string;
+  topic?: string;
+  concept?: string;
+}
+
+export interface PYQQuestion {
+  id: string;
+  exam: string;
+  year: number;
+  questionNumber?: number;
+  questionText: string;
+  optionA?: string;
+  optionB?: string;
+  optionC?: string;
+  optionD?: string;
+  correctAnswer?: "A" | "B" | "C" | "D";
+  explanation?: string;
+  topic?: string;
+  difficulty?: string;
+  passage?: PYQPassage;
+}
+
 // ── Legal Mentor deep-dive + Exam Lens + quiz (gated content) ──────────
 // Field names mirror the gavel-news engine's supabase_sync.py payload and
 // published_stories schema exactly (snake_case in Postgres, camelCase here).
@@ -87,7 +121,9 @@ export interface PublishedStory {
   whyItMatters: string;
   keyPoints: KeyPoint[];
   sources: Source[];
-  pyqKeyword?: string; // optional, for PYQ sidebar lookup
+  pyqKeyword?: string; // optional, legacy free-text theme tag
+  pyqQuestionIds?: string[]; // raw links into pyq_questions, as stored
+  pyqQuestions?: PYQQuestion[]; // resolved by the DataSource at read time
   decision: "must_cover" | "maybe"; // admin-set
   publishedAt: string; // ISO datetime
 

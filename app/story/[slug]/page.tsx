@@ -64,7 +64,7 @@ export default async function StoryPage({ params }: PageProps) {
 
   const showSidebar =
     user.signedIn &&
-    (Boolean(story.pyqKeyword) || related.length > 0);
+    ((story.pyqQuestions?.length ?? 0) > 0 || related.length > 0);
 
   return (
     <article className="relative mx-auto max-w-5xl px-5 py-8 pb-20 md:py-10 md:pb-20">
@@ -243,9 +243,9 @@ export default async function StoryPage({ params }: PageProps) {
         {showSidebar && (
           <aside className="flex flex-col gap-6">
             {/* Mobile: PYQ first, related at end. Desktop: related then PYQ. */}
-            {story.pyqKeyword && (
+            {(story.pyqQuestions?.length ?? 0) > 0 && (
               <div className="order-1 md:order-2">
-                <PYQSidebar keyword={story.pyqKeyword} />
+                <PYQSidebar questions={story.pyqQuestions!} />
               </div>
             )}
             <div className="order-2 md:order-1">

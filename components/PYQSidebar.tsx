@@ -1,13 +1,25 @@
+"use client";
+
+import { useState } from "react";
+import type { PYQQuestion } from "@/lib/types";
+
 interface PYQSidebarProps {
-  keyword: string;
+  questions: PYQQuestion[];
 }
 
-// Phase 1: static illustrative PYQs based on keyword.
-// Phase 5+ can wire this to the engine's `search_pyqs` MCP tool via API.
-const CLAT_YEAR_RE = /\(CLAT (\d{4})\)/;
+const OPTION_LABELS = ["A", "B", "C", "D"] as const;
 
-export function PYQSidebar({ keyword }: PYQSidebarProps) {
-  const questions = getIllustrativePYQs(keyword);
+/**
+ * Real, verified past-CLAT questions linked to this story (see
+ * PublishedStory.pyqQuestionIds, resolved by the DataSource from Supabase's
+ * pyq_questions/pyq_passages tables). Every question here was confirmed by
+ * an actual search_pyqs check against the real ingested corpus - nothing
+ * here is illustrative or invented. Renders nothing if the story has no
+ * linked questions, rather than fabricating a generic one.
+ */
+export function PYQSidebar({ questions }: PYQSidebarProps) {
+  if (!questions || questions.length === 0) return null;
+
   return (
     <div className="surface-hero p-6">
       <div className="mb-4 flex items-start gap-3">
@@ -18,41 +30,113 @@ export function PYQSidebar({ keyword }: PYQSidebarProps) {
           <h3 className="font-ui text-sm font-semibold uppercase tracking-wider text-brand">
             Past CLAT questions
           </h3>
-          <p className="mt-0.5 truncate text-xs text-ink-3">
-            On &quot;{keyword}&quot;
+          <p className="mt-0.5 text-xs text-ink-3">
+            {questions.length === 1
+              ? "A real question on this exact theme"
+              : `${questions.length} real questions on this exact theme`}
           </p>
         </div>
       </div>
       <ol className="space-y-3">
-        {questions.map((q, i) => {
-          const match = q.match(CLAT_YEAR_RE);
-          const text = match ? q.replace(CLAT_YEAR_RE, "").trim() : q;
-          return (
-            <li
-              key={i}
-              className="rounded-xl border border-border-app/70 bg-elevated/70 p-3.5 transition-colors hover:border-brand-border hover:bg-brand-soft/60"
-            >
-              <div className="mb-1.5 flex items-center justify-between gap-2">
-                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-brand-soft text-[11px] font-bold text-brand">
-                  {i + 1}
-                </span>
-                {match && (
-                  <span className="shrink-0 rounded-full bg-elevated-muted px-2 py-0.5 font-mono text-[10px] font-semibold text-ink-3">
-                    CLAT {match[1]}
-                  </span>
-                )}
-              </div>
-              <p className="text-[13.5px] leading-relaxed text-ink-2">{text}</p>
-            </li>
-          );
-        })}
+        {questions.map((q, i) => (
+          <PYQCard key={q.id} index={i} question={q} />
+        ))}
       </ol>
-      <p className="mt-4 border-t border-border-app/60 pt-3 text-[10px] leading-relaxed text-ink-3">
-        Illustrative only — questions shown are constructed for illustration. Real
-        PYQ lookup ships when the engine&apos;s <code>search_pyqs</code> tool is
-        wired to this site (post-v1).
-      </p>
     </div>
+  );
+}
+
+function PYQCard({ index, question }: { index: number; question: PYQQuestion }) {
+  const [open, setOpen] = useState(false);
+  const options = [question.optionA, question.optionB, question.optionC, question.optionD];
+  const hasOptions = options.some(Boolean);
+
+  return (
+    <li className="rounded-xl border border-border-app/70 bg-elevated/70 transition-colors hover:border-brand-border">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-start gap-2 p-3.5 text-left"
+        aria-expanded={open}
+      >
+        <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-brand-soft text-[11px] font-bold text-brand">
+          {index + 1}
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="mb-1 flex items-center gap-2">
+            <span className="shrink-0 rounded-full bg-elevated-muted px-2 py-0.5 font-mono text-[10px] font-semibold text-ink-3">
+              {question.exam} {question.year}
+            </span>
+          </span>
+          <span className="block text-[13.5px] leading-relaxed text-ink-2">
+            {question.questionText}
+          </span>
+        </span>
+        <ChevronIcon open={open} />
+      </button>
+
+      {open && (
+        <div className="border-t border-border-app/60 px-3.5 pb-4 pt-3">
+          {question.passage?.text && (
+            <blockquote className="mb-3 rounded-md border-l-2 border-brand-border bg-elevated-muted/60 p-3 text-[12.5px] leading-relaxed text-ink-3 italic">
+              {question.passage.text}
+            </blockquote>
+          )}
+
+          {hasOptions && (
+            <div className="mb-3 flex flex-col gap-1.5">
+              {options.map((opt, i) => {
+                if (!opt) return null;
+                const label = OPTION_LABELS[i];
+                const isCorrect = question.correctAnswer === label;
+                return (
+                  <div
+                    key={label}
+                    className={
+                      "flex items-start gap-2 rounded-md border px-2.5 py-2 text-[13px] leading-snug " +
+                      (isCorrect
+                        ? "border-[var(--gv-ok,#16a34a)] bg-[var(--gv-ok,#16a34a)]/10 text-ink"
+                        : "border-border-app text-ink-2")
+                    }
+                  >
+                    <span className="shrink-0 font-mono text-[11px] font-semibold text-ink-3">
+                      {label}
+                    </span>
+                    <span>{opt}</span>
+                    {isCorrect && (
+                      <span className="ml-auto shrink-0 text-[10px] font-semibold uppercase tracking-wide text-[var(--gv-ok,#16a34a)]">
+                        Correct
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {question.explanation && (
+            <p className="text-[12.5px] leading-relaxed text-ink-3">
+              {question.explanation}
+            </p>
+          )}
+        </div>
+      )}
+    </li>
+  );
+}
+
+function ChevronIcon({ open }: { open: boolean }) {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+      className={`mt-0.5 shrink-0 text-ink-3 transition-transform ${open ? "rotate-180" : ""}`}
+    >
+      <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }
 
@@ -67,67 +151,4 @@ function PyqIcon() {
       />
     </svg>
   );
-}
-
-function getIllustrativePYQs(keyword: string): string[] {
-  const k = keyword.toLowerCase();
-  if (k.includes("article 200") || k.includes("governor")) {
-    return [
-      "Under Article 200 of the Constitution, the Governor may — except when withholding assent — return a Bill to the Legislature for reconsideration. (CLAT 2019)",
-      "Which of the following is NOT an option available to a Governor when a Bill is presented under Article 200? (CLAT 2021)",
-      "The time-limit within which the Governor must act on a re-passed Bill was addressed by the Supreme Court in: (CLAT 2024)",
-    ];
-  }
-  if (k.includes("section 302") || k.includes("murder") || k.includes("section 103")) {
-    return [
-      "Under Section 302 IPC (Section 103 BNS), 'murder' is defined as culpable homicide with any of the four specified intentions. (CLAT 2020)",
-      "Which clause of Section 300 IPC corresponds to a death caused by an act done with the intention of causing bodily injury sufficient in the ordinary course to cause death? (CLAT 2018)",
-      "Sudden provocation (Exception 1 to Section 300) does NOT apply if: (CLAT 2022)",
-    ];
-  }
-  if (k.includes("section 27") || k.includes("evidence")) {
-    return [
-      "Section 27 of the Evidence Act is an exception to the rule against confessions. It admits: (CLAT 2017)",
-      "Only that portion of a statement which leads directly to discovery is admissible under Section 27. (CLAT 2020)",
-      "The 'causa causans' test for Section 27 was explained in: (CLAT 2023)",
-    ];
-  }
-  if (k.includes("dpdpa") || k.includes("data protection")) {
-    return [
-      "Under the Digital Personal Data Protection Act 2023, the Data Protection Board has adjudicatory powers under: (CLAT 2025)",
-      "Penalty under Section 33 DPDPA may extend up to: (CLAT 2025)",
-      "Which of the following is NOT a 'data fiduciary' obligation under the DPDPA? (CLAT 2024)",
-    ];
-  }
-  if (k.includes("consumer")) {
-    return [
-      "The pecuniary jurisdiction of District Consumer Disputes Redressal Commissions under the Consumer Protection Act 2019 (as amended in 2026) is: (CLAT 2026)",
-      "Under the CCPA framework, the Central Authority may investigate suo motu in: (CLAT 2025)",
-    ];
-  }
-  if (k.includes("sedition") || k.includes("section 152") || k.includes("124a")) {
-    return [
-      "Section 152 BNS replaces which pre-existing provision? (CLAT 2024)",
-      "The leading Supreme Court decision on Section 124A IPC sedicion law is: (CLAT 2017)",
-      "Mandatory minimum sentence under Section 152 BNS is: (CLAT 2025)",
-    ];
-  }
-  if (k.includes("anticipatory") || k.includes("482")) {
-    return [
-      "Anticipatory bail under Section 438 CrPC (now 482 BNSS) is governed by which decision? (CLAT 2019)",
-      "Anticipatory bail is NOT available for offences punishable with: (CLAT 2021)",
-    ];
-  }
-  if (k.includes("aijs") || k.includes("312")) {
-    return [
-      "The All-India Judicial Service is contemplated under which Article? (CLAT 2020)",
-      "Article 312 of the Constitution provides for All-India Services for: (CLAT 2022)",
-    ];
-  }
-  // Default generic PYQs
-  return [
-    `Assertion-Reason: ${keyword} is a recurring constitutional / statutory topic in CLAT. (CLAT 2023)`,
-    `Which of the following statements about ${keyword} is correct? (CLAT 2024)`,
-    `In the context of ${keyword}, the Supreme Court has held that: (CLAT 2025)`,
-  ];
 }
