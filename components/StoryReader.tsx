@@ -649,6 +649,15 @@ export function StoryReader({
   const cursorPlainRef = useRef(0); // current plain offset (word being spoken)
   const rateRef = useRef<number>(SPEEDS[1]);
   const langRef = useRef<string>(LANGS[0].code);
+  // Anchor for the between-boundaries word-advance estimate below: the last
+  // offset/time we actually KNOW is correct (a real onboundary event, or the
+  // clicked/chunk start position if none has fired yet). Some voices only
+  // fire sparse or sentence-level boundaries — without this, the highlight
+  // would freeze at the clicked word for the whole utterance whenever that
+  // happens, instead of advancing word by word.
+  const lastBoundaryOffsetRef = useRef(0);
+  const lastBoundaryTimeRef = useRef(0);
+  const lastHighlightedWordStartRef = useRef(-1);
   const totalDurationRef = useRef(0);
   const sessionStartMsRef = useRef(0); // Date.now when utterance started
   const pausedAccumMsRef = useRef(0);
@@ -738,6 +747,7 @@ export function StoryReader({
     cursorPlainRef.current = 0;
     startOffsetRef.current = 0;
     activeBlockRef.current = null;
+    lastHighlightedWordStartRef.current = -1;
     clearHighlight();
   }, [clearHighlight, stopRaf]);
 
@@ -772,13 +782,37 @@ export function StoryReader({
         }
       }
 
+      // Estimate the current word between real onboundary events, so the
+      // highlight keeps advancing even for voices that fire boundaries
+      // sparsely (sentence-only) or not at all. A real onboundary event
+      // always wins on arrival (it resets lastBoundaryOffsetRef/TimeRef),
+      // so this is a fallback/smoothing layer, not a replacement — it only
+      // ever advances forward from the last known-correct position.
+      const root = articleRef.current;
+      const full = fullTextRef.current;
+      if (root && full) {
+        const charsPerMs = (WPM * 5) / 60_000; // chars/ms at rate 1
+        const elapsed = Date.now() - lastBoundaryTimeRef.current;
+        const estimated =
+          lastBoundaryOffsetRef.current + elapsed * charsPerMs * rateRef.current;
+        const clamped = Math.min(full.length - 1, Math.max(0, Math.floor(estimated)));
+        const wordStart = snapToWordStart(full, clamped);
+        if (wordStart > lastHighlightedWordStartRef.current) {
+          lastHighlightedWordStartRef.current = wordStart;
+          cursorPlainRef.current = Math.max(cursorPlainRef.current, wordStart);
+          const wordLen = full.slice(wordStart).match(/^\S+/)?.[0]?.length ?? 1;
+          highlightWordAtOffset(root, wordStart, wordLen);
+          updateActiveBlock(root, wordStart);
+        }
+      }
+
       // Only mirror elapsed from the last real cursor (boundaries). Do not
       // wall-clock-estimate past the spoken position — that desynced UI.
       syncProgressFromCursor();
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
-  }, [stopRaf, syncProgressFromCursor]);
+  }, [stopRaf, syncProgressFromCursor, updateActiveBlock]);
 
   const speakFromOffset = useCallback(
     (plainOffset: number) => {
@@ -813,6 +847,9 @@ export function StoryReader({
       const firstWord = remaining.match(/^\S+/)?.[0] ?? remaining.slice(0, 1);
       highlightWordAtOffset(root, start, firstWord.length);
       updateActiveBlock(root, start);
+      lastBoundaryOffsetRef.current = start;
+      lastBoundaryTimeRef.current = Date.now();
+      lastHighlightedWordStartRef.current = start;
 
       // Round 2: speak `remaining` as a chain of short chunks (see
       // chunkArticleText) instead of one long utterance, so Chromium's
@@ -864,12 +901,23 @@ export function StoryReader({
             highlightWordAtOffset(articleRef.current, abs, len);
             updateActiveBlock(articleRef.current, abs);
           }
+          // A real boundary event is authoritative — resync the estimate's
+          // anchor to it so the fallback advance in startProgressRaf keeps
+          // counting forward from here, not from a stale earlier point.
+          lastBoundaryOffsetRef.current = abs;
+          lastBoundaryTimeRef.current = Date.now();
+          lastHighlightedWordStartRef.current = snapToWordStart(fullNow, abs);
           syncProgressFromCursor();
         };
 
         utterance.onstart = () => {
           if (sessionIdRef.current !== mySession) return;
           lastSpeechActivityRef.current = Date.now();
+          // Anchor the estimate at this chunk's start too, in case its
+          // first onboundary is delayed or never arrives at all (some
+          // voices only fire boundaries sparsely, or not per-chunk).
+          lastBoundaryOffsetRef.current = thisChunkAbsStart;
+          lastBoundaryTimeRef.current = Date.now();
           playingRef.current = true;
           pausedRef.current = false;
           isPlayingRef.current = true;
