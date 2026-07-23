@@ -240,7 +240,11 @@ function SidebarLink({
         </span>
         <span className="min-w-0 flex-1">
           <span className="flex items-center gap-1.5">
-            <span className="block text-[13px] font-semibold leading-tight">
+            <span
+              className={`block text-[13px] font-semibold leading-tight ${
+                active && !locked ? "" : "text-ink"
+              }`}
+            >
               {item.label}
             </span>
             {locked && <LockIcon className="text-ink-3" />}

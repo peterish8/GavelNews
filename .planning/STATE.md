@@ -76,6 +76,7 @@ None yet.
 | 260723-m87 | Update CLAUDE.md and AGENTS.md to reflect current Next.js version (15.5.21), Supabase link status, and new components/lib files | 2026-07-23 | (pending) | [260723-m87-update-claude-md-and-agents-md-to-reflec](./quick/260723-m87-update-claude-md-and-agents-md-to-reflec/) |
 | 260723-nmi | Make story TTS click-to-seek word-precise instead of sentence-precise | 2026-07-23 | 98bfe02 | [260723-nmi-make-story-tts-click-to-seek-word-precis](./quick/260723-nmi-make-story-tts-click-to-seek-word-precis/) |
 | 260723-nwa | Re-skin sidebar/app-shell nav to remove AI-slop tells (boxed edition widget, repeated eyebrow, nested mobile pill) while preserving IA | 2026-07-23 | 66dc992 | [260723-nwa-re-skin-the-sidebar-app-shell-navigation](./quick/260723-nwa-re-skin-the-sidebar-app-shell-navigation/) |
+| 260723-o65 | Fix low-contrast nav item titles in Sidebar - make them black/ink instead of muted ink-2 | 2026-07-23 | (pending) | [260723-o65-fix-low-contrast-nav-item-titles-in-side](./quick/260723-o65-fix-low-contrast-nav-item-titles-in-side/) |
 
 ## Deferred Items
 
