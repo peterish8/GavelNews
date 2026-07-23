@@ -175,7 +175,7 @@ export function NavSearch({
       title="Search (⌘K)"
       aria-expanded={open}
       aria-controls={panelId}
-      className="inline-flex size-7 items-center justify-center rounded-full text-ink-2 hover:bg-brand-soft hover:text-brand"
+      className="inline-flex size-7 items-center justify-center rounded-sm text-ink-2 hover:bg-brand-soft hover:text-brand"
     >
       <SearchIcon />
     </button>

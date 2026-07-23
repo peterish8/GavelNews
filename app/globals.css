@@ -17,29 +17,37 @@
 @import "./tokens.css";
 
 /* ── Gavel News law-editorial overrides (keep tokens.css shared-source clean) ──
-   Warm parchment paper, court-ink type, seal-red brand. Not SaaS/tech glass. */
+   Warm parchment paper, court-ink type, seal-red brand. Not SaaS/tech glass.
+
+   Hierarchy (light mode):
+   - --nav-bg  = near-white for top bar + sidebar chrome
+   - --bg      = soft warm page canvas (slightly more parchment than the header)
+   Cards/elevated stay cream so content still lifts off the page. */
 :root {
   --display-family: "Libre Baskerville", "Source Serif 4", Georgia, "Times New Roman", serif;
   --font-ui: "Inter", "Source Serif 4", system-ui, sans-serif;
   --font-serif: "Source Serif 4", "Libre Baskerville", Georgia, serif;
-  --bg: #f4efe6;
+  /* Header / sidebar chrome — near white */
+  --nav-bg: #fffcf8;
+  /* Page canvas — same warm family, a touch more parchment than the header */
+  --bg: #fbf8f3;
   --ink: #1a1410;
   --ink-2: #4a3f36;
   --ink-3: #7a6b5d;
   --gv-ink: #1a1410;
   --gv-ink-2: #4a3f36;
   --gv-ink-3: #7a6b5d;
-  --gv-bg: #f4efe6;
+  --gv-bg: #fbf8f3;
   --panel: #ebe4d8;
   --border: #e0d4c4;
   --input: #e0d4c4;
   --app-border: rgba(160, 140, 110, 0.38);
   --app-border-strong: #c4b39a;
-  --app-elevated-muted: #f0e9dc;
+  --app-elevated-muted: #f3eee5;
   --app-surface: #fffcf7;
   --app-elevated: #fffcf7;
   --card: #fffcf7;
-  --background: #f4efe6;
+  --background: #fbf8f3;
   --foreground: #1a1410;
   --muted: #f0e9dc;
   --muted-foreground: #7a6b5d;
@@ -136,6 +144,7 @@
 
   /* Gavelogy brand / ink utilities used across this app */
   --color-bg: var(--bg);
+  --color-nav-bg: var(--nav-bg);
   --color-fg: var(--foreground);
   --color-ink: var(--ink);
   --color-ink-2: var(--ink-2);
@@ -182,7 +191,7 @@ html {
 
 body {
   font-family: var(--font-ui, var(--font-sans));
-  background: var(--bg, #f4efe6);
+  background: var(--bg, #fbf8f3);
   color: var(--ink, #1a1410);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -232,12 +241,12 @@ body {
   display: none;
 }
 
-/* ── Light mode: warm legal parchment (no tech blue grid) ── */
+/* ── Light mode: whitish warm parchment canvas (nav keeps richer --nav-bg) ── */
 :root:not(.dark) body {
-  background-color: #f4efe6;
+  background-color: var(--bg, #fbf8f3);
   background-image:
-    radial-gradient(ellipse 90% 55% at 50% -8%, rgba(161, 29, 46, 0.045), transparent 58%),
-    linear-gradient(180deg, rgba(255, 252, 247, 0.55) 0%, transparent 42%);
+    radial-gradient(ellipse 90% 55% at 50% -8%, rgba(161, 29, 46, 0.03), transparent 58%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, transparent 48%);
   background-attachment: fixed;
 }
 
@@ -267,6 +276,11 @@ body {
 }
 
 /* ── Dark mode body — deep ink with warm seal glow ── */
+:root.dark {
+  /* Nav chrome slightly lifted off pure black page so the band still reads */
+  --nav-bg: #14110f;
+}
+
 :root.dark body {
   background:
     radial-gradient(ellipse 70% 42% at 50% 108%, rgba(161, 29, 46, 0.08) 0%, transparent 58%),

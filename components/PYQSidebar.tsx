@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Markdown } from "@/components/Markdown";
 import type { PYQPassage, PYQQuestion } from "@/lib/types";
 
@@ -208,7 +209,10 @@ function PYQQuestionModal({
   const options = [question.optionA, question.optionB, question.optionC, question.optionD];
   const hasOptions = options.some(Boolean);
 
-  return (
+  // Portal to <body>: PYQSidebar's .surface-hero ancestor uses backdrop-filter,
+  // which creates a containing block for `position: fixed` descendants and
+  // would otherwise confine this overlay to the card instead of the viewport.
+  return createPortal(
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
       onClick={onClose}
@@ -283,7 +287,8 @@ function PYQQuestionModal({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

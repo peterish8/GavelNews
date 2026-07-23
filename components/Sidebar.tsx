@@ -55,7 +55,7 @@ export function Sidebar({
         data-mobile-open={mobileOpen ? "true" : "false"}
         className={[
           "mobile-nav-drawer flex h-dvh max-h-dvh shrink-0 flex-col overflow-hidden border-r border-border-app",
-          "bg-[color-mix(in_srgb,var(--bg)_94%,#fff)] dark:bg-[color-mix(in_srgb,var(--bg)_98%,#000)]",
+          "bg-nav-bg dark:bg-[color-mix(in_srgb,var(--bg)_98%,#000)]",
           // Mobile: smooth slide-in. Desktop: width collapse only.
           "fixed inset-y-0 left-0 z-[80] w-[min(16.5rem,88vw)] shadow-2xl will-change-transform",
           "transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
@@ -138,15 +138,10 @@ export function Sidebar({
             const items = NAV_ITEMS.filter((i) => i.section === section);
             return (
               <div key={section} className="mb-4">
-                <p className="mb-1.5 border-b border-border-app/50 px-2 pb-1.5 font-serif text-[11px] italic tracking-[0.01em] text-ink-3">
-                  § {SECTION_LABELS[section]}
-                  {section === "account" && !signedIn && (
-                    <span className="ml-1 not-italic opacity-70">
-                      · sign in
-                    </span>
-                  )}
+                <p className="mb-1.5 border-b border-border-app/50 px-2 pb-1.5 font-serif text-[11px] italic tracking-[0.01em] text-ink">
+                  {SECTION_LABELS[section]}
                 </p>
-                <ul className="space-y-0.5">
+                <ul className="divide-y divide-border-app/40">
                   {items.map((item) => (
                     <SidebarLink
                       key={item.href}
@@ -169,23 +164,18 @@ export function Sidebar({
           </div>
 
           {signedIn ? (
-            <div className="rounded-xl border border-border-app bg-elevated/80 p-3">
-              <div className="mb-2 flex items-center gap-2">
-                <span className="flex size-8 items-center justify-center rounded-full bg-brand text-xs font-bold text-on-accent">
-                  {(email?.[0] ?? "U").toUpperCase()}
-                </span>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-ink">
-                    {email?.split("@")[0] ?? "Account"}
-                  </p>
-                  <p className="truncate text-[11px] text-ink-3">{email}</p>
-                </div>
+            <div className="px-1">
+              <div className="mb-2 min-w-0">
+                <p className="truncate text-sm font-medium text-ink">
+                  {email?.split("@")[0] ?? "Account"}
+                </p>
+                <p className="truncate text-[11px] text-ink-3">{email}</p>
               </div>
               <form action={signOut}>
                 <input type="hidden" name="next" value="/" />
                 <button
                   type="submit"
-                  className="btn-press w-full rounded-lg border border-border-app bg-elevated px-3 py-2 text-xs font-semibold text-ink-2 hover:border-brand-border hover:text-brand"
+                  className="btn-press w-full rounded-sm border border-border-app bg-transparent px-3 py-2 text-xs font-semibold text-ink-2 hover:border-brand-border hover:text-brand"
                 >
                   Sign out
                 </button>
@@ -195,7 +185,7 @@ export function Sidebar({
             <Link
               href={signInHref(pathname)}
               onClick={onMobileClose}
-              className="btn-press flex w-full items-center justify-center rounded-lg bg-brand px-3 py-2.5 text-xs font-semibold text-on-accent hover:bg-brand-hover"
+              className="btn-press flex w-full items-center justify-center rounded-sm bg-brand px-3 py-2.5 text-xs font-semibold text-on-accent hover:bg-brand-hover"
             >
               Sign in free
             </Link>
@@ -231,35 +221,23 @@ function SidebarLink({
             ? `${item.label} — requires sign in`
             : item.description
         }
-        className={`group flex items-center gap-2.5 rounded-lg border-l-[3px] px-2.5 py-2 transition-colors ${
-          active && !locked
-            ? "border-brand bg-brand-soft pl-[calc(0.625rem-3px)]"
-            : "border-transparent text-ink-2 hover:bg-elevated-muted hover:text-ink"
-        }`}
+        className="group flex items-center gap-2.5 px-2 py-2.5 text-ink transition-colors"
       >
-        <span
-          className={`flex size-8 shrink-0 items-center justify-center font-mono text-[13px] font-semibold tabular-nums ${
-            active && !locked ? "text-brand" : "text-ink-3"
-          }`}
-        >
+        <span className="flex size-7 shrink-0 items-center justify-center font-mono text-[13px] font-semibold tabular-nums text-ink">
           {index}
         </span>
         <span className="min-w-0 flex-1">
           <span className="flex items-center gap-1.5">
             <span
-              className={`block text-[13px] font-semibold leading-tight ${
-                active && !locked ? "text-brand" : "text-ink"
+              className={`block text-[13px] leading-tight text-ink ${
+                active && !locked ? "font-bold" : "font-semibold"
               }`}
             >
               {item.label}
             </span>
-            {locked && <LockIcon className="text-ink-3" />}
+            {locked && <LockIcon className="text-ink" />}
           </span>
-          <span
-            className={`mt-0.5 block truncate text-[11px] leading-tight ${
-              active && !locked ? "text-ink-2" : "text-ink-3"
-            }`}
-          >
+          <span className="mt-0.5 block truncate text-[11px] leading-tight text-ink">
             {locked ? "Sign in required" : item.description}
           </span>
         </span>

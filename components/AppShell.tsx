@@ -97,7 +97,7 @@ export function AppShell({
         data-sidebar-collapsed={collapsed ? "true" : "false"}
         className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden"
       >
-        <header className="relative shrink-0 border-b border-border-app bg-[color-mix(in_srgb,var(--bg)_94%,transparent)] backdrop-blur-xl">
+        <header className="relative shrink-0 border-b border-border-app bg-nav-bg backdrop-blur-xl">
           <div
             className="h-[2px] w-full"
             style={{ background: "var(--brand-blend)" }}
@@ -155,7 +155,7 @@ export function AppShell({
               {!signedIn && (
                 <Link
                   href={signInHref(pathname)}
-                  className="btn-press rounded-full bg-brand px-2.5 py-1 text-[10px] font-semibold text-on-accent"
+                  className="btn-press rounded-sm bg-brand px-2.5 py-1 text-[10px] font-semibold text-on-accent"
                 >
                   Sign in
                 </Link>
@@ -168,7 +168,7 @@ export function AppShell({
               {!signedIn && (
                 <Link
                   href={signInHref(pathname)}
-                  className="btn-press rounded-full bg-brand px-3 py-1 text-[11px] font-semibold text-on-accent sm:text-xs"
+                  className="btn-press rounded-sm bg-brand px-3 py-1 text-[11px] font-semibold text-on-accent sm:text-xs"
                 >
                   Sign in
                 </Link>

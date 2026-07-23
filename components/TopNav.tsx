@@ -82,7 +82,7 @@ export default function TopNav({
   );
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border-app/80 bg-[color-mix(in_srgb,var(--bg)_88%,transparent)] backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-border-app/80 bg-nav-bg backdrop-blur-xl">
       <div
         className="h-[2px] w-full"
         style={{ background: "var(--brand-blend)" }}
@@ -230,7 +230,7 @@ export default function TopNav({
       {menuOpen && (
         <div
           id={menuId}
-          className="border-t border-border-app bg-[color-mix(in_srgb,var(--bg)_96%,transparent)] md:hidden"
+          className="border-t border-border-app bg-nav-bg md:hidden"
         >
           <div className="mx-auto max-w-6xl px-4 py-4 sm:px-5">
             {/* Mobile search always first */}
