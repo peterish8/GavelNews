@@ -97,7 +97,7 @@ export function AppShell({
         data-sidebar-collapsed={collapsed ? "true" : "false"}
         className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden"
       >
-        <header className="relative flex shrink-0 items-center gap-2 border-b border-border-app bg-[color-mix(in_srgb,var(--bg)_94%,transparent)] px-2.5 py-1.5 backdrop-blur-xl sm:px-4">
+        <header className="relative flex h-16 shrink-0 items-center gap-2 border-b border-border-app bg-[color-mix(in_srgb,var(--bg)_94%,transparent)] px-2.5 backdrop-blur-xl sm:px-4">
           {/* Mobile: open drawer */}
           <button
             type="button"

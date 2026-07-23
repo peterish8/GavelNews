@@ -71,7 +71,7 @@ export function Sidebar({
         aria-hidden={collapsed ? true : undefined}
       >
         {/* Header: brand + edition dateline + INSIDE opener (only while open) */}
-        <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border-app px-3 py-2.5">
+        <div className="flex h-16 shrink-0 items-center justify-between gap-2 border-b border-border-app px-3">
           <Link
             href="/"
             onClick={onMobileClose}
