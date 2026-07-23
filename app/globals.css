@@ -273,7 +273,7 @@ body {
 }
 
 .surface-muted {
-  background: color-mix(in srgb, var(--elevated, #fff) 55%, transparent);
+  background: color-mix(in srgb, var(--app-elevated) 55%, transparent);
   border: 1px solid color-mix(in srgb, var(--app-border) 70%, transparent);
   border-radius: calc(var(--card-radius, 14px) - 2px);
   box-shadow: none;

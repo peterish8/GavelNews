@@ -257,10 +257,10 @@
   --ink-3: #8A8F9C;
 
   /* ── Brand palette ── */
-  --brand:        #F87171;
-  --brand-hover:  #EF4444;
+  --brand:        #EF4444;
+  --brand-hover:  #DC2626;
   --brand-soft:   rgba(239, 68, 68, 0.14);
-  --brand-border: rgba(248, 113, 113, 0.28);
+  --brand-border: rgba(239, 68, 68, 0.28);
   --brand-violet: #818CF8;
   --brand-violet-soft: rgba(99, 102, 241, 0.10);
   --brand-blend:  linear-gradient(135deg, #dc2626 0%, #ef4444 68%, #f87171 100%);
@@ -286,9 +286,19 @@
   --app-border-strong:  rgba(255, 255, 255, 0.12);
 
   /* ── Gavelogy status ── */
-  --gv-success: #34D399;
-  --gv-warn:    #FBBF24;
-  --gv-danger:  #FB7185;
+  --gv-success:       #34D399;
+  --gv-success-soft:  rgba(52, 211, 153, 0.14);
+  --gv-warn:          #FBBF24;
+  --gv-warn-soft:     #451a03;
+  --gv-danger:        #FB7185;
+  --gv-danger-soft:   rgba(251, 113, 133, 0.14);
+  --gv-accent:        #F472B6;
+  --gv-accent-hover:  #EC4899;
+  --gv-accent-soft:   rgba(244, 114, 182, 0.14);
+  --gv-accent-border: rgba(244, 114, 182, 0.26);
+  --gv-gold:          #EAB308;
+  --gv-gold-soft:     rgba(234, 179, 8, 0.14);
+  --gv-gold-border:   rgba(234, 179, 8, 0.26);
 
   /* ── Glass system ── */
   --glass-1:             rgba(12, 12, 14, 0.94);
