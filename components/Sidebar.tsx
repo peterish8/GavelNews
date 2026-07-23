@@ -63,15 +63,15 @@ export function Sidebar({
             ? "translate-x-0"
             : "-translate-x-full pointer-events-none lg:pointer-events-auto",
           // desktop: open = full width, closed = 0 (opener moves to top bar)
-          "lg:static lg:z-0 lg:w-[16.5rem] lg:translate-x-0 lg:shadow-none lg:will-change-auto",
+          "lg:static lg:z-0 lg:translate-x-0 lg:shadow-none lg:will-change-auto",
           "lg:transition-[width] lg:duration-200 lg:ease-out",
           collapsed ? "lg:w-0 lg:border-r-0 lg:pointer-events-none" : "lg:w-[16.5rem]",
         ].join(" ")}
         aria-label="Main navigation"
         aria-hidden={collapsed ? true : undefined}
       >
-        {/* Header: brand + INSIDE opener (only while open) */}
-        <div className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border-app px-3">
+        {/* Header: brand + edition dateline + INSIDE opener (only while open) */}
+        <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border-app px-3 py-2.5">
           <Link
             href="/"
             onClick={onMobileClose}
@@ -82,9 +82,25 @@ export function Sidebar({
               <span className="block truncate font-serif text-[17px] font-bold tracking-tight text-ink">
                 Gavel News
               </span>
-              <span className="mt-0.5 block font-mono text-[9px] font-medium uppercase tracking-[0.12em] text-ink-3">
-                CLAT brief
-              </span>
+              {(editionDate || typeof editionIndex === "number") && (
+                <span className="mt-0.5 block truncate text-[11px] text-ink-3">
+                  {typeof editionIndex === "number" && editionIndex > 0 && (
+                    <span className="font-medium text-brand">Day {editionIndex}</span>
+                  )}
+                  {editionDate && (
+                    <>
+                      {typeof editionIndex === "number" ? " · " : ""}
+                      {formatDate(editionDate)}
+                    </>
+                  )}
+                  {typeof storyCount === "number" && (
+                    <>
+                      {" · "}
+                      {storyCount} {storyCount === 1 ? "story" : "stories"}
+                    </>
+                  )}
+                </span>
+              )}
             </span>
           </Link>
 
@@ -109,33 +125,6 @@ export function Sidebar({
             <CloseIcon />
           </button>
         </div>
-
-        {/* Edition chip */}
-        {(editionDate || typeof editionIndex === "number") && (
-          <div className="shrink-0 border-b border-border-app px-3 py-2.5">
-            <div className="rounded-xl border border-border-app bg-elevated-muted/70 px-3 py-2">
-              <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-ink-3">
-                Live edition
-              </p>
-              <p className="mt-0.5 text-sm font-semibold text-ink">
-                {typeof editionIndex === "number" && editionIndex > 0 && (
-                  <span className="text-brand">Day {editionIndex}</span>
-                )}
-                {editionDate && (
-                  <span className="text-ink-2">
-                    {typeof editionIndex === "number" ? " · " : ""}
-                    {formatDate(editionDate)}
-                  </span>
-                )}
-              </p>
-              {typeof storyCount === "number" && (
-                <p className="mt-0.5 text-xs text-ink-3">
-                  {storyCount} {storyCount === 1 ? "story" : "stories"}
-                </p>
-              )}
-            </div>
-          </div>
-        )}
 
         <nav className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-2.5 py-3">
           {sections.map((section) => {
@@ -175,7 +164,7 @@ export function Sidebar({
           {signedIn ? (
             <div className="rounded-xl border border-border-app bg-elevated/80 p-3">
               <div className="mb-2 flex items-center gap-2">
-                <span className="flex size-8 items-center justify-center rounded-full bg-brand text-xs font-bold text-[var(--on-accent)]">
+                <span className="flex size-8 items-center justify-center rounded-full bg-brand text-xs font-bold text-on-accent">
                   {(email?.[0] ?? "U").toUpperCase()}
                 </span>
                 <div className="min-w-0">
@@ -199,7 +188,7 @@ export function Sidebar({
             <Link
               href={signInHref(pathname)}
               onClick={onMobileClose}
-              className="btn-press flex w-full items-center justify-center rounded-lg bg-brand px-3 py-2.5 text-xs font-semibold text-[var(--on-accent)] hover:bg-brand-hover"
+              className="btn-press flex w-full items-center justify-center rounded-lg bg-brand px-3 py-2.5 text-xs font-semibold text-on-accent hover:bg-brand-hover"
             >
               Sign in free
             </Link>
@@ -236,7 +225,7 @@ function SidebarLink({
         }
         className={`group flex items-center gap-2.5 rounded-xl px-2.5 py-2 transition-colors ${
           active && !locked
-            ? "bg-brand text-[var(--on-accent,#fff)] shadow-sm"
+            ? "bg-brand text-on-accent shadow-sm"
             : "text-ink-2 hover:bg-elevated-muted hover:text-ink"
         }`}
       >
@@ -363,11 +352,11 @@ function NavIcon({ name }: { name: string }) {
           />
         </svg>
       );
-    case "Favorites":
+    case "Saved":
       return (
         <svg {...common}>
           <path
-            d="M12 21s-7-4.5-9.5-9.5C.8 7.5 3.2 4 6.5 4c1.9 0 3.5 1 4.5 2.5 1-1.5 2.6-2.5 4.5-2.5 3.3 0 5.7 3.5 4 7.5C19 16.5 12 21 12 21z"
+            d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-6.5-4-6.5 4V4.5a1 1 0 0 1 1-1z"
             stroke="currentColor"
             strokeWidth="1.6"
             strokeLinejoin="round"

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Sidebar, PanelLeftIcon } from "./Sidebar";
 import { Footer } from "./Footer";
 import { NavSearch } from "./NavSearch";
-import { NAV_ITEMS, signInHref } from "@/lib/nav";
+import { signInHref } from "@/lib/nav";
 
 const COLLAPSE_KEY = "gavel-sidebar-collapsed";
 
@@ -75,8 +75,6 @@ export function AppShell({
   // One control: outside only when desktop sidebar is closed
   const showOutsideToggle = collapsed;
 
-  const readNav = NAV_ITEMS.filter((item) => item.section === "read");
-
   return (
     <div
       className={`flex h-dvh max-h-dvh overflow-hidden ${
@@ -132,94 +130,39 @@ export function AppShell({
             <span className="truncate font-serif text-base font-bold tracking-tight text-ink sm:text-lg lg:text-xl">
               Gavel News
             </span>
-            <span className="hidden font-mono text-[9px] font-medium uppercase tracking-[0.14em] text-ink-3 sm:block">
+            <span className="hidden font-serif text-[10px] italic text-ink-3 sm:block">
               Daily Legal Brief
             </span>
           </Link>
 
-          {/* ── Mobile: one compact control pill ───────────────────── */}
+          {/* ── Mobile: search + sign-in — full nav lives in the drawer ── */}
           <div
-            className="flex shrink-0 items-center rounded-full border border-border-app bg-elevated/90 p-0.5 shadow-sm md:hidden"
+            className="flex shrink-0 items-center gap-1.5 md:hidden"
             role="group"
             aria-label="Quick actions"
           >
-            {readNav
-              .filter((item) => item.href !== "/search")
-              .map((item) => {
-                const active = item.match(pathname);
-                const short =
-                  item.label === "Calendar"
-                    ? "Cal"
-                    : item.label === "Today"
-                      ? "Today"
-                      : item.label;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`pressable rounded-full px-2 py-1 text-[10px] font-semibold transition-colors ${
-                      active
-                        ? "bg-brand text-[var(--on-accent,#fff)] shadow-sm"
-                        : "text-ink-2 hover:bg-brand-soft hover:text-brand"
-                    }`}
-                  >
-                    {short}
-                  </Link>
-                );
-              })}
-            <span
-              className="mx-0.5 h-3.5 w-px shrink-0 bg-border-app"
-              aria-hidden
-            />
             <NavSearch
               compact
               open={mobileSearchOpen}
               onOpenChange={setMobileSearchOpen}
             />
             {!signedIn && (
-              <>
-                <span
-                  className="mx-0.5 h-3.5 w-px shrink-0 bg-border-app"
-                  aria-hidden
-                />
-                <Link
-                  href={signInHref(pathname)}
-                  className="rounded-full bg-brand px-2 py-1 text-[10px] font-semibold text-[var(--on-accent)]"
-                >
-                  Sign
-                </Link>
-              </>
+              <Link
+                href={signInHref(pathname)}
+                className="btn-press rounded-full bg-brand px-2.5 py-1 text-[10px] font-semibold text-on-accent"
+              >
+                Sign in
+              </Link>
             )}
           </div>
 
-          {/* ── Desktop / tablet: expanded chrome ──────────────────── */}
+          {/* ── Desktop / tablet: search + sign-in only — full nav lives in the sidebar ── */}
           <div className="ml-auto hidden shrink-0 items-center gap-2 md:flex">
-            <nav
-              className="flex items-center rounded-full border border-border-app bg-elevated/80 p-0.5"
-              aria-label="Primary"
-            >
-              {readNav.map((item) => {
-                const active = item.match(pathname);
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`pressable rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors sm:px-3 sm:text-[12px] ${
-                      active
-                        ? "bg-brand text-[var(--on-accent,#fff)] shadow-sm"
-                        : "text-ink-2 hover:bg-brand-soft hover:text-brand"
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                );
-              })}
-            </nav>
             <NavSearch />
             {!signedIn && (
               <Link
                 href={signInHref(pathname)}
-                className="btn-press rounded-full bg-brand px-3 py-1 text-[11px] font-semibold text-[var(--on-accent)] sm:text-xs"
+                className="btn-press rounded-full bg-brand px-3 py-1 text-[11px] font-semibold text-on-accent sm:text-xs"
               >
                 Sign in
               </Link>
