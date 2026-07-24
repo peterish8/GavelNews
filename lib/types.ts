@@ -106,6 +106,83 @@ export interface BeforeYouLeave {
   examTip: string;
 }
 
+// ── GavelNews article schema v2 (engine supabase_sync.py contract) ────
+// Nested blocks are snake_case in Postgres; camelCase here. All optional so
+// schema_version=1 rows and dual-read payloads still typecheck.
+
+export interface StoryHero {
+  title?: string;
+  subtitle?: string;
+  category?: string;
+  subject?: string;
+  exam?: string;
+  readTime?: string;
+  difficulty?: string;
+  importance?: string;
+  date?: string;
+  tags?: string[];
+}
+
+/** v2 "What Happened?" block — not to be confused with the story row itself. */
+export interface StoryBlock {
+  heading?: string;
+  summary?: string;
+  takeaway?: string;
+}
+
+export interface LawDecode {
+  heading?: string;
+  sections?: { provision: string; explanation: string }[];
+  doctrines?: { name: string; explanation: string }[];
+  legalTests?: { name: string; rule: string }[];
+  importantCases?: { case: string; principle: string }[];
+  constitutionalLink?: { article: string; why: string }[];
+  staticConnections?: { item: string }[];
+  bnsMapping?: { ipc?: string; bns?: string };
+  dontConfuse?: { confusion: string; reality: string }[];
+  memoryTrick?: string;
+}
+
+export type ExamRadarDifficulty =
+  | "Easy"
+  | "Medium"
+  | "Hard"
+  | { UG?: string; PG?: string; Judiciary?: string };
+
+export interface ExamRadar {
+  heading?: string;
+  whyExam?: string;
+  likelyQuestions?: string[];
+  examinerFocus?: string[];
+  pyqConnection?: string;
+  probability?: number; // 1-5
+  difficulty?: ExamRadarDifficulty;
+}
+
+export interface ChallengeMcq {
+  question: string;
+  type: string;
+  options: { A: string; B: string; C: string; D: string };
+  answer: string; // letter, e.g. "B"
+  explanation: string;
+}
+
+export interface Challenge {
+  heading?: string;
+  mcqs?: ChallengeMcq[];
+}
+
+export interface OneLineRevision {
+  heading?: string;
+  line?: string;
+}
+
+/** v2 sources shape — object with primary + secondary list (not Source[]). */
+export interface SourcesV2 {
+  primary: string;
+  secondary?: string[];
+}
+
 export interface PublishedStory {
   id: string;
   editionDate: string; // ISO date "2026-07-22"
@@ -115,11 +192,13 @@ export interface PublishedStory {
   examTags: Exam[]; // which exams this is relevant to
   readingTimeMin: number;
   summary?: string; // 1-sentence card teaser (derived from what_happened in mock)
-  whatHappened: string;
-  background: string;
-  whatCourtHeld: string | null; // null for non-judgments
-  whyItMatters: string;
-  keyPoints: KeyPoint[];
+  // v1 teaser body — optional so pure schema_version=2 rows (empty v1 cols) typecheck
+  whatHappened?: string;
+  background?: string;
+  whatCourtHeld?: string | null; // null for non-judgments
+  whyItMatters?: string;
+  keyPoints?: KeyPoint[];
+  /** v1 sources array. Empty when the row carries v2 sources object instead. */
   sources: Source[];
   pyqKeyword?: string; // optional, legacy free-text theme tag
   pyqQuestionIds?: string[]; // raw links into pyq_questions, as stored
@@ -128,7 +207,7 @@ export interface PublishedStory {
   publishedAt: string; // ISO datetime
   status: "published"; // publication status, matches database schema
 
-  // Legal Mentor deep-dive (gated behind sign-in in the story page)
+  // Legal Mentor deep-dive (gated behind sign-in in the story page) — v1
   whatActuallyHappening?: string;
   whyDidThisHappen?: string;
   importantTerms?: ImportantTerm[];
@@ -137,7 +216,7 @@ export interface PublishedStory {
   friendExplanation?: string;
   commonConfusions?: CommonConfusion[];
 
-  // Exam Lens (gated behind sign-in in the story page)
+  // Exam Lens (gated behind sign-in in the story page) — v1
   examLens?: ExamLens;
 
   // Challenge + Answers: fixed, pre-authored quiz (gated). Absent/empty for
@@ -145,8 +224,22 @@ export interface PublishedStory {
   // gracefully (section simply doesn't render).
   quiz?: QuizQuestion[];
 
-  // Before You Leave (gated behind sign-in in the story page)
+  // Before You Leave (gated behind sign-in in the story page) — v1
   beforeYouLeave?: BeforeYouLeave;
+
+  // ── schema v2 nested blocks (gated / public as noted in story page) ──
+  schemaVersion?: number;
+  hero?: StoryHero;
+  /** v2 story body: { heading, summary, takeaway } */
+  story?: StoryBlock;
+  lawDecode?: LawDecode;
+  examRadar?: ExamRadar;
+  challenge?: Challenge;
+  oneLineRevision?: OneLineRevision;
+  /** ASCII tree diagram as plain text (Visual Memory Card). */
+  visualMemoryCard?: string;
+  /** v2 sources object when engine shipped sources as {primary, secondary}. */
+  sourcesV2?: SourcesV2;
 }
 
 export interface Edition {

@@ -12,6 +12,14 @@ import type {
   BeforeYouLeave,
   PYQQuestion,
   PYQPassage,
+  StoryHero,
+  StoryBlock,
+  LawDecode,
+  ExamRadar,
+  Challenge,
+  OneLineRevision,
+  SourcesV2,
+  Source,
 } from "@/lib/types";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceRoleClient } from "@/lib/supabase/serviceRole";
@@ -64,6 +72,118 @@ function mapBeforeYouLeave(b: Row | null | undefined): BeforeYouLeave | undefine
     threeBullets: b.three_bullets ?? [],
     examTip: b.exam_tip ?? "",
   };
+}
+
+function emptyObject(v: unknown): boolean {
+  return !v || (typeof v === "object" && !Array.isArray(v) && Object.keys(v as object).length === 0);
+}
+
+function mapHero(h: Row | null | undefined): StoryHero | undefined {
+  if (emptyObject(h)) return undefined;
+  const r = h as Row;
+  return {
+    title: r.title || undefined,
+    subtitle: r.subtitle || undefined,
+    category: r.category || undefined,
+    subject: r.subject || undefined,
+    exam: r.exam || undefined,
+    readTime: r.read_time || undefined,
+    difficulty: r.difficulty || undefined,
+    importance: r.importance || undefined,
+    date: r.date || undefined,
+    tags: r.tags ?? undefined,
+  };
+}
+
+function mapStoryBlock(s: Row | null | undefined): StoryBlock | undefined {
+  if (emptyObject(s)) return undefined;
+  const r = s as Row;
+  return {
+    heading: r.heading || undefined,
+    summary: r.summary || undefined,
+    takeaway: r.takeaway || undefined,
+  };
+}
+
+function mapLawDecode(l: Row | null | undefined): LawDecode | undefined {
+  if (emptyObject(l)) return undefined;
+  const r = l as Row;
+  return {
+    heading: r.heading || undefined,
+    sections: r.sections ?? undefined,
+    doctrines: r.doctrines ?? undefined,
+    legalTests: r.legal_tests ?? undefined,
+    importantCases: r.important_cases ?? undefined,
+    constitutionalLink: r.constitutional_link ?? undefined,
+    staticConnections: r.static_connections ?? undefined,
+    bnsMapping: r.bns_mapping && !emptyObject(r.bns_mapping) ? r.bns_mapping : undefined,
+    dontConfuse: r.dont_confuse ?? undefined,
+    memoryTrick: r.memory_trick || undefined,
+  };
+}
+
+function mapExamRadar(e: Row | null | undefined): ExamRadar | undefined {
+  if (emptyObject(e)) return undefined;
+  const r = e as Row;
+  return {
+    heading: r.heading || undefined,
+    whyExam: r.why_exam || undefined,
+    likelyQuestions: r.likely_questions ?? undefined,
+    examinerFocus: r.examiner_focus ?? undefined,
+    pyqConnection: r.pyq_connection || undefined,
+    probability: r.probability ?? undefined,
+    difficulty: r.difficulty ?? undefined,
+  };
+}
+
+function mapChallenge(c: Row | null | undefined): Challenge | undefined {
+  if (emptyObject(c)) return undefined;
+  const r = c as Row;
+  const mcqs = (r.mcqs ?? []).map((q: Row) => ({
+    question: q.question ?? "",
+    type: q.type ?? "conceptual",
+    options: q.options ?? { A: "", B: "", C: "", D: "" },
+    answer: q.answer ?? "",
+    explanation: q.explanation ?? "",
+  }));
+  if (mcqs.length === 0 && !r.heading) return undefined;
+  return {
+    heading: r.heading || undefined,
+    mcqs,
+  };
+}
+
+function mapOneLineRevision(o: Row | null | undefined): OneLineRevision | undefined {
+  if (emptyObject(o)) return undefined;
+  const r = o as Row;
+  if (!r.line && !r.heading) return undefined;
+  return {
+    heading: r.heading || undefined,
+    line: r.line || undefined,
+  };
+}
+
+/** Engine ships v1 Source[] or v2 {primary, secondary} under the same column. */
+function mapSources(raw: unknown): { sources: Source[]; sourcesV2?: SourcesV2 } {
+  if (Array.isArray(raw)) {
+    return { sources: raw as Source[] };
+  }
+  if (raw && typeof raw === "object") {
+    const r = raw as Row;
+    const secondary = Array.isArray(r.secondary)
+      ? (r.secondary as string[])
+      : r.secondary
+        ? [String(r.secondary)]
+        : [];
+    return {
+      sources: [],
+      sourcesV2: {
+        primary: r.primary ?? "",
+        secondary,
+      },
+    };
+  }
+  return { sources: [] };
 }
 
 function mapPYQPassage(p: Row): PYQPassage {
@@ -122,6 +242,7 @@ async function resolvePYQQuestions(
 }
 
 function rowToStory(row: Row): PublishedStory {
+  const { sources, sourcesV2 } = mapSources(row.sources);
   return {
     id: row.id,
     editionDate: row.edition_date,
@@ -131,12 +252,15 @@ function rowToStory(row: Row): PublishedStory {
     examTags: (row.exam_tags ?? ["Both"]) as Exam[],
     readingTimeMin: row.reading_time_min ?? 1,
     summary: row.summary ?? undefined,
-    whatHappened: row.what_happened ?? "",
-    background: row.background ?? "",
+    whatHappened: row.what_happened || undefined,
+    background: row.background || undefined,
     whatCourtHeld: row.what_court_held ?? null,
-    whyItMatters: row.why_it_matters ?? "",
-    keyPoints: (row.key_points ?? []).map((text: string) => ({ text })),
-    sources: row.sources ?? [],
+    whyItMatters: row.why_it_matters || undefined,
+    keyPoints: (row.key_points ?? []).map((text: string) =>
+      typeof text === "string" ? { text } : { text: (text as Row).text ?? "" },
+    ),
+    sources,
+    sourcesV2,
     pyqKeyword: row.pyq_keyword || undefined,
     pyqQuestionIds: row.pyq_question_ids ?? undefined,
     decision: row.decision ?? "must_cover",
@@ -156,6 +280,15 @@ function rowToStory(row: Row): PublishedStory {
     quiz: (row.quiz ?? []).map(mapQuizQuestion),
 
     beforeYouLeave: mapBeforeYouLeave(row.before_you_leave),
+
+    schemaVersion: row.schema_version ?? undefined,
+    hero: mapHero(row.hero),
+    story: mapStoryBlock(row.story),
+    lawDecode: mapLawDecode(row.law_decode),
+    examRadar: mapExamRadar(row.exam_radar),
+    challenge: mapChallenge(row.challenge),
+    oneLineRevision: mapOneLineRevision(row.one_line_revision),
+    visualMemoryCard: row.visual_memory_card || undefined,
   };
 }
 

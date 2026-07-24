@@ -92,16 +92,20 @@ export const mockDataSource: DataSource = {
       const haystack = [
         s.title,
         s.summary ?? "",
-        s.whatHappened,
-        s.background,
+        s.whatHappened ?? "",
+        s.background ?? "",
         s.whatCourtHeld ?? "",
-        s.whyItMatters,
+        s.whyItMatters ?? "",
+        s.story?.summary ?? "",
+        s.story?.takeaway ?? "",
         s.pyqKeyword ?? "",
         s.category,
         s.slug,
         ...s.examTags,
-        ...s.keyPoints.map((k) => k.text),
+        ...(s.keyPoints ?? []).map((k) => k.text),
         ...s.sources.map((src) => src.name),
+        s.sourcesV2?.primary ?? "",
+        ...(s.sourcesV2?.secondary ?? []),
       ]
         .join(" ")
         .toLowerCase();
