@@ -2,7 +2,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser, safeNext } from "@/lib/auth";
 import { signInWithGoogle, signInDevMode } from "@/lib/auth-actions";
-import { AuthBenefits } from "@/components/AuthBenefits";
 
 interface PageProps {
   searchParams: Promise<{ next?: string; error?: string }>;
@@ -51,7 +50,7 @@ export default async function SignInPage({ searchParams }: PageProps) {
         <h1 className="heading-law text-2xl md:text-3xl">
           {cameFromProtected
             ? `Unlock ${destinationLabel(next)}`
-            : "Sign in to unlock the exam layer"}
+            : "Compare your options"}
         </h1>
         <p className="mx-auto mt-1.5 max-w-lg font-serif text-sm leading-relaxed text-ink-2">
           {cameFromProtected ? (
@@ -59,89 +58,163 @@ export default async function SignInPage({ searchParams }: PageProps) {
               <strong className="font-semibold text-ink">
                 {destinationLabel(next)}
               </strong>{" "}
-              needs a free account. Here&apos;s everything you get after you
-              sign in — then we&apos;ll send you to{" "}
-              <code className="rounded bg-elevated-muted px-1.5 py-0.5 text-xs text-ink">
-                {next}
-              </code>
-              .
+              requires a free account. Compare your options below.
             </>
           ) : (
             <>
-              Reading the daily brief stays free. Create a free account for
-              CLAT-focused extras on every story.
+              Choose how you want to use Gavel News. Both options are free.
             </>
           )}
         </p>
       </div>
 
-      <div className="lg:grid lg:grid-cols-[26rem_1fr] lg:items-start lg:gap-12">
-        <div className="surface-hero mx-auto max-w-md p-7 sm:p-9 lg:sticky lg:top-16 lg:mx-0 lg:max-w-none lg:p-10">
-          <p className="mb-6 text-center text-[15px] font-semibold text-ink">
-            {cameFromProtected
-              ? `Sign in to open ${destinationLabel(next)}`
-              : "Ready? Sign in takes a second"}
-          </p>
+      <div className="max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Without Sign In Box */}
+          <div className="rounded-xl border-2 border-border-app bg-elevated/50 p-6 opacity-90">
+            <div className="text-center mb-6">
+              <p className="label-law mb-2 text-ink-3">Without Sign In</p>
+              <h3 className="heading-law text-xl text-ink">Free Reading</h3>
+            </div>
+            
+            <ul className="space-y-3 mb-6">
+              <li className="flex items-start gap-3">
+                <svg className="w-5 h-5 text-ink-3 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 6v6l4 2"/>
+                </svg>
+                <span className="text-ink-2">Daily morning brief</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <svg className="w-5 h-5 text-ink-3 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 6v6l4 2"/>
+                </svg>
+                <span className="text-ink-2">Story teaser (what happened, background)</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <svg className="w-5 h-5 text-ink-3 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 6v6l4 2"/>
+                </svg>
+                <span className="text-ink-2">Archive & search</span>
+              </li>
+            </ul>
 
-          {err && (
-            <p
-              role="alert"
-              className="mb-3 rounded-sm border border-border-app bg-elevated-muted px-3 py-2 text-center text-xs leading-relaxed text-ink"
-            >
-              {err}
-            </p>
-          )}
+            <div className="pt-4 border-t border-border-app">
+              <p className="text-center text-sm text-ink-3">
+                <span className="line-through opacity-60">Exam layer analysis</span>
+                <span className="mx-2">•</span>
+                <span className="line-through opacity-60">Key points</span>
+                <span className="mx-2">•</span>
+                <span className="line-through opacity-60">Past questions</span>
+              </p>
+            </div>
+          </div>
 
-          <form action={signInWithGoogle} className="mb-4">
-            <input type="hidden" name="next" value={next} />
-            <button
-              type="submit"
-              className="btn-press inline-flex w-full items-center justify-center gap-3 rounded-md border border-border-app bg-elevated px-5 py-3.5 text-[15px] font-semibold text-ink shadow-sm transition-transform hover:-translate-y-0.5 hover:border-brand-border hover:bg-brand-soft hover:shadow-md"
-            >
-              <GoogleIcon />
-              Continue with Google
-            </button>
-          </form>
+          {/* With Free Account Box */}
+          <div className="rounded-xl border-2 border-brand-border bg-brand-soft/30 p-6 shadow-lg relative">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+              <span className="inline-block px-4 py-1 bg-brand text-on-accent text-sm font-semibold rounded-full">
+                Most Popular
+              </span>
+            </div>
+            
+            <div className="text-center mb-6">
+              <p className="label-law mb-2 text-brand">With Free Account</p>
+              <h3 className="heading-law text-xl text-ink">Exam Layer Unlocked</h3>
+            </div>
+            
+            <ul className="space-y-3 mb-6">
+              <li className="flex items-start gap-3">
+                <svg className="w-5 h-5 text-brand mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span className="text-ink font-medium">Everything in free reading</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <svg className="w-5 h-5 text-brand mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span className="text-ink font-medium">Why it matters for CLAT</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <svg className="w-5 h-5 text-brand mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span className="text-ink font-medium">Key points (revise in 60 seconds)</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <svg className="w-5 h-5 text-brand mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span className="text-ink font-medium">Past CLAT questions</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <svg className="w-5 h-5 text-brand mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span className="text-ink font-medium">Saved stories & progress tracking</span>
+              </li>
+            </ul>
 
-          <p className="text-center text-xs leading-relaxed text-ink-3">
-            Secure sign-in via Google. We only receive your name and email —
-            no password stored here. After auth you return to where you were
-            headed.
-          </p>
+            {err && (
+              <p
+                role="alert"
+                className="mb-3 rounded-sm border border-border-app bg-elevated-muted px-3 py-2 text-center text-xs leading-relaxed text-ink"
+              >
+                {err}
+              </p>
+            )}
 
-          {process.env.NODE_ENV !== "production" && (
-            <>
-              <div className="my-6 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-ink-3">
-                <span className="h-px flex-1 bg-border-app" />
-                Local dev only
-                <span className="h-px flex-1 bg-border-app" />
-              </div>
-              <form action={signInDevMode}>
-                <input type="hidden" name="next" value={next} />
-                <button
-                  type="submit"
-                  className="btn-press inline-flex w-full items-center justify-center gap-2 rounded-sm border border-dashed border-brand-border bg-brand-soft/50 px-4 py-3 text-sm font-semibold text-brand hover:bg-brand-soft"
-                >
-                  <DevIcon />
-                  Dev bypass — skip Google
-                </button>
-              </form>
-            </>
-          )}
-        </div>
+            <form action={signInWithGoogle} className="mb-3">
+              <input type="hidden" name="next" value={next} />
+              <button
+                type="submit"
+                className="btn-press group relative inline-flex w-full items-center justify-center gap-3 rounded-lg border-2 border-border-app bg-white px-5 py-4 text-[15px] font-semibold text-ink shadow-md transition-all hover:-translate-y-0.5 hover:border-brand-border hover:shadow-xl hover:shadow-brand/10 active:translate-y-0 active:shadow-sm"
+              >
+                <GoogleIcon />
+                <span className="relative z-10">Continue with Google</span>
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-brand-soft/50 to-brand-2-soft/30 opacity-0 transition-opacity group-hover:opacity-100"></div>
+              </button>
+            </form>
 
-        {/* Benefits live ONLY here — not in the sidebar */}
-        <div className="mt-8 lg:mt-0">
-          <AuthBenefits variant="full" nextPath={next} showCta={false} />
+            <div className="flex items-center justify-center gap-2 text-xs text-ink-3">
+              <svg className="w-3 h-3 text-brand" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+              <span>Free forever • No credit card</span>
+            </div>
+
+            {process.env.NODE_ENV !== "production" && (
+              <>
+                <div className="my-4 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-ink-3">
+                  <span className="h-px flex-1 bg-border-app" />
+                  Local dev only
+                  <span className="h-px flex-1 bg-border-app" />
+                </div>
+                <form action={signInDevMode}>
+                  <input type="hidden" name="next" value={next} />
+                  <button
+                    type="submit"
+                    className="btn-press inline-flex w-full items-center justify-center gap-2 rounded-sm border border-dashed border-brand-border bg-brand-soft/50 px-4 py-3 text-sm font-semibold text-brand hover:bg-brand-soft"
+                  >
+                    <DevIcon />
+                    Dev bypass — skip Google
+                  </button>
+                </form>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="mt-8 grid gap-2 text-center text-sm">
+      <div className="mt-8 text-center text-sm">
         <Link
           href="/"
           className="link-press font-medium text-brand hover:underline"
         >
-          ← Keep reading without signing in
+          ← Continue reading without signing in
         </Link>
       </div>
     </div>
