@@ -213,7 +213,7 @@ export function NavSearch({
               if (e.target === e.currentTarget) setOpen(false);
             }}
           >
-            <div className="glass-panel flex max-h-[min(78vh,560px)] w-full max-w-lg flex-col overflow-hidden rounded-2xl">
+            <div className="flex max-h-[min(78vh,560px)] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-border-app bg-card shadow-[var(--shadow-2)] dark:border-[rgba(180,170,210,0.16)]">
               <form
                 className="flex shrink-0 items-center gap-2 border-b border-border-app px-3 py-2.5"
                 onSubmit={(e) => {
