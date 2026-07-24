@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Category, PublishedStory } from "@/lib/types";
 import { CATEGORY_META } from "@/lib/types";
@@ -17,7 +18,18 @@ interface StoryCardProps {
   index?: number;
 }
 
-/** Category-branded art for muted ("More stories for you") cards only. */
+/**
+ * Free-license (Unsplash) category photos for muted tiles.
+ * Keyed by Category; missing keys fall back to CATEGORY_ART.
+ */
+const CATEGORY_PHOTOS: Partial<Record<Category, string>> = {
+  "constitutional-law": "/images/categories/constitutional-law.jpg",
+  "criminal-law": "/images/categories/criminal-law.jpg",
+  "legal-current-affairs": "/images/categories/legal-current-affairs.jpg",
+  "bare-acts-update": "/images/categories/bare-acts-update.jpg",
+};
+
+/** Category-branded art fallback for muted tiles (no photo path). */
 const CATEGORY_ART: Record<
   Category,
   {
@@ -134,39 +146,70 @@ export function StoryCard({
 
   if (size === "muted") {
     const art = CATEGORY_ART[story.category];
+    const photoSrc = CATEGORY_PHOTOS[story.category];
     const Icon = art.icon;
+    const readLabel = formatReadingTime(story.readingTimeMin);
+
     return (
       <Link
         href={`/story/${story.slug}`}
         className="surface-muted card-interactive group block overflow-hidden"
       >
-        {/* Category art tile — no photography; CSS gradient + line icon */}
-        <div
-          className={`relative flex h-[7.5rem] items-center justify-center bg-gradient-to-br ${art.tile}`}
-        >
-          <span
-            className={`absolute left-3 top-3 rounded-full border px-2.5 py-0.5 font-sans text-[10px] font-semibold uppercase tracking-[0.1em] ${art.badge}`}
-          >
-            {meta.shortLabel}
-          </span>
-          {/* Soft radial sheen so the tile doesn't read flat */}
-          <div
-            className="pointer-events-none absolute inset-0 opacity-60"
-            style={{
-              background:
-                "radial-gradient(ellipse at 70% 30%, color-mix(in srgb, var(--brand) 8%, transparent), transparent 60%)",
-            }}
-            aria-hidden
-          />
-          <Icon className={`${art.iconColor} transition-transform duration-200 group-hover:scale-105`} />
+        {/* ~16:10 photo tile (or icon/gradient fallback if no photo path) */}
+        <div className="relative aspect-[16/10] w-full overflow-hidden">
+          {photoSrc ? (
+            <>
+              <Image
+                src={photoSrc}
+                alt=""
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+              />
+              {/* Bottom scrim — keeps bottom-right read-time legible */}
+              <div
+                className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/55 via-black/20 to-transparent"
+                aria-hidden
+              />
+              <span
+                className={`absolute left-3 top-3 rounded-full border px-2.5 py-0.5 font-sans text-[10px] font-semibold uppercase tracking-[0.1em] shadow-sm backdrop-blur-[2px] ${art.badge}`}
+              >
+                {meta.shortLabel}
+              </span>
+              <span className="absolute bottom-3 right-3 font-sans text-[11px] font-medium text-white/95 drop-shadow-sm">
+                {readLabel}
+              </span>
+            </>
+          ) : (
+            <div
+              className={`absolute inset-0 flex items-center justify-center bg-gradient-to-br ${art.tile}`}
+            >
+              <span
+                className={`absolute left-3 top-3 rounded-full border px-2.5 py-0.5 font-sans text-[10px] font-semibold uppercase tracking-[0.1em] ${art.badge}`}
+              >
+                {meta.shortLabel}
+              </span>
+              <div
+                className="pointer-events-none absolute inset-0 opacity-60"
+                style={{
+                  background:
+                    "radial-gradient(ellipse at 70% 30%, color-mix(in srgb, var(--brand) 8%, transparent), transparent 60%)",
+                }}
+                aria-hidden
+              />
+              <Icon
+                className={`${art.iconColor} transition-transform duration-200 group-hover:scale-105`}
+              />
+              <span className="absolute bottom-3 right-3 font-sans text-[11px] text-ink-3">
+                {readLabel}
+              </span>
+            </div>
+          )}
         </div>
         <div className="p-4 md:p-5">
-          <h3 className="mb-2 font-ui text-[15px] font-semibold leading-snug tracking-tight text-ink-2 transition-colors group-hover:text-brand line-clamp-2">
+          <h3 className="line-clamp-2 font-ui text-[15px] font-semibold leading-snug tracking-tight text-ink-2 transition-colors group-hover:text-brand">
             {story.title}
           </h3>
-          <p className="font-sans text-[11px] text-ink-3">
-            {formatReadingTime(story.readingTimeMin)}
-          </p>
         </div>
       </Link>
     );
