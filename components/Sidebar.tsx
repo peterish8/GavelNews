@@ -6,7 +6,39 @@ import { ThemeToggle } from "./ThemeToggle";
 import { NAV_ITEMS, SECTION_LABELS, signInHref, type NavItem } from "@/lib/nav";
 import { formatDate } from "@/lib/format";
 import { signOut } from "@/lib/auth-actions";
-import { PanelLeftIcon, LockIcon, CloseIcon, Logo } from "./icons";
+import type { ReactNode } from "react";
+import {
+  PanelLeftIcon,
+  LockIcon,
+  CloseIcon,
+  Logo,
+  NewspaperIcon,
+  CalendarIcon,
+  SearchIcon,
+  BookmarkIcon,
+  SettingsIcon,
+  InfoIcon,
+} from "./icons";
+
+function navIcon(href: string): ReactNode {
+  switch (href) {
+    case "/":
+      return <NewspaperIcon />;
+    case "/calendar":
+      return <CalendarIcon />;
+    case "/search":
+      // Pass className so SearchIcon doesn't force its default text-ink-3 color
+      return <SearchIcon className="text-current" />;
+    case "/favorites":
+      return <BookmarkIcon />;
+    case "/settings":
+      return <SettingsIcon />;
+    case "/about":
+      return <InfoIcon />;
+    default:
+      return null;
+  }
+}
 
 type SidebarProps = {
   signedIn: boolean;
@@ -210,7 +242,6 @@ function SidebarLink({
 }) {
   const locked = Boolean(item.requiresAuth) && !signedIn;
   const href = locked ? signInHref(item.href) : item.href;
-  const index = String(NAV_ITEMS.indexOf(item) + 1).padStart(2, "0");
 
   return (
     <li>
@@ -224,8 +255,8 @@ function SidebarLink({
         }
         className="group flex items-center gap-2.5 px-2 py-2.5 text-ink transition-colors"
       >
-        <span className="flex size-7 shrink-0 items-center justify-center font-sans text-[13px] font-semibold tabular-nums text-ink">
-          {index}
+        <span className="flex size-7 shrink-0 items-center justify-center text-ink transition-transform duration-150 ease-out group-hover:scale-110">
+          {navIcon(item.href)}
         </span>
         <span className="min-w-0 flex-1">
           <span className="flex items-center gap-1.5">
