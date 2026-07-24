@@ -39,7 +39,7 @@ export default async function SignInPage({ searchParams }: PageProps) {
   if (user.signedIn) redirect(next);
 
   return (
-    <div className="mx-auto max-w-3xl px-5 py-10 md:py-14">
+    <div className="mx-auto max-w-3xl lg:max-w-6xl px-5 py-10 md:py-14">
       <div className="mb-8 text-center">
         <p className="label-law mb-2">
           {cameFromProtected ? "Sign in required" : "Free account"}
@@ -71,41 +71,45 @@ export default async function SignInPage({ searchParams }: PageProps) {
         </p>
       </div>
 
-      {/* Benefits live ONLY here — not in the sidebar */}
-      <AuthBenefits variant="full" nextPath={next} showCta={false} />
-
-      <div className="surface-hero mx-auto mt-8 max-w-md p-6 sm:p-8">
-        <p className="mb-4 text-center text-sm font-semibold text-ink">
-          {cameFromProtected
-            ? `Sign in to open ${destinationLabel(next)}`
-            : "Ready? Sign in takes a second"}
-        </p>
-
-        {err && (
-          <p
-            role="alert"
-            className="mb-3 rounded-sm border border-border-app bg-elevated-muted px-3 py-2 text-center text-xs leading-relaxed text-ink"
-          >
-            {err}
+      <div className="lg:grid lg:grid-cols-[26rem_1fr] lg:items-start lg:gap-12">
+        <div className="surface-hero mx-auto max-w-md p-6 sm:p-8 lg:sticky lg:top-16 lg:mx-0 lg:max-w-none lg:p-9">
+          <p className="mb-5 text-center text-[15px] font-semibold text-ink">
+            {cameFromProtected
+              ? `Sign in to open ${destinationLabel(next)}`
+              : "Ready? Sign in takes a second"}
           </p>
-        )}
 
-        <form action={signInWithGoogle} className="mb-3">
-          <input type="hidden" name="next" value={next} />
-          <button
-            type="submit"
-            className="btn-press inline-flex w-full items-center justify-center gap-2 rounded-sm border border-border-app bg-elevated px-4 py-3 text-sm font-semibold text-ink hover:border-brand-border hover:bg-brand-soft"
-          >
-            <GoogleIcon />
-            Continue with Google
-          </button>
-        </form>
+          {err && (
+            <p
+              role="alert"
+              className="mb-3 rounded-sm border border-border-app bg-elevated-muted px-3 py-2 text-center text-xs leading-relaxed text-ink"
+            >
+              {err}
+            </p>
+          )}
 
-        <p className="text-center text-xs leading-relaxed text-ink-3">
-          Secure sign-in via Google. We only receive your name and email —
-          no password stored here. After auth you return to where you were
-          headed.
-        </p>
+          <form action={signInWithGoogle} className="mb-3">
+            <input type="hidden" name="next" value={next} />
+            <button
+              type="submit"
+              className="btn-press inline-flex w-full items-center justify-center gap-3 rounded-md border border-border-app bg-elevated px-5 py-3.5 text-[15px] font-semibold text-ink shadow-sm transition-transform hover:-translate-y-0.5 hover:border-brand-border hover:bg-brand-soft hover:shadow-md"
+            >
+              <GoogleIcon />
+              Continue with Google
+            </button>
+          </form>
+
+          <p className="text-center text-xs leading-relaxed text-ink-3">
+            Secure sign-in via Google. We only receive your name and email —
+            no password stored here. After auth you return to where you were
+            headed.
+          </p>
+        </div>
+
+        {/* Benefits live ONLY here — not in the sidebar */}
+        <div className="mt-8 lg:mt-0">
+          <AuthBenefits variant="full" nextPath={next} showCta={false} />
+        </div>
       </div>
 
       <div className="mt-8 grid gap-2 text-center text-sm">
@@ -122,7 +126,7 @@ export default async function SignInPage({ searchParams }: PageProps) {
 
 function GoogleIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden>
+    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden>
       <path
         fill="#4285F4"
         d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
