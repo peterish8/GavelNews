@@ -85,8 +85,8 @@ None yet.
 | 260723-ua1 | Give the nav a distinctive legal-editorial identity: brand-blend masthead rule, docket-index nav markers, § serif-italic section labels, left-rule active state | 2026-07-23 | ad2f4e9 | [260723-ua1-make-the-nav-bar-ui-look-better-and-more](./quick/260723-ua1-make-the-nav-bar-ui-look-better-and-more/) |
 | 260723-vk1 | Fix PYQSidebar: render markdown in question/options/explanation text, and replace inline accordion with a full-screen modal on question click | 2026-07-23 | f1fc2e3, bd266d9 | [260723-vk1-fix-pyqsidebar-render-markdown-in-questi](./quick/260723-vk1-fix-pyqsidebar-render-markdown-in-questi/) |
 | 260724-daz | Redesign sign-in page so Google sign-in CTA is visible above the fold on desktop (premium two-column layout) | 2026-07-24 | 1aad1d0 | [260724-daz-redesign-sign-in-page-so-google-sign-in-](./quick/260724-daz-redesign-sign-in-page-so-google-sign-in-/) |
-| 260724-typ | Replace Inter/Libre/IBM Plex with Source legal stack; centralize type + theme tokens in app/system.css | 2026-07-24 | (pending) | [260724-typ-legal-font-system-source-of-truth](./quick/260724-typ-legal-font-system-source-of-truth/) |
-| 260724-dpf | Polish sign-in page: shrink header footprint, add breathing room to sign-in card spacing | 2026-07-24 | (pending) | [260724-dpf-polish-sign-in-page-shrink-header-footpr](./quick/260724-dpf-polish-sign-in-page-shrink-header-footpr/) |
+| 260724-typ | Replace Inter/Libre/IBM Plex with Source legal stack; centralize type + theme tokens in app/system.css | 2026-07-24 | f3febc6 | [260724-typ-legal-font-system-source-of-truth](./quick/260724-typ-legal-font-system-source-of-truth/) |
+| 260724-dpf | Polish sign-in page: shrink header footprint, add breathing room to sign-in card spacing | 2026-07-24 | 93f1075 | [260724-dpf-polish-sign-in-page-shrink-header-footpr](./quick/260724-dpf-polish-sign-in-page-shrink-header-footpr/) |
 
 ## Deferred Items
 
