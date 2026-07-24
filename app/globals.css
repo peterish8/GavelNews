@@ -237,10 +237,19 @@ body {
 
 /* Ghost / outline buttons & inputs — subtle glass */
 .glass-input {
-  background: rgba(255, 255, 255, 0.55);
+  background: var(--glass-input);
   border: 1px solid var(--glass-border-subtle);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+}
+
+/* Full-height chrome (sidebar) — uses dedicated sidebar glass token */
+.glass-sidebar {
+  background: var(--glass-sidebar);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-color: var(--glass-border-subtle);
+  box-shadow: var(--glass-shadow);
 }
 
 /* ── Hierarchy surfaces (deliberate 3-tier scale) ──────────────────
@@ -309,19 +318,19 @@ body {
 }
 
 :root.dark .surface-muted {
-  background: rgba(255, 255, 255, 0.03);
-  border-color: rgba(255, 255, 255, 0.07);
+  background: color-mix(in srgb, var(--app-elevated) 40%, transparent);
+  border-color: color-mix(in srgb, var(--app-border) 80%, transparent);
 }
 
 :root.dark .surface-gate {
   background:
     radial-gradient(ellipse 70% 80% at 0% 0%, rgba(220, 38, 38, 0.12), transparent 55%),
     radial-gradient(ellipse 50% 60% at 100% 100%, rgba(180, 130, 40, 0.06), transparent 50%),
-    rgba(14, 14, 16, 0.94);
+    var(--glass-2);
 }
 
 :root.dark .surface-emphasis {
-  background: color-mix(in srgb, var(--gv-warn-soft) 35%, rgba(14, 14, 16, 0.9));
+  background: color-mix(in srgb, var(--gv-warn-soft) 35%, var(--card));
   box-shadow: none;
 }
 
@@ -352,48 +361,54 @@ body {
   box-shadow: var(--glass-shadow-lg), var(--glass-inner-glow);
 }
 
-/* ── Dark glass overrides (from Gavelogy dark-theme generic surfaces) ─ */
-.dark .glass-card {
-  background: rgba(12, 12, 14, 0.94);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.60),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+/* ── Dark glass: consume warm tokens from system.css :root.dark ─────
+   Do not hardcode cool near-black rgba here — tokens are the source of
+   truth so glass tracks the court-ink dark palette. */
+:root.dark .glass-card {
+  background: var(--glass-1);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow), var(--glass-inner-glow);
 }
 
-.dark .glass-panel {
-  background: rgba(14, 14, 16, 0.92);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.65),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+:root.dark .glass-panel {
+  background: var(--glass-2);
+  backdrop-filter: var(--glass-blur-sm);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
+  border: 1px solid var(--glass-border-subtle);
+  box-shadow: var(--glass-shadow-lg), var(--glass-inner-glow);
 }
 
-.dark .glass-surface {
-  background: rgba(6, 6, 8, 0.95);
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04), 0 4px 20px rgba(0, 0, 0, 0.50);
+:root.dark .glass-surface {
+  background: var(--glass-3);
+  backdrop-filter: blur(28px) saturate(1.5);
+  -webkit-backdrop-filter: blur(28px) saturate(1.5);
+  border-bottom: 1px solid var(--glass-border-subtle);
+  box-shadow: 0 1px 0 rgba(245, 239, 230, 0.04), var(--glass-shadow);
 }
 
-.dark .glass-input {
-  background: rgba(14, 14, 16, 0.80);
+:root.dark .glass-input {
+  background: var(--glass-input);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-color: rgba(255, 255, 255, 0.09);
+  border-color: var(--glass-border-subtle);
+}
+
+:root.dark .glass-sidebar {
+  background: var(--glass-sidebar);
+  border-color: var(--glass-border-subtle);
+  box-shadow: var(--glass-shadow);
 }
 
 /* Fallback when backdrop-filter unsupported */
 @supports not (backdrop-filter: blur(1px)) {
-  .glass-card  { background: rgba(255, 255, 255, 0.94); }
-  .glass-panel { background: rgba(255, 255, 255, 0.97); }
-  :root.dark .glass-card  { background: rgba(12,12,14,0.98); }
-  :root.dark .glass-panel { background: rgba(14,14,16,0.99); }
+  .glass-card  { background: var(--glass-1); opacity: 1; }
+  .glass-panel { background: var(--glass-2); }
+  .glass-sidebar { background: var(--glass-sidebar); }
+  :root.dark .glass-card  { background: var(--glass-1); }
+  :root.dark .glass-panel { background: var(--glass-2); }
+  :root.dark .glass-sidebar { background: var(--glass-sidebar); }
 }
 
 /* ═══════════════════════════════════════════════════════════════════
