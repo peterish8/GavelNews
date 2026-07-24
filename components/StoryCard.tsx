@@ -1,8 +1,14 @@
 import Link from "next/link";
-import type { PublishedStory } from "@/lib/types";
+import type { Category, PublishedStory } from "@/lib/types";
 import { CATEGORY_META } from "@/lib/types";
 import { formatDate, formatReadingTime } from "@/lib/format";
-import { ArrowIcon } from "./icons";
+import {
+  ArrowIcon,
+  BookIcon,
+  GavelIcon,
+  PressIcon,
+  ScalesIcon,
+} from "./icons";
 
 interface StoryCardProps {
   story: PublishedStory;
@@ -10,6 +16,43 @@ interface StoryCardProps {
   size?: "default" | "compact" | "featured" | "rail" | "muted";
   index?: number;
 }
+
+/** Category-branded art for muted ("More stories for you") cards only. */
+const CATEGORY_ART: Record<
+  Category,
+  {
+    icon: typeof ScalesIcon;
+    /** Gradient using brand-family tokens — themes with light/dark */
+    tile: string;
+    badge: string;
+    iconColor: string;
+  }
+> = {
+  "constitutional-law": {
+    icon: ScalesIcon,
+    tile: "from-brand-soft via-brand-soft/70 to-elevated",
+    badge: "border-brand-border bg-brand-soft/95 text-brand",
+    iconColor: "text-brand/55",
+  },
+  "criminal-law": {
+    icon: GavelIcon,
+    tile: "from-gold-soft via-gold-soft/60 to-elevated",
+    badge: "border-gold-border bg-gold-soft/95 text-gold",
+    iconColor: "text-gold/55",
+  },
+  "legal-current-affairs": {
+    icon: PressIcon,
+    tile: "from-brand-2-soft via-brand-2-soft/60 to-elevated",
+    badge: "border-brand-2-border bg-brand-2-soft/95 text-brand-2",
+    iconColor: "text-brand-2/55",
+  },
+  "bare-acts-update": {
+    icon: BookIcon,
+    tile: "from-support-soft via-support-soft/60 to-elevated",
+    badge: "border-border-app bg-elevated/95 text-ink-2",
+    iconColor: "text-ink-3/70",
+  },
+};
 
 export function StoryCard({
   story,
@@ -90,23 +133,41 @@ export function StoryCard({
   }
 
   if (size === "muted") {
+    const art = CATEGORY_ART[story.category];
+    const Icon = art.icon;
     return (
       <Link
         href={`/story/${story.slug}`}
-        className="surface-muted card-interactive group block p-4 md:p-5"
+        className="surface-muted card-interactive group block overflow-hidden"
       >
-        <div className="mb-2 flex flex-wrap items-center gap-2 text-[11px] text-ink-3">
-          <span className="font-sans text-[10px] uppercase tracking-[0.12em]">
-            Also today
+        {/* Category art tile — no photography; CSS gradient + line icon */}
+        <div
+          className={`relative flex h-[7.5rem] items-center justify-center bg-gradient-to-br ${art.tile}`}
+        >
+          <span
+            className={`absolute left-3 top-3 rounded-full border px-2.5 py-0.5 font-sans text-[10px] font-semibold uppercase tracking-[0.1em] ${art.badge}`}
+          >
+            {meta.shortLabel}
           </span>
-          <span className="opacity-40">·</span>
-          <span className="font-medium text-ink-3">{meta.shortLabel}</span>
-          <span className="opacity-40">·</span>
-          <span>{formatReadingTime(story.readingTimeMin)}</span>
+          {/* Soft radial sheen so the tile doesn't read flat */}
+          <div
+            className="pointer-events-none absolute inset-0 opacity-60"
+            style={{
+              background:
+                "radial-gradient(ellipse at 70% 30%, color-mix(in srgb, var(--brand) 8%, transparent), transparent 60%)",
+            }}
+            aria-hidden
+          />
+          <Icon className={`${art.iconColor} transition-transform duration-200 group-hover:scale-105`} />
         </div>
-        <h3 className="font-ui text-[15px] font-semibold leading-snug tracking-tight text-ink-2 transition-colors group-hover:text-brand">
-          {story.title}
-        </h3>
+        <div className="p-4 md:p-5">
+          <h3 className="mb-2 font-ui text-[15px] font-semibold leading-snug tracking-tight text-ink-2 transition-colors group-hover:text-brand line-clamp-2">
+            {story.title}
+          </h3>
+          <p className="font-sans text-[11px] text-ink-3">
+            {formatReadingTime(story.readingTimeMin)}
+          </p>
+        </div>
       </Link>
     );
   }

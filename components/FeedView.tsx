@@ -1,12 +1,19 @@
 "use client";
 
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
 import type { Category, PublishedStory } from "@/lib/types";
 import { StoryCard } from "./StoryCard";
 import { CategoryFilter } from "./CategoryFilter";
 import { EmptyState } from "./EmptyState";
 import { formatDate, formatReadingTime } from "@/lib/format";
+import {
+  BookmarkIcon,
+  ClockIcon,
+  DocumentIcon,
+  FlameIcon,
+} from "./icons";
 
 interface FeedViewProps {
   stories: PublishedStory[];
@@ -72,78 +79,138 @@ export function FeedView({
 
   return (
     <div className="content-shell mx-auto max-w-6xl px-5 py-6 md:py-9">
-      {/* Edition masthead */}
-      <header className="mb-5 grid gap-6 border-b border-border-app pb-5 md:mb-6 md:grid-cols-[1.4fr_auto] md:items-end md:gap-10 md:pb-6">
-        <div>
-          <div className="mb-4 flex flex-wrap items-center gap-2">
-            {typeof editionIndex === "number" && editionIndex > 0 && (
-              <span className="rounded border border-border-app bg-elevated/80 px-2.5 py-1 font-serif text-[11px] font-semibold text-ink-3">
-                Day {editionIndex}
-              </span>
-            )}
-            {dateLabel && (
-              <span className="inline-flex items-center gap-2 rounded border border-brand-border bg-brand-soft px-2.5 py-1 font-serif text-[11px] font-semibold text-brand">
-                <span className="relative flex size-1.5">
-                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand opacity-40" />
-                  <span className="relative inline-flex size-1.5 rounded-full bg-brand" />
-                </span>
-                {formatDate(dateLabel)}
-              </span>
-            )}
-          </div>
+      {/* Edition masthead — soft brand glow + wave/dot motif (CSS only) */}
+      <header className="relative mb-5 overflow-hidden border-b border-border-app pb-5 md:mb-6 md:pb-6">
+        {/* Decorative background layer */}
+        <div className="pointer-events-none absolute inset-0" aria-hidden>
+          {/* Brand-red radial glow from upper-right */}
+          <div
+            className="absolute -right-8 -top-16 h-56 w-72 rounded-full opacity-50 dark:opacity-25"
+            style={{
+              background:
+                "radial-gradient(ellipse at center, color-mix(in srgb, var(--brand) 22%, transparent) 0%, color-mix(in srgb, var(--brand-soft) 55%, transparent) 42%, transparent 72%)",
+            }}
+          />
+          <div
+            className="absolute right-12 top-4 h-28 w-40 rounded-full opacity-40 dark:opacity-20"
+            style={{
+              background:
+                "radial-gradient(ellipse at center, color-mix(in srgb, var(--brand) 12%, transparent) 0%, transparent 70%)",
+            }}
+          />
+          {/* Faint wavy line + dots motif */}
+          <svg
+            className="absolute inset-x-0 top-0 h-full w-full opacity-[0.28] dark:opacity-[0.14]"
+            viewBox="0 0 800 220"
+            preserveAspectRatio="xMaxYMin slice"
+            fill="none"
+          >
+            <path
+              d="M420 48c48 18 92 52 148 46s98-40 140-28"
+              stroke="var(--brand)"
+              strokeWidth="1.2"
+              strokeLinecap="round"
+              opacity="0.45"
+            />
+            <path
+              d="M460 78c42 14 86 36 132 30s86-34 128-22"
+              stroke="var(--brand)"
+              strokeWidth="1"
+              strokeLinecap="round"
+              opacity="0.28"
+            />
+            <circle cx="560" cy="36" r="2.2" fill="var(--brand)" opacity="0.35" />
+            <circle cx="610" cy="62" r="1.6" fill="var(--brand)" opacity="0.28" />
+            <circle cx="680" cy="42" r="1.8" fill="var(--brand)" opacity="0.3" />
+            <circle cx="720" cy="88" r="1.4" fill="var(--brand)" opacity="0.22" />
+            <circle cx="500" cy="28" r="1.3" fill="var(--brand)" opacity="0.2" />
+          </svg>
+        </div>
 
-          <h1 className="heading-law max-w-xl text-[2.05rem] leading-[1.12] md:text-5xl lg:text-[3.1rem]">
-            {heading}
-          </h1>
-          {subtitle && (
-            <p className="mt-3 max-w-xl font-serif text-[15px] leading-relaxed text-ink-2 md:text-base">
-              {subtitle}
-            </p>
-          )}
-
-          {/* One-click previous / next edition — not a trip through /calendar */}
-          {(prevEditionDate || nextEditionDate) && (
-            <div className="mt-5 flex flex-wrap items-center gap-2">
-              {prevEditionDate ? (
-                <Link
-                  href={`/edition/${prevEditionDate}`}
-                  className="btn-press inline-flex items-center gap-1.5 rounded-full border border-border-app bg-elevated/90 px-3 py-1.5 text-xs font-semibold text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand"
-                >
-                  <Chevron dir="left" />
-                  {formatDate(prevEditionDate)}
-                </Link>
-              ) : (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-transparent px-3 py-1.5 text-xs text-ink-3">
-                  Oldest edition
+        <div className="relative grid gap-6 md:grid-cols-[1.4fr_auto] md:items-end md:gap-10">
+          <div>
+            <div className="mb-4 flex flex-wrap items-center gap-2">
+              {typeof editionIndex === "number" && editionIndex > 0 && (
+                <span className="rounded border border-border-app bg-elevated/80 px-2.5 py-1 font-serif text-[11px] font-semibold text-ink-3">
+                  Day {editionIndex}
                 </span>
               )}
-              {nextEditionDate ? (
-                <Link
-                  href={`/edition/${nextEditionDate}`}
-                  className="btn-press inline-flex items-center gap-1.5 rounded-full border border-border-app bg-elevated/90 px-3 py-1.5 text-xs font-semibold text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand"
-                >
-                  {formatDate(nextEditionDate)}
-                  <Chevron dir="right" />
-                </Link>
-              ) : (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-transparent px-3 py-1.5 text-xs font-medium text-ink-3">
-                  Latest
+              {dateLabel && (
+                <span className="inline-flex items-center gap-2 rounded border border-brand-border bg-brand-soft px-2.5 py-1 font-serif text-[11px] font-semibold text-brand">
+                  <span className="relative flex size-1.5">
+                    <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand opacity-40" />
+                    <span className="relative inline-flex size-1.5 rounded-full bg-brand" />
+                  </span>
+                  {formatDate(dateLabel)}
                 </span>
               )}
             </div>
-          )}
-        </div>
 
-        <dl className="grid grid-cols-3 gap-2 sm:gap-3 md:min-w-[280px]">
-          <Stat label="Stories" value={String(filtered.length)} />
-          <Stat label="Read time" value={`${totalMins}m`} />
-          <Stat
-            label="Must cover"
-            value={String(
-              filtered.filter((s) => s.decision === "must_cover").length,
+            <h1 className="heading-law max-w-xl text-[2.05rem] leading-[1.12] md:text-5xl lg:text-[3.1rem]">
+              {heading}
+            </h1>
+            {subtitle && (
+              <p className="mt-3 max-w-xl font-serif text-[15px] leading-relaxed text-ink-2 md:text-base">
+                {subtitle}
+              </p>
             )}
-          />
-        </dl>
+
+            {/* One-click previous / next edition — not a trip through /calendar */}
+            {(prevEditionDate || nextEditionDate) && (
+              <div className="mt-5 flex flex-wrap items-center gap-2">
+                {prevEditionDate ? (
+                  <Link
+                    href={`/edition/${prevEditionDate}`}
+                    className="btn-press inline-flex items-center gap-1.5 rounded-full border border-border-app bg-elevated/90 px-3 py-1.5 text-xs font-semibold text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand"
+                  >
+                    <Chevron dir="left" />
+                    {formatDate(prevEditionDate)}
+                  </Link>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-transparent px-3 py-1.5 text-xs text-ink-3">
+                    Oldest edition
+                  </span>
+                )}
+                {nextEditionDate ? (
+                  <Link
+                    href={`/edition/${nextEditionDate}`}
+                    className="btn-press inline-flex items-center gap-1.5 rounded-full border border-border-app bg-elevated/90 px-3 py-1.5 text-xs font-semibold text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand"
+                  >
+                    {formatDate(nextEditionDate)}
+                    <Chevron dir="right" />
+                  </Link>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-transparent px-3 py-1.5 text-xs font-medium text-ink-3">
+                    Latest
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+
+          <dl className="grid grid-cols-3 gap-2 sm:gap-3 md:min-w-[280px]">
+            <Stat
+              label="Stories"
+              value={String(filtered.length)}
+              icon={<DocumentIcon />}
+              tone="brand"
+            />
+            <Stat
+              label="Read time"
+              value={`${totalMins}m`}
+              icon={<ClockIcon />}
+              tone="brand-2"
+            />
+            <Stat
+              label="Must cover"
+              value={String(
+                filtered.filter((s) => s.decision === "must_cover").length,
+              )}
+              icon={<BookmarkIcon />}
+              tone="gold"
+            />
+          </dl>
+        </div>
       </header>
 
       {/* Filters */}
@@ -221,10 +288,16 @@ export function FeedView({
             </section>
           )}
 
-          {/* Maybe stories — muted, below the fold */}
+          {/* Optional depth — category-art tiles */}
           {maybeStories.length > 0 && (
             <section>
-              <SectionLabel>Also today · optional</SectionLabel>
+              <div className="mb-4 flex items-end gap-3">
+                <h2 className="inline-flex items-center gap-2 font-ui text-base font-semibold tracking-tight text-ink md:text-[17px]">
+                  <FlameIcon className="text-brand" />
+                  More stories for you
+                </h2>
+                <div className="mb-1.5 h-px flex-1 bg-border-app/80" aria-hidden />
+              </div>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {maybeStories.map((story) => (
                   <StoryCard key={story.id} story={story} size="muted" />
@@ -249,9 +322,47 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+type StatTone = "brand" | "brand-2" | "gold";
+
+const STAT_TONE: Record<
+  StatTone,
+  { chip: string; icon: string }
+> = {
+  brand: {
+    chip: "border-brand-border bg-brand-soft text-brand",
+    icon: "text-brand",
+  },
+  "brand-2": {
+    chip: "border-brand-2-border bg-brand-2-soft text-brand-2",
+    icon: "text-brand-2",
+  },
+  gold: {
+    chip: "border-gold-border bg-gold-soft text-gold",
+    icon: "text-gold",
+  },
+};
+
+function Stat({
+  label,
+  value,
+  icon,
+  tone,
+}: {
+  label: string;
+  value: string;
+  icon: ReactNode;
+  tone: StatTone;
+}) {
+  const t = STAT_TONE[tone];
   return (
     <div className="surface-muted px-3 py-3 text-center">
+      <div className="mb-2 flex justify-center">
+        <span
+          className={`inline-flex size-8 items-center justify-center rounded-lg border ${t.chip}`}
+        >
+          <span className={t.icon}>{icon}</span>
+        </span>
+      </div>
       <dt className="font-sans text-[9px] font-semibold uppercase tracking-[0.16em] text-ink-3">
         {label}
       </dt>
