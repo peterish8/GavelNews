@@ -176,9 +176,9 @@ export function NavSearch({
       title="Search (⌘K)"
       aria-expanded={open}
       aria-controls={panelId}
-      className="inline-flex size-7 items-center justify-center rounded-sm text-ink-2 hover:bg-brand-soft hover:text-brand"
+      className="icon-btn inline-flex size-10 items-center justify-center rounded-[13px] border border-[rgba(205,198,220,0.42)] bg-[rgba(255,255,255,0.72)] text-ink-2 shadow-[0_6px_18px_rgba(19,15,42,0.04)] hover:border-brand-border hover:bg-brand-soft hover:text-brand"
     >
-      <SearchIcon />
+      <SearchIcon className="text-current" />
     </button>
   ) : (
     <button
@@ -188,11 +188,13 @@ export function NavSearch({
       title="Search all stories (⌘K)"
       aria-expanded={open}
       aria-controls={panelId}
-      className="icon-btn glass-input inline-flex h-8 items-center gap-2 rounded-full px-2.5 text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand sm:h-9 sm:px-3"
+      className="icon-btn glass-input inline-flex h-12 w-[min(370px,32vw)] items-center gap-2.5 rounded-[13px] px-3.5 text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand"
     >
-      <SearchIcon />
-      <span className="hidden text-[12px] font-medium sm:inline">Search</span>
-      <kbd className="hidden rounded border border-border-app bg-elevated-muted px-1.5 py-0.5 font-sans text-[10px] text-ink-3 md:inline">
+      <SearchIcon className="text-current" />
+      <span className="min-w-0 flex-1 truncate text-left text-[13px] font-medium text-ink-3">
+        Search news, cases, topics...
+      </span>
+      <kbd className="hidden shrink-0 rounded-[6px] bg-[rgba(19,15,42,0.04)] px-[7px] py-1 font-sans text-[11px] text-ink-3 dark:bg-[rgba(242,240,248,0.06)] md:inline">
         ⌘K
       </kbd>
     </button>

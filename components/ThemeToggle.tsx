@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { SunIcon, MoonIcon } from "./icons";
 
-// Tiny CSS-only sun/moon toggle. Persists to localStorage. Respects system.
+// Segmented light/dark control. Persists to localStorage. Respects system.
 export function ThemeToggle() {
   const [mounted, setMounted] = useState(false);
   const [isDark, setIsDark] = useState(false);
@@ -13,10 +13,9 @@ export function ThemeToggle() {
     setIsDark(document.documentElement.classList.contains("dark"));
   }, []);
 
-  function toggle() {
-    const next = !isDark;
-    setIsDark(next);
-    if (next) {
+  function setTheme(dark: boolean) {
+    setIsDark(dark);
+    if (dark) {
       document.documentElement.classList.add("dark");
       localStorage.setItem("gavel-theme", "dark");
     } else {
@@ -25,27 +24,57 @@ export function ThemeToggle() {
     }
   }
 
-  // Render a stable placeholder on SSR; the real button after mount.
   if (!mounted) {
     return (
-      <button
-        type="button"
-        aria-label="Toggle theme"
-        className="icon-btn inline-flex size-9 items-center justify-center rounded-full border border-border-app bg-elevated/80 text-ink-2 hover:border-brand-border hover:text-brand"
+      <div
+        className="flex h-10 w-full items-center rounded-[11px] border border-[rgba(205,198,220,0.38)] bg-[rgba(255,255,255,0.46)] p-0.5"
+        aria-hidden
       >
-        <span className="block size-4" />
-      </button>
+        <span className="flex h-full flex-1 items-center justify-center gap-1.5 rounded-[9px] text-xs font-semibold text-ink-3">
+          <span className="block size-3.5" />
+          Light
+        </span>
+        <span className="flex h-full w-10 items-center justify-center text-ink-3">
+          <span className="block size-3.5" />
+        </span>
+      </div>
     );
   }
 
   return (
-    <button
-      type="button"
-      onClick={toggle}
-      aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
-      className="icon-btn inline-flex size-9 items-center justify-center rounded-full border border-border-app bg-elevated/80 text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand"
+    <div
+      role="group"
+      aria-label="Theme"
+      className="flex h-10 w-full items-center rounded-[11px] border border-[rgba(205,198,220,0.38)] bg-[rgba(255,255,255,0.46)] p-0.5 dark:border-[rgba(180,170,210,0.16)] dark:bg-[rgba(26,24,40,0.55)]"
     >
-      {isDark ? <SunIcon /> : <MoonIcon />}
-    </button>
+      <button
+        type="button"
+        onClick={() => setTheme(false)}
+        aria-pressed={!isDark}
+        className={[
+          "flex h-full flex-1 items-center justify-center gap-1.5 rounded-[9px] text-xs font-semibold transition-colors duration-150",
+          !isDark
+            ? "bg-white text-brand shadow-sm dark:bg-[rgba(255,255,255,0.08)]"
+            : "text-ink-3 hover:text-ink-2",
+        ].join(" ")}
+      >
+        <SunIcon />
+        Light
+      </button>
+      <button
+        type="button"
+        onClick={() => setTheme(true)}
+        aria-pressed={isDark}
+        aria-label="Switch to dark theme"
+        className={[
+          "flex h-full w-10 items-center justify-center rounded-[9px] transition-colors duration-150",
+          isDark
+            ? "bg-white text-brand shadow-sm dark:bg-[rgba(255,255,255,0.08)]"
+            : "text-ink-3 hover:text-ink-2",
+        ].join(" ")}
+      >
+        <MoonIcon />
+      </button>
+    </div>
   );
 }

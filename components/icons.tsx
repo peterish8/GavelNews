@@ -110,27 +110,84 @@ export function UserIcon() {
   );
 }
 
-export function Logo() {
+export function Logo({ size = 42 }: { size?: number }) {
   return (
-    <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-brand-border bg-brand-soft text-brand">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <span
+      className="flex shrink-0 items-center justify-center rounded-[11px] bg-brand text-white shadow-sm"
+      style={{ width: size, height: size }}
+    >
+      <svg width={size * 0.48} height={size * 0.48} viewBox="0 0 24 24" fill="none" aria-hidden>
+        {/* Minimal legal pillar / shield monogram */}
         <path
           d="M12 2L4 6v6c0 5 3.4 9.4 8 10 4.6-.6 8-5 8-10V6l-8-4z"
           stroke="currentColor"
           strokeWidth="1.6"
           strokeLinejoin="round"
           fill="currentColor"
-          fillOpacity="0.12"
+          fillOpacity="0.18"
         />
         <path
-          d="M9.5 12.5l1.8 1.8 3.5-3.6"
+          d="M9 10.5h6M12 8v8"
           stroke="currentColor"
-          strokeWidth="1.8"
+          strokeWidth="1.7"
           strokeLinecap="round"
-          strokeLinejoin="round"
         />
       </svg>
     </span>
+  );
+}
+
+export function BellIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+      className={className}
+    >
+      <path
+        d="M6 9a6 6 0 1 1 12 0c0 3.5 1.2 5 2 6.5H4c.8-1.5 2-3 2-6.5z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M10 18a2 2 0 0 0 4 0"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+export function SignOutIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+      className={className}
+    >
+      <path
+        d="M10 7V5a2 2 0 0 1 2-2h7v18h-7a2 2 0 0 1-2-2v-2"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M15 12H4m0 0 3-3m-3 3 3 3"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
 

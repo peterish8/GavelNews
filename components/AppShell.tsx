@@ -7,6 +7,7 @@ import { Sidebar, PanelLeftIcon } from "./Sidebar";
 import { Footer } from "./Footer";
 import { NavSearch } from "./NavSearch";
 import { signInHref } from "@/lib/nav";
+import { BellIcon, Logo } from "./icons";
 
 const COLLAPSE_KEY = "gavel-sidebar-collapsed";
 
@@ -48,8 +49,6 @@ export function AppShell({
   }, [pathname]);
 
   useEffect(() => {
-    // Let floating UI (TTS bar) know the mobile drawer is open so it can
-    // yield stacking / hide itself instead of sitting on top of the nav.
     document.documentElement.dataset.mobileNav = mobileOpen ? "open" : "closed";
     if (!mobileOpen) return;
     const prev = document.body.style.overflow;
@@ -72,12 +71,11 @@ export function AppShell({
     });
   }
 
-  // One control: outside only when desktop sidebar is closed
   const showOutsideToggle = collapsed;
 
   return (
     <div
-      className={`flex h-dvh max-h-dvh overflow-hidden ${
+      className={`app-shell flex h-dvh max-h-dvh overflow-hidden ${
         ready ? "" : "opacity-0 lg:opacity-100"
       }`}
     >
@@ -95,55 +93,63 @@ export function AppShell({
 
       <div
         data-sidebar-collapsed={collapsed ? "true" : "false"}
-        className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden"
+        className={[
+          "main-shell flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
+          // Desktop: offset for fixed floating sidebar (258 + 12 inset + 12 gap)
+          "lg:ml-[282px]",
+          collapsed ? "lg:!ml-0" : "",
+        ].join(" ")}
       >
-        <header className="relative shrink-0 border-b border-border-app bg-nav-bg backdrop-blur-xl">
-          <div
-            className="h-[2px] w-full"
-            style={{ background: "var(--brand-blend)" }}
-            aria-hidden
-          />
-          <div className="relative flex h-16 items-center gap-2 px-2.5 sm:px-4">
-            {/* Mobile: open drawer */}
-            <button
-              type="button"
-              onClick={() => setMobileOpen(true)}
-              className="icon-btn inline-flex size-8 shrink-0 items-center justify-center rounded-lg border border-border-app bg-elevated text-ink lg:hidden"
-              aria-label="Open navigation"
-              title="Open navigation"
-            >
-              <PanelLeftIcon />
-            </button>
-
-            {/* Desktop: outside only when closed (inside when open) */}
-            {showOutsideToggle && (
+        {/* Dashboard header (spec §11–12) */}
+        <header className="relative z-10 shrink-0 px-4 pb-0 pt-4 sm:px-7 lg:px-7">
+          <div className="mx-auto flex w-full max-w-[1240px] items-start justify-between gap-4 sm:gap-6">
+            <div className="flex min-w-0 items-start gap-2.5">
+              {/* Mobile: open drawer */}
               <button
                 type="button"
-                onClick={toggleCollapsed}
-                className="icon-btn hidden size-7 shrink-0 items-center justify-center rounded-lg border border-border-app bg-elevated text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand lg:inline-flex"
-                aria-label="Open sidebar"
-                title="Open sidebar"
+                onClick={() => setMobileOpen(true)}
+                className="icon-btn mt-1 inline-flex size-10 shrink-0 items-center justify-center rounded-[13px] border border-[rgba(205,198,220,0.42)] bg-[rgba(255,255,255,0.72)] text-ink shadow-[0_6px_18px_rgba(19,15,42,0.04)] lg:hidden"
+                aria-label="Open navigation"
+                title="Open navigation"
               >
                 <PanelLeftIcon />
               </button>
-            )}
 
-            {/* Brand — inline on mobile (no absolute collision), centered on lg+ */}
-            <Link
-              href="/"
-              className="link-press flex min-w-0 flex-1 flex-col items-start gap-0 leading-none lg:absolute lg:left-1/2 lg:top-1/2 lg:flex-none lg:-translate-x-1/2 lg:-translate-y-1/2 lg:items-center lg:gap-0.5"
-            >
-              <span className="truncate font-serif text-base font-bold tracking-tight text-ink sm:text-lg lg:text-xl">
-                Gavel News
-              </span>
-              <span className="hidden font-serif text-[10px] italic text-ink-3 sm:block">
-                Daily Legal Brief
-              </span>
-            </Link>
+              {/* Desktop: outside only when closed */}
+              {showOutsideToggle && (
+                <button
+                  type="button"
+                  onClick={toggleCollapsed}
+                  className="icon-btn mt-1 hidden size-10 shrink-0 items-center justify-center rounded-[13px] border border-[rgba(205,198,220,0.42)] bg-[rgba(255,255,255,0.72)] text-ink-2 shadow-[0_6px_18px_rgba(19,15,42,0.04)] hover:border-brand-border hover:bg-brand-soft hover:text-brand lg:inline-flex"
+                  aria-label="Open sidebar"
+                  title="Open sidebar"
+                >
+                  <PanelLeftIcon />
+                </button>
+              )}
 
-            {/* ── Mobile: search + sign-in — full nav lives in the drawer ── */}
+              <Link
+                href="/"
+                className="link-press flex min-w-0 flex-col items-start leading-none"
+              >
+                <span className="flex items-center gap-2 lg:hidden">
+                  <Logo size={32} />
+                  <span className="font-[family-name:var(--font-editorial)] text-[22px] font-medium tracking-tight text-ink">
+                    Gavel News
+                  </span>
+                </span>
+                <span className="hidden font-[family-name:var(--font-editorial)] text-[32px] font-medium leading-none tracking-tight text-ink lg:block">
+                  Gavel News
+                </span>
+                <span className="mt-1 hidden text-[13px] text-ink-3 lg:block">
+                  Daily Legal Briefing
+                </span>
+              </Link>
+            </div>
+
+            {/* Mobile: search + sign-in */}
             <div
-              className="flex shrink-0 items-center gap-1.5 md:hidden"
+              className="flex shrink-0 items-center gap-2 md:hidden"
               role="group"
               aria-label="Quick actions"
             >
@@ -155,20 +161,28 @@ export function AppShell({
               {!signedIn && (
                 <Link
                   href={signInHref(pathname)}
-                  className="btn-press rounded-sm bg-brand px-2.5 py-1 text-[10px] font-semibold text-on-accent"
+                  className="btn-press rounded-[10px] bg-brand px-3 py-2 text-[11px] font-semibold text-on-accent"
                 >
                   Sign in
                 </Link>
               )}
             </div>
 
-            {/* ── Desktop / tablet: search + sign-in only — full nav lives in the sidebar ── */}
-            <div className="ml-auto hidden shrink-0 items-center gap-2 md:flex">
+            {/* Desktop / tablet: search + notification + sign-in */}
+            <div className="ml-auto hidden shrink-0 items-center gap-2.5 md:flex">
               <NavSearch />
+              <button
+                type="button"
+                className="icon-btn glass-input inline-flex size-12 items-center justify-center rounded-[13px] text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand"
+                aria-label="Notifications"
+                title="Notifications (coming soon)"
+              >
+                <BellIcon />
+              </button>
               {!signedIn && (
                 <Link
                   href={signInHref(pathname)}
-                  className="btn-press rounded-sm bg-brand px-3 py-1 text-[11px] font-semibold text-on-accent sm:text-xs"
+                  className="btn-press rounded-[11px] bg-brand px-4 py-2.5 text-xs font-semibold text-on-accent hover:bg-brand-hover sm:text-sm"
                 >
                   Sign in
                 </Link>
@@ -178,7 +192,6 @@ export function AppShell({
         </header>
 
         <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain">
-          {/* No min-h-full — that left a huge empty band between page content and footer */}
           <main>{children}</main>
           <Footer />
         </div>
