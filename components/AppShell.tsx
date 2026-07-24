@@ -7,7 +7,16 @@ import { Sidebar, PanelLeftIcon } from "./Sidebar";
 import { Footer } from "./Footer";
 import { NavSearch } from "./NavSearch";
 import { signInHref } from "@/lib/nav";
-import { BellIcon, Logo } from "./icons";
+import {
+  BellIcon,
+  Logo,
+  NewspaperIcon,
+  CalendarIcon,
+  SearchIcon,
+  BookmarkIcon,
+  SettingsIcon,
+} from "./icons";
+import { NAV_ITEMS } from "@/lib/nav";
 
 const COLLAPSE_KEY = "gavel-sidebar-collapsed";
 
@@ -191,11 +200,65 @@ export function AppShell({
           </div>
         </header>
 
-        <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain">
+        <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain pb-[calc(4.25rem+env(safe-area-inset-bottom))] md:pb-0">
           <main>{children}</main>
           <Footer />
         </div>
+
+        {/* Mobile bottom navigation (spec §33) */}
+        <nav
+          className="fixed inset-x-0 bottom-0 z-40 border-t border-[rgba(205,198,220,0.42)] bg-[rgba(255,255,255,0.88)] px-2 pb-[env(safe-area-inset-bottom)] pt-1 backdrop-blur-xl dark:border-[rgba(180,170,210,0.16)] dark:bg-[rgba(18,16,28,0.92)] md:hidden"
+          aria-label="Primary"
+        >
+          <ul className="mx-auto flex max-w-lg items-stretch justify-around">
+            {MOBILE_NAV.map((item) => {
+              const active = item.match(pathname);
+              const locked = Boolean(item.requiresAuth) && !signedIn;
+              const href = locked ? signInHref(item.href) : item.href;
+              return (
+                <li key={item.href} className="flex-1">
+                  <Link
+                    href={href}
+                    aria-current={active && !locked ? "page" : undefined}
+                    className={[
+                      "flex flex-col items-center gap-0.5 px-1 py-2 text-[10px] font-semibold transition-colors",
+                      active && !locked
+                        ? "text-brand"
+                        : "text-ink-3 hover:text-ink-2",
+                    ].join(" ")}
+                  >
+                    <span className="flex size-6 items-center justify-center">
+                      {mobileNavIcon(item.href)}
+                    </span>
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
       </div>
     </div>
   );
+}
+
+const MOBILE_NAV = NAV_ITEMS.filter((i) =>
+  ["/", "/calendar", "/search", "/favorites", "/settings"].includes(i.href),
+);
+
+function mobileNavIcon(href: string) {
+  switch (href) {
+    case "/":
+      return <NewspaperIcon />;
+    case "/calendar":
+      return <CalendarIcon />;
+    case "/search":
+      return <SearchIcon className="text-current" />;
+    case "/favorites":
+      return <BookmarkIcon />;
+    case "/settings":
+      return <SettingsIcon />;
+    default:
+      return null;
+  }
 }

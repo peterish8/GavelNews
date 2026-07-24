@@ -574,6 +574,27 @@ body {
   .content-shell {
     padding: 16px 16px 40px;
   }
+
+  .page-title {
+    font-size: clamp(40px, 10vw, 44px) !important;
+  }
+}
+
+/* Tablet: priority grid ~60/40, story grid 2-col (spec §33) */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .priority-grid {
+    grid-template-columns: minmax(0, 1.5fr) minmax(240px, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .surface-brief svg,
+  .card-interactive,
+  .btn-press,
+  .icon-btn {
+    transition: none !important;
+    animation: none !important;
+  }
 }
 
 .popover-enter {

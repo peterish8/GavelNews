@@ -17,7 +17,7 @@ export function SearchInput({ value, onChange, onSubmit }: SearchInputProps) {
         e.preventDefault();
         onSubmit(value);
       }}
-      className={`glass-input flex items-center gap-2 rounded-2xl px-4 py-3 transition-all duration-[200ms] ease-out ${
+      className={`glass-input flex h-12 items-center gap-2 rounded-[13px] px-4 transition-all duration-[200ms] ease-out ${
         focused
           ? "border-brand shadow-[var(--shadow-brand-sm)]"
           : ""

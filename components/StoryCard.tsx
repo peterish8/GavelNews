@@ -34,7 +34,6 @@ const CATEGORY_ART: Record<
   Category,
   {
     icon: typeof ScalesIcon;
-    /** Gradient using brand-family tokens — themes with light/dark */
     tile: string;
     badge: string;
     iconColor: string;
@@ -66,6 +65,14 @@ const CATEGORY_ART: Record<
   },
 };
 
+/** Semantic color for rail category labels (spec §25) */
+const CATEGORY_RAIL_COLOR: Record<Category, string> = {
+  "constitutional-law": "text-[#7c3aed] dark:text-[#a78bfa]",
+  "criminal-law": "text-danger",
+  "legal-current-affairs": "text-brand",
+  "bare-acts-update": "text-brand-2",
+};
+
 export function StoryCard({
   story,
   size = "default",
@@ -77,43 +84,43 @@ export function StoryCard({
     return (
       <Link
         href={`/story/${story.slug}`}
-        className="surface-hero card-interactive group flex h-full flex-col overflow-hidden p-6 md:p-8"
+        className="surface-hero card-interactive group relative flex h-full min-h-[350px] flex-col overflow-hidden p-6 md:p-8"
       >
         <div className="mb-5 flex flex-wrap items-center gap-2 text-xs">
-          <span className="rounded-md bg-brand px-2 py-0.5 font-sans text-[10px] font-semibold uppercase tracking-[0.12em] text-on-accent">
-            Lead · must cover
+          <span className="inline-flex h-[29px] items-center rounded-[8px] bg-brand px-3 font-sans text-[11px] font-bold tracking-[0.025em] text-on-accent">
+            LEAD · MUST COVER
           </span>
-          <span className="rounded-full border border-brand-border bg-brand-soft px-2.5 py-0.5 font-medium text-brand">
-            {meta.label}
+          <span className="inline-flex h-[29px] items-center rounded-[8px] border border-[rgba(205,198,220,0.42)] bg-[rgba(255,255,255,0.58)] px-[11px] font-medium text-ink-2">
+            {meta.shortLabel}
           </span>
-          {story.examTags.map((t) => (
+          {story.examTags.slice(0, 3).map((t) => (
             <span
               key={t}
-              className="rounded-full border border-border-app bg-elevated-muted px-2 py-0.5 text-ink-3"
+              className="inline-flex h-[29px] items-center rounded-[8px] border border-[rgba(205,198,220,0.42)] bg-[rgba(255,255,255,0.58)] px-[11px] text-ink-3"
             >
               {t}
             </span>
           ))}
         </div>
 
-        <h2 className="mb-4 font-serif text-2xl font-bold leading-[1.15] tracking-tight text-ink transition-colors group-hover:text-brand md:text-[1.85rem] lg:text-[2.15rem]">
+        <h2 className="featured-title mb-0 max-w-[760px] transition-colors group-hover:text-brand">
           {story.title}
         </h2>
 
         {story.summary && (
-          <p className="mb-6 max-w-2xl flex-1 text-[15px] leading-relaxed text-ink-2 md:line-clamp-3 md:text-base">
+          <p className="mt-[18px] max-w-[650px] flex-1 text-[15px] leading-[1.65] text-ink-2 md:line-clamp-4">
             {story.summary}
           </p>
         )}
 
-        <div className="mt-auto flex items-center justify-between gap-3 border-t border-border-app/80 pt-4 text-xs text-ink-3">
+        <div className="mt-auto flex items-center justify-between gap-3 pt-6 text-[12px] text-ink-3">
           <div className="flex items-center gap-2 font-sans">
             <span>{formatDate(story.editionDate)}</span>
             <span className="opacity-40">·</span>
             <span>{formatReadingTime(story.readingTimeMin)}</span>
           </div>
           <span className="inline-flex items-center gap-1.5 font-semibold text-brand">
-            Open brief
+            Read brief
             <ArrowIcon className="transition-transform duration-200 group-hover:translate-x-1" />
           </span>
         </div>
@@ -122,21 +129,25 @@ export function StoryCard({
   }
 
   if (size === "rail") {
+    const catColor = CATEGORY_RAIL_COLOR[story.category];
     return (
       <Link
         href={`/story/${story.slug}`}
-        className="group flex gap-3 rounded-xl border border-transparent p-3 transition-colors hover:border-border-app hover:bg-elevated-muted/70"
+        className="group -mx-2 grid grid-cols-[28px_1fr] gap-3 rounded-xl border border-transparent px-2 py-[15px] transition-colors duration-150 hover:bg-[rgba(19,15,42,0.025)] dark:hover:bg-[rgba(242,240,248,0.04)]"
       >
-        <span className="mt-0.5 w-6 shrink-0 font-sans text-[11px] font-semibold tabular-nums text-ink-3">
+        <span className="mt-0.5 w-7 shrink-0 text-[12px] font-semibold tabular-nums text-ink-2" style={{ fontWeight: 650 }}>
           {String(index ?? 0).padStart(2, "0")}
         </span>
-        <div className="min-w-0 flex-1">
-          <div className="mb-1 flex flex-wrap items-center gap-1.5 text-[10px] text-ink-3">
-            <span className="font-medium text-brand">{meta.shortLabel}</span>
+        <div className="min-w-0 border-b border-[rgba(205,198,220,0.28)] pb-3 group-last:border-b-0">
+          <div className="mb-0 flex flex-wrap items-center gap-1.5 text-[11px] text-ink-3">
+            <span className={`font-medium ${catColor}`}>{meta.shortLabel}</span>
             <span className="opacity-40">·</span>
             <span>{formatReadingTime(story.readingTimeMin)}</span>
           </div>
-          <h3 className="font-ui text-[14px] font-semibold leading-snug tracking-tight text-ink transition-colors group-hover:text-brand">
+          <h3
+            className="mt-[5px] line-clamp-3 text-[13.5px] leading-[1.45] text-ink transition-colors group-hover:text-brand"
+            style={{ fontWeight: 650 }}
+          >
             {story.title}
           </h3>
         </div>
@@ -155,8 +166,7 @@ export function StoryCard({
         href={`/story/${story.slug}`}
         className="surface-muted card-interactive group block overflow-hidden"
       >
-        {/* ~16:10 photo tile (or icon/gradient fallback if no photo path) */}
-        <div className="relative aspect-[16/10] w-full overflow-hidden">
+        <div className="relative aspect-video w-full overflow-hidden">
           {photoSrc ? (
             <>
               <Image
@@ -166,7 +176,6 @@ export function StoryCard({
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
               />
-              {/* Bottom scrim — keeps bottom-right read-time legible */}
               <div
                 className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/55 via-black/20 to-transparent"
                 aria-hidden
@@ -207,9 +216,17 @@ export function StoryCard({
           )}
         </div>
         <div className="p-4 md:p-5">
-          <h3 className="line-clamp-2 font-ui text-[15px] font-semibold leading-snug tracking-tight text-ink-2 transition-colors group-hover:text-brand">
+          <h3
+            className="line-clamp-2 text-[15px] leading-snug tracking-tight text-ink transition-colors group-hover:text-brand"
+            style={{ fontWeight: 650 }}
+          >
             {story.title}
           </h3>
+          {story.summary && (
+            <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-ink-3">
+              {story.summary}
+            </p>
+          )}
         </div>
       </Link>
     );
@@ -246,7 +263,7 @@ export function StoryCard({
       </div>
 
       <h3
-        className={`mb-2 font-ui font-semibold tracking-tight text-ink transition-colors group-hover:text-brand ${
+        className={`mb-2 font-semibold tracking-tight text-ink transition-colors group-hover:text-brand ${
           isCompact ? "text-base" : "text-lg md:text-xl"
         }`}
       >
@@ -269,5 +286,3 @@ export function StoryCard({
     </Link>
   );
 }
-
-
