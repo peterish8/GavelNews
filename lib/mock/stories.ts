@@ -576,4 +576,206 @@ export const MOCK_STORIES: PublishedStory[] = [
     publishedAt: "2026-07-20T07:30:00Z",
     status: "published",
   },
+
+  // ── Schema v2 example (Section 294(b) obscenity — public-domain SC theme) ──
+  {
+    id: "s-v2-001",
+    editionDate: "2026-07-24",
+    slug: "section-294b-obscenity-test-sc",
+    title: "Section 294(b) and the Living Community Standard on Obscenity",
+    category: "criminal-law",
+    examTags: ["UG", "PG"],
+    readingTimeMin: 5,
+    summary:
+      "Supreme Court revisits the obscenity test under Section 294(b) IPC / BNS successor — community standards, not Victorian morals.",
+    // Dual-read: leave classic v1 body lightly filled so feed/search still work
+    whatHappened:
+      "A Supreme Court bench clarified how Section 294(b) IPC (and its BNS successor) should be read when a complaint alleges that public conduct or material is 'obscene'. The Court stressed a contemporary community standard rather than a Victorian moral filter.",
+    background:
+      "Obscenity jurisprudence in India runs from Ranjit Udeshi through Aveek Sarkar and beyond. Section 294 deals with obscene acts and songs in public; the BNS recodification keeps the offence but renumbers the provision.",
+    whatCourtHeld:
+      "The Court held that the test is whether the material tends to deprave and corrupt those whose minds are open to such influences, judged by contemporary community standards — not the hypersensitivity of a complainant alone.",
+    whyItMatters:
+      "Obscenity and free speech (Arts. 19(1)(a)/19(2)) are a high-frequency CLAT pair. Knowing the governing test and the IPC→BNS map is exam-critical.",
+    keyPoints: [
+      { text: "Community standard of the day governs obscenity, not Victorian morals." },
+      { text: "Section 294(b) IPC maps to the corresponding BNS public-obscenity clause." },
+      { text: "Art. 19(2) decency/morality is the constitutional hinge." },
+    ],
+    sources: [],
+    sourcesV2: {
+      primary: "Supreme Court of India judgment (public domain report)",
+      secondary: [
+        "Indian Penal Code Section 294(b)",
+        "Bharatiya Nyaya Sanhita (corresponding public-obscenity provision)",
+      ],
+    },
+    pyqKeyword: "obscenity Section 294 free speech",
+    decision: "must_cover",
+    publishedAt: "2026-07-24T07:30:00Z",
+    status: "published",
+    schemaVersion: 2,
+    hero: {
+      title: "Section 294(b) and the Living Community Standard on Obscenity",
+      subtitle: "Community standards, not Victorian morals",
+      category: "criminal-law",
+      subject: "Obscenity / Free speech",
+      exam: "Both",
+      readTime: "5 min",
+      difficulty: "Medium",
+      importance: "4",
+      date: "2026-07-24",
+      tags: ["obscenity", "Section 294", "Art. 19", "BNS"],
+    },
+    story: {
+      heading: "What Happened?",
+      summary:
+        "The Supreme Court revisited how Section 294(b) IPC (and its BNS successor) should be applied when someone says public conduct or material is 'obscene'. The short version: judges must use today's community standard, not a 19th-century moral filter, and a single hypersensitive complainant does not set the bar.",
+      takeaway:
+        "Obscenity under 294(b) is judged by contemporary community standards — not Victorian morals or one person's outrage.",
+    },
+    lawDecode: {
+      heading: "Decode the Law",
+      sections: [
+        {
+          provision: "Section 294(b) IPC",
+          explanation:
+            "Criminalises singing, reciting, or uttering any obscene song, ballad, or words in or near a public place, to the annoyance of others.",
+        },
+        {
+          provision: "Article 19(1)(a) / 19(2)",
+          explanation:
+            "Speech is free, but reasonable restrictions on grounds including decency and morality can sustain obscenity offences when the legal test is met.",
+        },
+      ],
+      doctrines: [
+        {
+          name: "Community standards test",
+          explanation:
+            "Material is judged by contemporary standards of the community whose morals are said to be affected — not by the most sensitive person.",
+        },
+      ],
+      legalTests: [
+        {
+          name: "Hicklin / community standard (Indian adaptation)",
+          rule: "Whether the tendency of the matter is to deprave and corrupt those whose minds are open to such immoral influences, read through a modern community lens.",
+        },
+      ],
+      importantCases: [
+        {
+          case: "Ranjit D. Udeshi v. State of Maharashtra (1965)",
+          principle: "Classic Indian engagement with the Hicklin test on obscenity.",
+        },
+        {
+          case: "Aveek Sarkar v. State of West Bengal (2014)",
+          principle: "Community standards and context matter; isolated prurience is not enough.",
+        },
+      ],
+      constitutionalLink: [
+        {
+          article: "Article 19(2) — decency and morality",
+          why: "The restriction clause that lets the State sustain obscenity offences against free-speech challenges.",
+        },
+      ],
+      staticConnections: [
+        { item: "Art. 19 free speech vs reasonable restrictions" },
+        { item: "IPC → BNS renumbering of public-obscenity offences" },
+      ],
+      bnsMapping: {
+        ipc: "Section 294(b) IPC",
+        bns: "Corresponding BNS public-obscenity provision",
+      },
+      dontConfuse: [
+        {
+          confusion: "Section 292 (sale of obscene books/objects)",
+          reality:
+            "292 targets distribution/sale of obscene material; 294(b) targets obscene utterance/song in or near a public place causing annoyance.",
+        },
+      ],
+      memoryTrick:
+        "294(b) = Public song/words + annoyance. Judge by TODAY's community, not Queen Victoria.",
+    },
+    examRadar: {
+      heading: "Exam Radar",
+      whyExam:
+        "Obscenity + Art. 19 is a staple free-speech pair on CLAT UG/PG; the IPC/BNS map and the community-standard test are both tested.",
+      likelyQuestions: [
+        "Distinguish Section 292 and Section 294(b)",
+        "State the community standards test for obscenity",
+        "Link Art. 19(2) decency/morality to obscenity offences",
+      ],
+      examinerFocus: [
+        "Community standard vs Victorian morals",
+        "Public place + annoyance elements of 294(b)",
+        "IPC → BNS continuity",
+      ],
+      pyqConnection:
+        "Free-speech and reasonable-restriction fact patterns often pair Art. 19 with obscenity or public-order offences.",
+      probability: 4,
+      difficulty: { UG: "Medium", PG: "Medium", Judiciary: "Hard" },
+    },
+    challenge: {
+      heading: "Challenge Yourself",
+      mcqs: [
+        {
+          question:
+            "Under the contemporary Indian approach, obscenity is primarily judged by:",
+          type: "conceptual",
+          options: {
+            A: "The most sensitive complainant's reaction alone",
+            B: "Contemporary community standards",
+            C: "Victorian English morals as of 1860",
+            D: "Whether the material is political",
+          },
+          answer: "B",
+          explanation:
+            "Indian jurisprudence has moved toward a contemporary community-standards lens rather than a purely Victorian or hypersensitive baseline.",
+        },
+        {
+          question: "Section 294(b) IPC primarily targets:",
+          type: "factual",
+          options: {
+            A: "Sale of obscene books in private",
+            B: "Obscene song/words in or near a public place to others' annoyance",
+            C: "Online defamation only",
+            D: "Sedition",
+          },
+          answer: "B",
+          explanation:
+            "294(b) is about obscene utterance/song in or near a public place causing annoyance — distinct from 292's sale/distribution focus.",
+        },
+        {
+          question:
+            "Which constitutional clause most directly sustains obscenity offences against free-speech challenges?",
+          type: "application",
+          options: {
+            A: "Article 14 equality",
+            B: "Article 21 privacy only",
+            C: "Article 19(2) decency and morality",
+            D: "Article 32 alone",
+          },
+          answer: "C",
+          explanation:
+            "Art. 19(2) lists decency and morality among the grounds for reasonable restrictions on Art. 19(1)(a).",
+        },
+      ],
+    },
+    oneLineRevision: {
+      heading: "One Line Revision",
+      line: "294(b): public obscene words/song + annoyance — judged by today's community standard, sustained via Art. 19(2) decency/morality.",
+    },
+    visualMemoryCard: `SECTION 294(b) OBSCENITY
+           │
+    Public song / words
+           │
+    + Annoyance to others
+           │
+    Test: community standard (today)
+           │
+    NOT Victorian morals alone
+           │
+    Art. 19(1)(a) ←→ Art. 19(2) decency
+           │
+    IPC 294(b) → BNS (public obscenity)`,
+  },
 ];
