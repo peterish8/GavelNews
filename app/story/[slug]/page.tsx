@@ -89,7 +89,7 @@ export default async function StoryPage({ params }: PageProps) {
             {meta.label}
           </span>
           {story.decision === "must_cover" && (
-            <span className="rounded-full border border-brand bg-brand px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-on-accent">
+            <span className="rounded-full border border-brand bg-brand px-2.5 py-0.5 font-sans text-[10px] font-semibold uppercase tracking-[0.1em] text-on-accent">
               Must cover
             </span>
           )}

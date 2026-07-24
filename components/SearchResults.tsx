@@ -136,12 +136,12 @@ export function SearchResults({
                         {(isFav || isDone) && (
                           <span className="mt-0.5 flex shrink-0 gap-1">
                             {isFav && (
-                              <span className="rounded-full bg-accent-soft px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase text-accent">
+                              <span className="rounded-full bg-accent-soft px-1.5 py-0.5 font-sans text-[9px] font-semibold uppercase text-accent">
                                 Saved
                               </span>
                             )}
                             {isDone && (
-                              <span className="rounded-full bg-success-soft px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase text-success">
+                              <span className="rounded-full bg-success-soft px-1.5 py-0.5 font-sans text-[9px] font-semibold uppercase text-success">
                                 Done
                               </span>
                             )}

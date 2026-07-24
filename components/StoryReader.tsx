@@ -542,7 +542,7 @@ function NewsReaderPill({
             type="button"
             data-no-tts
             onClick={onLang}
-            className="shrink-0 rounded-full px-1.5 py-1 font-mono text-[10px] font-semibold tracking-wide text-brand hover:bg-brand-soft sm:px-2 sm:py-0.5"
+            className="shrink-0 rounded-full px-1.5 py-1 font-sans text-[10px] font-semibold tracking-wide text-brand hover:bg-brand-soft sm:px-2 sm:py-0.5"
             title="Language"
           >
             {LANGS[langIdx].label}

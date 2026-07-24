@@ -191,7 +191,7 @@ export function NavSearch({
     >
       <SearchIcon />
       <span className="hidden text-[12px] font-medium sm:inline">Search</span>
-      <kbd className="hidden rounded border border-border-app bg-elevated-muted px-1.5 py-0.5 font-mono text-[10px] text-ink-3 md:inline">
+      <kbd className="hidden rounded border border-border-app bg-elevated-muted px-1.5 py-0.5 font-sans text-[10px] text-ink-3 md:inline">
         ⌘K
       </kbd>
     </button>
@@ -230,14 +230,14 @@ export function NavSearch({
                   autoComplete="off"
                 />
                 {loading && (
-                  <span className="shrink-0 font-mono text-[10px] uppercase tracking-wider text-ink-3">
+                  <span className="shrink-0 font-sans text-[10px] uppercase tracking-wider text-ink-3">
                     …
                   </span>
                 )}
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="shrink-0 rounded-md px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-ink-3 hover:bg-elevated-muted hover:text-ink"
+                  className="shrink-0 rounded-md px-1.5 py-0.5 font-sans text-[10px] font-semibold uppercase tracking-wide text-ink-3 hover:bg-elevated-muted hover:text-ink"
                 >
                   Esc
                 </button>
@@ -246,7 +246,7 @@ export function NavSearch({
               <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-2">
                 {!q.trim() && recent.length > 0 && (
                   <div className="mb-2 px-1.5">
-                    <p className="mb-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-3">
+                    <p className="mb-1.5 font-sans text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-3">
                       Recent
                     </p>
                     <div className="flex flex-wrap gap-1.5">
@@ -298,7 +298,7 @@ export function NavSearch({
                                 <span className="mt-0.5 flex shrink-0 items-center gap-1">
                                   {isFav && (
                                     <span
-                                      className="rounded-full bg-accent-soft px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wide text-accent"
+                                      className="rounded-full bg-accent-soft px-1.5 py-0.5 font-sans text-[9px] font-semibold uppercase tracking-wide text-accent"
                                       title="Saved"
                                     >
                                       Saved
@@ -306,7 +306,7 @@ export function NavSearch({
                                   )}
                                   {isDone && (
                                     <span
-                                      className="rounded-full bg-success-soft px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wide text-success"
+                                      className="rounded-full bg-success-soft px-1.5 py-0.5 font-sans text-[9px] font-semibold uppercase tracking-wide text-success"
                                       title="Completed"
                                     >
                                       Done
@@ -348,7 +348,7 @@ export function NavSearch({
               </div>
 
               <div className="flex shrink-0 items-center justify-between gap-2 border-t border-border-app px-3 py-2">
-                <p className="font-mono text-[10px] text-ink-3">
+                <p className="font-sans text-[10px] text-ink-3">
                   {q.trim()
                     ? loading
                       ? "Searching…"

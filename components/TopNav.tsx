@@ -179,7 +179,7 @@ export default function TopNav({
       {(editionDate || typeof editionIndex === "number") && (
         <div className="border-t border-border-app/60 bg-elevated-muted/50">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 py-1.5 sm:px-5">
-            <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-3">
+            <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 font-sans text-[10px] uppercase tracking-[0.12em] text-ink-3">
               {typeof editionIndex === "number" && editionIndex > 0 && (
                 <span className="font-semibold text-brand">Day {editionIndex}</span>
               )}
@@ -254,7 +254,7 @@ export default function TopNav({
                       >
                         {item.label}
                         {active && (
-                          <span className="font-mono text-[10px] uppercase tracking-wider text-brand">
+                          <span className="font-sans text-[10px] uppercase tracking-wider text-brand">
                             Here
                           </span>
                         )}

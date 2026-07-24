@@ -112,7 +112,7 @@ function PYQGroupCard({
   return (
     <div className="rounded-xl border border-border-app/70 bg-elevated/70">
       <div className="flex items-center justify-between gap-2 px-3.5 pt-3.5">
-        <span className="rounded-full bg-elevated-muted px-2 py-0.5 font-mono text-[10px] font-semibold text-ink-3">
+        <span className="rounded-full bg-elevated-muted px-2 py-0.5 font-sans text-[10px] font-semibold text-ink-3">
           {first.exam} {first.year}
         </span>
         {group.questions.length > 1 && (
@@ -233,7 +233,7 @@ function PYQQuestionModal({
         </button>
 
         <div className="mb-3 flex items-center gap-2 pr-10">
-          <span className="rounded-full bg-elevated-muted px-2 py-0.5 font-mono text-[10px] font-semibold text-ink-3">
+          <span className="rounded-full bg-elevated-muted px-2 py-0.5 font-sans text-[10px] font-semibold text-ink-3">
             {question.exam} {question.year}
           </span>
         </div>
@@ -264,7 +264,7 @@ function PYQQuestionModal({
                       : "border-border-app text-ink-2")
                   }
                 >
-                  <span className="shrink-0 font-mono text-[11px] font-semibold text-ink-3">
+                  <span className="shrink-0 font-sans text-[11px] font-semibold text-ink-3">
                     {label}
                   </span>
                   <span className="min-w-0 flex-1">

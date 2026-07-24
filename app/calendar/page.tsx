@@ -15,7 +15,7 @@ export default async function CalendarPage() {
       <CalendarBrowser archive={archive} />
 
       <div className="mb-5 flex items-end gap-3">
-        <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-3">
+        <h2 className="font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-3">
           Browse as list
         </h2>
         <div className="mb-1 h-px flex-1 bg-border-app/80" aria-hidden />
@@ -25,7 +25,7 @@ export default async function CalendarPage() {
         {archive.map((m) => (
           <section key={m.month}>
             <div className="mb-5 flex items-end gap-3">
-              <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-3">
+              <h2 className="font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-3">
                 {m.label}
               </h2>
               <div className="mb-1 h-px flex-1 bg-border-app/80" aria-hidden />
@@ -41,7 +41,7 @@ export default async function CalendarPage() {
                       <div className="font-ui text-2xl font-bold leading-none text-ink transition-colors group-hover:text-brand">
                         {new Date(`${ed.date}T00:00:00Z`).getUTCDate()}
                       </div>
-                      <div className="mt-1 font-mono text-[9px] uppercase tracking-[0.14em] text-ink-3">
+                      <div className="mt-1 font-sans text-[9px] uppercase tracking-[0.14em] text-ink-3">
                         {new Date(`${ed.date}T00:00:00Z`).toLocaleDateString("en-US", {
                           month: "short",
                           timeZone: "UTC",
@@ -50,7 +50,7 @@ export default async function CalendarPage() {
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <div className="mb-2 flex flex-wrap items-center gap-2 font-mono text-[11px] text-ink-3">
+                      <div className="mb-2 flex flex-wrap items-center gap-2 font-sans text-[11px] text-ink-3">
                         <span>{formatDate(ed.date)}</span>
                         <span className="opacity-40">·</span>
                         <span>

@@ -223,7 +223,7 @@ function SidebarLink({
         }
         className="group flex items-center gap-2.5 px-2 py-2.5 text-ink transition-colors"
       >
-        <span className="flex size-7 shrink-0 items-center justify-center font-mono text-[13px] font-semibold tabular-nums text-ink">
+        <span className="flex size-7 shrink-0 items-center justify-center font-sans text-[13px] font-semibold tabular-nums text-ink">
           {index}
         </span>
         <span className="min-w-0 flex-1">

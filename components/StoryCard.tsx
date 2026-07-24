@@ -24,7 +24,7 @@ export function StoryCard({
         className="surface-hero card-interactive group flex h-full flex-col overflow-hidden p-6 md:p-8"
       >
         <div className="mb-5 flex flex-wrap items-center gap-2 text-xs">
-          <span className="rounded-md bg-brand px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-on-accent">
+          <span className="rounded-md bg-brand px-2 py-0.5 font-sans text-[10px] font-semibold uppercase tracking-[0.12em] text-on-accent">
             Lead · must cover
           </span>
           <span className="rounded-full border border-brand-border bg-brand-soft px-2.5 py-0.5 font-medium text-brand">
@@ -51,7 +51,7 @@ export function StoryCard({
         )}
 
         <div className="mt-auto flex items-center justify-between gap-3 border-t border-border-app/80 pt-4 text-xs text-ink-3">
-          <div className="flex items-center gap-2 font-mono">
+          <div className="flex items-center gap-2 font-sans">
             <span>{formatDate(story.editionDate)}</span>
             <span className="opacity-40">·</span>
             <span>{formatReadingTime(story.readingTimeMin)}</span>
@@ -71,7 +71,7 @@ export function StoryCard({
         href={`/story/${story.slug}`}
         className="group flex gap-3 rounded-xl border border-transparent p-3 transition-colors hover:border-border-app hover:bg-elevated-muted/70"
       >
-        <span className="mt-0.5 w-6 shrink-0 font-mono text-[11px] font-semibold tabular-nums text-ink-3">
+        <span className="mt-0.5 w-6 shrink-0 font-sans text-[11px] font-semibold tabular-nums text-ink-3">
           {String(index ?? 0).padStart(2, "0")}
         </span>
         <div className="min-w-0 flex-1">
@@ -95,7 +95,7 @@ export function StoryCard({
         className="surface-muted card-interactive group block p-4 md:p-5"
       >
         <div className="mb-2 flex flex-wrap items-center gap-2 text-[11px] text-ink-3">
-          <span className="font-mono text-[10px] uppercase tracking-[0.12em]">
+          <span className="font-sans text-[10px] uppercase tracking-[0.12em]">
             Also today
           </span>
           <span className="opacity-40">·</span>
@@ -119,7 +119,7 @@ export function StoryCard({
     >
       <div className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
         {typeof index === "number" && (
-          <span className="font-mono text-[10px] font-semibold tabular-nums text-ink-3">
+          <span className="font-sans text-[10px] font-semibold tabular-nums text-ink-3">
             {String(index).padStart(2, "0")}
           </span>
         )}
@@ -155,7 +155,7 @@ export function StoryCard({
       )}
 
       <div className="flex items-center justify-between text-xs text-ink-3">
-        <span className="font-mono">{formatDate(story.editionDate)}</span>
+        <span className="font-sans">{formatDate(story.editionDate)}</span>
         <span className="inline-flex items-center gap-1 font-medium text-brand transition-transform duration-200 group-hover:translate-x-0.5">
           Read
           <ArrowIcon />

@@ -168,7 +168,7 @@ export function CalendarBrowser({ archive }: CalendarBrowserProps) {
             {WEEKDAYS.map((d) => (
               <div
                 key={d}
-                className="text-center font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-ink-3"
+                className="text-center font-sans text-[10px] font-semibold uppercase tracking-[0.12em] text-ink-3"
               >
                 {d}
               </div>
@@ -273,7 +273,7 @@ export function CalendarBrowser({ archive }: CalendarBrowserProps) {
               >
                 {/* Compact header */}
                 <div className="mb-2.5 flex shrink-0 flex-wrap items-center justify-between gap-2">
-                  <p className="font-mono text-[11px] text-ink-3">
+                  <p className="font-sans text-[11px] text-ink-3">
                     <span className="font-medium text-ink-2">
                       {formatDate(selectedDate)}
                     </span>
@@ -320,7 +320,7 @@ export function CalendarBrowser({ archive }: CalendarBrowserProps) {
                                   {story.summary}
                                 </p>
                               )}
-                              <p className="mt-1 font-mono text-[11px] text-ink-3">
+                              <p className="mt-1 font-sans text-[11px] text-ink-3">
                                 {formatReadingTime(story.readingTimeMin)}
                               </p>
                             </div>

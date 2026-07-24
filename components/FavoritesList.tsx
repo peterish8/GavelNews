@@ -53,7 +53,7 @@ export function FavoritesList() {
           className="surface-standard flex items-center justify-between gap-3 px-4 py-3"
         >
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-wider text-ink-3">
+            <p className="font-sans text-[10px] uppercase tracking-wider text-ink-3">
               Story id
             </p>
             <p className="font-medium text-ink">{id}</p>

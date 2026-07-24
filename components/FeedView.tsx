@@ -149,13 +149,13 @@ export function FeedView({
       {/* Filters */}
       <section className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="mb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-3">
+          <h2 className="mb-2 font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-3">
             Syllabus filter
           </h2>
           <CategoryFilter selected={selected} onToggle={toggle} />
         </div>
         {selected.length > 0 && (
-          <p className="font-mono text-[11px] text-ink-3 sm:text-right">
+          <p className="font-sans text-[11px] text-ink-3 sm:text-right">
             {filtered.length}/{stories.length} matching
           </p>
         )}
@@ -178,12 +178,12 @@ export function FeedView({
               <aside className="flex flex-col lg:col-span-4">
                 <div className="surface-standard flex h-full flex-col p-2 sm:p-3">
                   <div className="flex items-center justify-between px-3 pb-2 pt-2">
-                    <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-3">
+                    <h2 className="font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-3">
                       {mustCoverRest.length > 0
                         ? "Also must cover"
                         : "Start here"}
                     </h2>
-                    <span className="font-mono text-[10px] text-ink-3">
+                    <span className="font-sans text-[10px] text-ink-3">
                       {formatReadingTime(lead.readingTimeMin)} lead
                     </span>
                   </div>
@@ -241,7 +241,7 @@ export function FeedView({
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <div className="mb-4 flex items-end gap-3">
-      <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-3">
+      <h2 className="font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-3">
         {children}
       </h2>
       <div className="mb-1 h-px flex-1 bg-border-app/80" aria-hidden />
@@ -252,7 +252,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="surface-muted px-3 py-3 text-center">
-      <dt className="font-mono text-[9px] font-semibold uppercase tracking-[0.16em] text-ink-3">
+      <dt className="font-sans text-[9px] font-semibold uppercase tracking-[0.16em] text-ink-3">
         {label}
       </dt>
       <dd className="mt-1 font-ui text-xl font-bold tracking-tight text-ink md:text-2xl">
