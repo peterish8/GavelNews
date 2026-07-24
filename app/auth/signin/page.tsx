@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser, safeNext } from "@/lib/auth";
-import { signInWithGoogle } from "@/lib/auth-actions";
+import { signInWithGoogle, signInDevMode } from "@/lib/auth-actions";
 import { AuthBenefits } from "@/components/AuthBenefits";
 
 interface PageProps {
@@ -24,6 +24,10 @@ function errorMessage(code?: string): string | null {
       return "Google sign-in was cancelled or denied. You can try again.";
     case "oauth_callback":
       return "Sign-in could not be completed. Please try again.";
+    case "dev_mode_unavailable":
+      return "Dev bypass only works when the app is running locally.";
+    case "dev_mode_failed":
+      return "Dev bypass sign-in failed. Check the Supabase service-role key in .env.local.";
     default:
       return code ? "Something went wrong during sign-in. Please try again." : null;
   }
@@ -104,6 +108,26 @@ export default async function SignInPage({ searchParams }: PageProps) {
             no password stored here. After auth you return to where you were
             headed.
           </p>
+
+          {process.env.NODE_ENV !== "production" && (
+            <>
+              <div className="my-4 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-ink-3">
+                <span className="h-px flex-1 bg-border-app" />
+                Local dev only
+                <span className="h-px flex-1 bg-border-app" />
+              </div>
+              <form action={signInDevMode}>
+                <input type="hidden" name="next" value={next} />
+                <button
+                  type="submit"
+                  className="btn-press inline-flex w-full items-center justify-center gap-2 rounded-sm border border-dashed border-brand-border bg-brand-soft/50 px-4 py-3 text-sm font-semibold text-brand hover:bg-brand-soft"
+                >
+                  <DevIcon />
+                  Dev bypass — skip Google
+                </button>
+              </form>
+            </>
+          )}
         </div>
 
         {/* Benefits live ONLY here — not in the sidebar */}
@@ -121,6 +145,20 @@ export default async function SignInPage({ searchParams }: PageProps) {
         </Link>
       </div>
     </div>
+  );
+}
+
+function DevIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M8 9l-4 3 4 3M16 9l4 3-4 3M13 6l-2 12"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
 
