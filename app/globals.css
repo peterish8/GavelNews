@@ -12,7 +12,7 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 /* Font files only — family assignment lives in system.css */
-@import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600&family=Source+Sans+3:ital,wght@0,300..700;1,300..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:ital,opsz,wght@0,14..32,300..700;1,14..32,300..700&family=Source+Code+Pro:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap");
 
 /* Pure Tailwind v4 — no tailwindcss-animate / no JS config.
    Reference hybrid ships animate for shadcn accordion; we don't use those yet. */
@@ -64,10 +64,11 @@
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  /* Radius scale — set in system.css; bridge exposes Tailwind rounded-* */
+  --radius-sm: 8px;
+  --radius-md: 11px;
+  --radius-lg: 15px;
+  --radius-xl: 18px;
 
   /* Fonts — families named only in system.css (--type-*); bridge maps utilities */
   --font-sans: var(--type-ui);
@@ -126,8 +127,8 @@ html {
 
 body {
   font-family: var(--font-ui, var(--font-sans));
-  background: var(--bg, #fbf8f3);
-  color: var(--ink, #1a1410);
+  background: var(--bg, #f4f3f8);
+  color: var(--ink, #130f2a);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   transition: background-color 0.3s ease, color 0.3s ease;
@@ -135,53 +136,66 @@ body {
   overflow: hidden;
 }
 
-/* Focus rings */
+/* Focus rings — soft brand ring (spec §32) */
 :focus-visible {
-  outline: 2px solid var(--ring);
+  outline: 3px solid rgba(220, 38, 38, 0.18);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* Selection — seal red on parchment */
+/* Selection — brand red on soft canvas */
 ::selection {
   background: color-mix(in srgb, var(--brand) 18%, transparent);
   color: var(--brand-hover);
 }
 
-/* ── Ambient sunrise orb — position:fixed, never scrolls ─────────────
-   Light mode only in theory; currently hidden in both themes (dark orb
-   lives on :root.dark body). Kept so layout can mount the element. */
+/* ── Ambient canvas orbs — fixed, non-interactive (spec §3) ───────── */
 .ambient-sunrise {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 65vh;
+  inset: 0;
   pointer-events: none;
   z-index: 0;
-
   background:
-    radial-gradient(ellipse 60% 50% at 50% 108%, rgba(138, 90, 10, 0.08) 0%, rgba(161, 29, 46, 0.05) 45%, transparent 64%),
-    radial-gradient(ellipse 38% 28% at 12% 112%, rgba(138, 90, 10, 0.04) 0%, transparent 58%),
-    radial-gradient(ellipse 44% 34% at 88% 112%, rgba(161, 29, 46, 0.06) 0%, transparent 58%);
+    radial-gradient(
+      circle at 75% 12%,
+      rgba(99, 102, 241, 0.05),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 90% 32%,
+      rgba(220, 38, 38, 0.04),
+      transparent 26%
+    );
 }
 
-/* Light mode: no ambient horizon glow — warm paper only */
-:root:not(.dark) .ambient-sunrise {
-  display: none;
+:root.dark .ambient-sunrise {
+  background:
+    radial-gradient(
+      circle at 75% 12%,
+      rgba(99, 102, 241, 0.07),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 90% 32%,
+      rgba(220, 38, 38, 0.05),
+      transparent 26%
+    );
 }
 
-/* Hidden in dark mode — dark mode orb lives on :root.dark body */
-.dark .ambient-sunrise {
-  display: none;
-}
-
-/* ── Light mode: whitish warm parchment canvas (nav keeps richer --nav-bg) ── */
+/* ── Light mode: soft lavender-grey canvas (spec §3) ── */
 :root:not(.dark) body {
-  background-color: var(--bg, #fbf8f3);
+  background-color: var(--bg, #f4f3f8);
   background-image:
-    radial-gradient(ellipse 90% 55% at 50% -8%, rgba(161, 29, 46, 0.03), transparent 58%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, transparent 48%);
+    radial-gradient(
+      circle at 75% 12%,
+      rgba(99, 102, 241, 0.05),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 90% 32%,
+      rgba(220, 38, 38, 0.04),
+      transparent 26%
+    );
   background-attachment: fixed;
 }
 
@@ -193,139 +207,202 @@ body {
   overflow: hidden;
 }
 
-/* ── Dark mode body — deep ink with warm seal glow ── */
+/* ── Dark mode body — cool ink with soft ambient ── */
 :root.dark body {
-  background:
-    radial-gradient(ellipse 70% 42% at 50% 108%, rgba(161, 29, 46, 0.08) 0%, transparent 58%),
-    radial-gradient(ellipse 50% 28% at 50% 0%, rgba(138, 90, 10, 0.05) 0%, transparent 62%),
-    radial-gradient(ellipse 40% 24% at 88% 100%, rgba(161, 29, 46, 0.04) 0%, transparent 55%),
-    #0c0a09;
+  background-color: var(--bg, #12101c);
+  background-image:
+    radial-gradient(
+      circle at 75% 12%,
+      rgba(99, 102, 241, 0.07),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 90% 32%,
+      rgba(220, 38, 38, 0.05),
+      transparent 26%
+    );
   background-attachment: fixed;
 }
 
-/* ── Glass utility classes ────────────────────────────────────────── */
+/* ── Glass utility classes (restrained glass, spec §4) ────────────── */
 @layer components {
 
-/* Level 1 — standard cards, stat panels */
+/* Level 1 — primary glass: cards, stat panels */
 .glass-card {
+  background: var(--card);
   background: var(--glass-1);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow), var(--glass-inner-glow);
-  border-radius: var(--card-radius, 14px);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius-lg, 15px);
 }
 
-/* Level 2 — elevated panels, modals, popovers */
+/* Level 2 — secondary glass: panels, modals */
 .glass-panel {
+  background: var(--card);
   background: var(--glass-2);
   backdrop-filter: var(--glass-blur-sm);
   -webkit-backdrop-filter: var(--glass-blur-sm);
   border: 1px solid var(--glass-border-subtle);
-  box-shadow: var(--glass-shadow-lg), var(--glass-inner-glow);
-  border-radius: var(--card-radius, 14px);
+  box-shadow: var(--shadow-2);
+  border-radius: var(--radius-lg, 15px);
 }
 
-/* Level 3 — header, sticky bars (most opaque) */
+/* Level 3 — header / sticky bars */
 .glass-surface {
+  background: var(--card);
   background: var(--glass-3);
-  backdrop-filter: blur(24px) saturate(1.8);
-  -webkit-backdrop-filter: blur(24px) saturate(1.8);
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
   border-bottom: 1px solid var(--glass-border-subtle);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.8), var(--glass-shadow);
+  box-shadow: var(--shadow-1);
 }
 
-/* Ghost / outline buttons & inputs — subtle glass */
+/* Search / inputs */
 .glass-input {
+  background: var(--card);
   background: var(--glass-input);
   border: 1px solid var(--glass-border-subtle);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 6px 18px rgba(19, 15, 42, 0.04);
 }
 
-/* Full-height chrome (sidebar) — uses dedicated sidebar glass token */
+/* Sidebar chrome — stronger glass */
 .glass-sidebar {
+  background: var(--card);
   background: var(--glass-sidebar);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border-color: var(--glass-border-subtle);
-  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(20px) saturate(120%);
+  -webkit-backdrop-filter: blur(20px) saturate(120%);
+  border: 1px solid rgba(205, 198, 220, 0.4);
+  box-shadow: 0 12px 38px rgba(19, 15, 42, 0.07);
 }
 
-/* ── Hierarchy surfaces (deliberate 3-tier scale) ──────────────────
-   hero     → lead story, primary conversion gate
-   standard → must_cover cards, signed-in sidebar
-   muted    → maybe stories, empty states, secondary chrome
+/* ── Hierarchy surfaces ─────────────────────────────────────────────
+   hero     → lead / featured story
+   standard → must-cover panels
+   muted    → story grid cards, secondary chrome
 */
 .surface-hero {
   position: relative;
-  background: var(--glass-2);
-  backdrop-filter: var(--glass-blur-sm);
-  -webkit-backdrop-filter: var(--glass-blur-sm);
-  border: 1px solid var(--brand-border);
-  box-shadow: var(--glass-shadow-lg), var(--glass-inner-glow);
-  border-radius: calc(var(--card-radius, 14px) + 4px);
-}
-
-.surface-hero::before {
-  content: "";
-  position: absolute;
-  inset-inline: 0;
-  top: 0;
-  height: 3px;
-  border-radius: inherit;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  background: var(--brand-blend);
-  pointer-events: none;
+  background: var(--card);
+  background:
+    linear-gradient(
+      110deg,
+      rgba(255, 255, 255, 0.86) 0%,
+      rgba(244, 248, 255, 0.78) 62%,
+      rgba(239, 246, 255, 0.68) 100%
+    );
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  border: 1px solid rgba(200, 212, 232, 0.72);
+  box-shadow: 0 12px 34px rgba(19, 15, 42, 0.06);
+  border-radius: 17px;
 }
 
 .surface-standard {
-  background: var(--glass-1);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow), var(--glass-inner-glow);
-  border-radius: var(--card-radius, 14px);
+  background: var(--card);
+  background: rgba(255, 255, 255, 0.66);
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  border: 1px solid rgba(205, 198, 220, 0.42);
+  box-shadow: 0 10px 28px rgba(19, 15, 42, 0.05);
+  border-radius: 17px;
 }
 
 .surface-muted {
-  background: color-mix(in srgb, var(--app-elevated) 55%, transparent);
-  border: 1px solid color-mix(in srgb, var(--app-border) 70%, transparent);
-  border-radius: calc(var(--card-radius, 14px) - 2px);
-  box-shadow: none;
+  background: var(--card);
+  background: rgba(255, 255, 255, 0.66);
+  border: 1px solid rgba(205, 198, 220, 0.4);
+  border-radius: 15px;
+  box-shadow: 0 8px 24px rgba(19, 15, 42, 0.045);
+  overflow: hidden;
 }
 
 .surface-gate {
   position: relative;
   overflow: hidden;
+  background: var(--card);
   background:
-    radial-gradient(ellipse 70% 80% at 0% 0%, rgba(161, 29, 46, 0.07), transparent 55%),
-    radial-gradient(ellipse 50% 60% at 100% 100%, rgba(138, 90, 10, 0.05), transparent 50%),
+    radial-gradient(ellipse 70% 80% at 0% 0%, rgba(220, 38, 38, 0.06), transparent 55%),
+    radial-gradient(ellipse 50% 60% at 100% 100%, rgba(99, 102, 241, 0.04), transparent 50%),
     var(--glass-2);
   backdrop-filter: var(--glass-blur-sm);
   -webkit-backdrop-filter: var(--glass-blur-sm);
   border: 1px solid var(--brand-border);
-  box-shadow: var(--glass-shadow-lg);
-  border-radius: calc(var(--card-radius, 14px) + 2px);
+  box-shadow: var(--shadow-2);
+  border-radius: var(--radius-xl, 18px);
 }
 
 .surface-emphasis {
   border: 1px solid color-mix(in srgb, var(--gv-warn) 35%, transparent);
   background: color-mix(in srgb, var(--gv-warn-soft) 88%, transparent);
-  border-radius: var(--card-radius, 14px);
+  border-radius: var(--radius-lg, 15px);
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
 }
 
+/* Morning Brief hero panel */
+.surface-brief {
+  position: relative;
+  overflow: hidden;
+  min-height: 238px;
+  background: var(--card);
+  background:
+    linear-gradient(
+      120deg,
+      rgba(255, 255, 255, 0.80),
+      rgba(255, 255, 255, 0.62)
+    ),
+    radial-gradient(
+      circle at 92% 12%,
+      rgba(220, 38, 38, 0.04),
+      transparent 40%
+    );
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+  border: 1px solid rgba(205, 198, 220, 0.40);
+  box-shadow: 0 12px 34px rgba(19, 15, 42, 0.05);
+  border-radius: var(--radius-xl, 18px);
+}
+
+.surface-stat {
+  background: var(--card);
+  background: rgba(255, 255, 255, 0.60);
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+  border: 1px solid rgba(205, 198, 220, 0.38);
+  box-shadow: 0 8px 24px rgba(19, 15, 42, 0.04);
+  border-radius: 14px;
+}
+
+:root.dark .surface-hero {
+  background:
+    linear-gradient(
+      110deg,
+      rgba(26, 24, 40, 0.94) 0%,
+      rgba(30, 32, 52, 0.9) 100%
+    );
+  border-color: rgba(180, 170, 210, 0.16);
+  box-shadow: var(--shadow-3);
+}
+
+:root.dark .surface-standard {
+  background: var(--glass-1);
+  border-color: var(--glass-border-subtle);
+  box-shadow: var(--shadow-2);
+}
+
 :root.dark .surface-muted {
-  background: color-mix(in srgb, var(--app-elevated) 40%, transparent);
-  border-color: color-mix(in srgb, var(--app-border) 80%, transparent);
+  background: var(--glass-1);
+  border-color: var(--glass-border-subtle);
+  box-shadow: var(--shadow-1);
 }
 
 :root.dark .surface-gate {
   background:
     radial-gradient(ellipse 70% 80% at 0% 0%, rgba(220, 38, 38, 0.12), transparent 55%),
-    radial-gradient(ellipse 50% 60% at 100% 100%, rgba(180, 130, 40, 0.06), transparent 50%),
+    radial-gradient(ellipse 50% 60% at 100% 100%, rgba(99, 102, 241, 0.06), transparent 50%),
     var(--glass-2);
 }
 
@@ -334,81 +411,61 @@ body {
   box-shadow: none;
 }
 
-} /* end @layer components — glass bases */
-
-/* ── Light mode: warm paper wash on glass surfaces (no tech blue) ── */
-:root:not(.dark) .glass-card {
+:root.dark .surface-brief {
   background:
-    radial-gradient(ellipse 78% 52% at 50% 118%, rgba(138, 90, 10, 0.05) 0%, rgba(161, 29, 46, 0.03) 48%, transparent 58%),
-    radial-gradient(ellipse 42% 34% at 0% 100%, rgba(138, 90, 10, 0.025) 0%, transparent 52%),
-    radial-gradient(ellipse 50% 40% at 100% 100%, rgba(161, 29, 46, 0.04) 0%, transparent 52%),
-    rgba(255, 252, 247, 0.82);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid rgba(200, 180, 150, 0.45);
-  box-shadow: var(--glass-shadow), var(--glass-inner-glow);
-}
-
-:root:not(.dark) .glass-panel {
-  background:
-    radial-gradient(ellipse 78% 52% at 50% 118%, rgba(138, 90, 10, 0.05) 0%, rgba(161, 29, 46, 0.03) 48%, transparent 58%),
-    radial-gradient(ellipse 42% 34% at 0% 100%, rgba(138, 90, 10, 0.02) 0%, transparent 52%),
-    radial-gradient(ellipse 50% 40% at 100% 100%, rgba(161, 29, 46, 0.04) 0%, transparent 52%),
-    rgba(255, 252, 247, 0.9);
-  backdrop-filter: var(--glass-blur-sm);
-  -webkit-backdrop-filter: var(--glass-blur-sm);
-  border: 1px solid rgba(200, 180, 150, 0.4);
-  box-shadow: var(--glass-shadow-lg), var(--glass-inner-glow);
-}
-
-/* ── Dark glass: consume warm tokens from system.css :root.dark ─────
-   Do not hardcode cool near-black rgba here — tokens are the source of
-   truth so glass tracks the court-ink dark palette. */
-:root.dark .glass-card {
-  background: var(--glass-1);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow), var(--glass-inner-glow);
-}
-
-:root.dark .glass-panel {
-  background: var(--glass-2);
-  backdrop-filter: var(--glass-blur-sm);
-  -webkit-backdrop-filter: var(--glass-blur-sm);
-  border: 1px solid var(--glass-border-subtle);
-  box-shadow: var(--glass-shadow-lg), var(--glass-inner-glow);
-}
-
-:root.dark .glass-surface {
-  background: var(--glass-3);
-  backdrop-filter: blur(28px) saturate(1.5);
-  -webkit-backdrop-filter: blur(28px) saturate(1.5);
-  border-bottom: 1px solid var(--glass-border-subtle);
-  box-shadow: 0 1px 0 rgba(245, 239, 230, 0.04), var(--glass-shadow);
-}
-
-:root.dark .glass-input {
-  background: var(--glass-input);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+    linear-gradient(
+      120deg,
+      rgba(26, 24, 40, 0.92),
+      rgba(26, 24, 40, 0.82)
+    ),
+    radial-gradient(
+      circle at 92% 12%,
+      rgba(220, 38, 38, 0.08),
+      transparent 40%
+    );
   border-color: var(--glass-border-subtle);
+  box-shadow: var(--shadow-3);
+}
+
+:root.dark .surface-stat {
+  background: var(--glass-1);
+  border-color: var(--glass-border-subtle);
+  box-shadow: var(--shadow-1);
 }
 
 :root.dark .glass-sidebar {
   background: var(--glass-sidebar);
   border-color: var(--glass-border-subtle);
-  box-shadow: var(--glass-shadow);
+  box-shadow: 0 12px 38px rgba(0, 0, 0, 0.45);
 }
 
-/* Fallback when backdrop-filter unsupported */
+} /* end @layer components — glass bases */
+
+/* Fallback when backdrop-filter unsupported — solid card surfaces */
 @supports not (backdrop-filter: blur(1px)) {
-  .glass-card  { background: var(--glass-1); opacity: 1; }
-  .glass-panel { background: var(--glass-2); }
-  .glass-sidebar { background: var(--glass-sidebar); }
-  :root.dark .glass-card  { background: var(--glass-1); }
-  :root.dark .glass-panel { background: var(--glass-2); }
-  :root.dark .glass-sidebar { background: var(--glass-sidebar); }
+  .glass-card,
+  .glass-panel,
+  .glass-sidebar,
+  .glass-input,
+  .glass-surface,
+  .surface-hero,
+  .surface-standard,
+  .surface-muted,
+  .surface-brief,
+  .surface-stat,
+  .surface-gate {
+    background: var(--card);
+  }
+  :root.dark .glass-card,
+  :root.dark .glass-panel,
+  :root.dark .glass-sidebar,
+  :root.dark .surface-hero,
+  :root.dark .surface-standard,
+  :root.dark .surface-muted,
+  :root.dark .surface-brief,
+  :root.dark .surface-stat {
+    background: var(--card);
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -433,27 +490,23 @@ body {
 }
 
 .card-interactive {
-  transition: transform var(--duration-hover) var(--ease-out-strong),
-              box-shadow var(--duration-hover) var(--ease-out-strong);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
   will-change: transform;
   -webkit-tap-highlight-color: transparent;
 }
 
 @media (hover: hover) and (pointer: fine) {
   :root:not(.dark) .card-interactive:hover {
-    transform: translateY(-3px);
-    box-shadow:
-      var(--glass-shadow-lg),
-      0 0 0 1px rgba(161, 29, 46, 0.08),
-      0 16px 40px rgba(40, 28, 16, 0.1);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-3);
   }
 
   :root.dark .card-interactive:hover {
-    transform: translateY(-3px);
-    box-shadow:
-      0 8px 40px rgba(0, 0, 0, 0.55),
-      0 0 0 1px rgba(248, 113, 113, 0.14),
-      0 16px 48px rgba(161, 29, 46, 0.12);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-3);
   }
 }
 
@@ -506,7 +559,20 @@ body {
   }
 
   .hover-glow:hover {
-    box-shadow: 0 0 20px rgba(161, 29, 46, 0.14);
+    box-shadow: 0 5px 14px rgba(220, 38, 38, 0.12);
+  }
+}
+
+/* Content shell used by feed + pages */
+.content-shell {
+  width: min(100%, var(--content-max-width, 1240px));
+  margin-inline: auto;
+  padding: 20px 28px 48px;
+}
+
+@media (max-width: 767px) {
+  .content-shell {
+    padding: 16px 16px 40px;
   }
 }
 
@@ -553,7 +619,7 @@ body {
 
 /* ── Article prose (Gavel News specific — keep) ───────────────────── */
 .prose-article {
-  font-family: var(--font-serif);
+  font-family: var(--type-body-serif, "Source Serif 4", Georgia, serif);
   font-size: 17px;
   line-height: 1.75;
   color: var(--ink);

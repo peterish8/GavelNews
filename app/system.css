@@ -10,21 +10,23 @@
      3. @theme bridge in globals.css (maps --type-* → font-* utilities)
    ═══════════════════════════════════════════════════════════════════ */
 
-/* ── Fonts — one legal-editorial family stack ───────────────────────
-   UI / labels / buttons: Source Sans 3  (neat, quiet, high legibility)
-   Headlines / body / brand: Source Serif 4  (court / journal reading)
-   Code only: Source Code Pro
-   Removed: Inter, Libre Baskerville, IBM Plex Mono, Plus Jakarta Sans
-   Font files are @import'd at the top of globals.css (CSS import order). */
+/* ── Fonts — editorial serif + Inter UI ─────────────────────────────
+   UI / labels / buttons: Inter
+   Headlines / brand / display: DM Serif Display
+   Body longform / article: Source Serif 4 (loaded; reading comfort)
+   Code: Source Code Pro
+   Font files are @import'd at the top of globals.css. */
 
 :root {
   /* ── Type tokens (THE only place font families are named) ─────────
      Prefixed --type-* so @theme can map to --font-* without cycles. */
-  --type-ui: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --type-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --type-ui: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --type-serif: "DM Serif Display", Georgia, "Times New Roman", serif;
   --type-mono: "Source Code Pro", ui-monospace, "Cascadia Code", monospace;
   --type-label: var(--type-ui);
   --type-display: var(--type-serif);
+  /* Long-form body (article prose) — keep a true text serif */
+  --type-body-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
 
   /* Legacy aliases used by body / prose / components (read-only mirrors) */
   --font-ui: var(--type-ui);
@@ -32,6 +34,7 @@
   --font-serif: var(--type-serif);
   --font-mono: var(--type-mono);
   --font-label: var(--type-label);
+  --font-editorial: var(--type-display);
   --display-family: var(--type-display);
 
   /* ── Type scale ─────────────────────────────────────────────────── */
@@ -39,191 +42,203 @@
   --text-meta: 0.75rem;      /* 12px */
   --text-body: 1.0625rem;    /* 17px article */
   --leading-body: 1.75;
-  --tracking-label: 0.12em;
+  --tracking-label: 0.08em;
 
-  /* ── Law-editorial surfaces (warm parchment, court ink) ───────────
-     Overrides shared tokens.css SaaS/glass defaults. */
-  --nav-bg: #fffcf8;
-  --bg: #fbf8f3;
-  --ink: #1a1410;
-  --ink-2: #4a3f36;
-  --ink-3: #7a6b5d;
-  --gv-ink: #1a1410;
-  --gv-ink-2: #4a3f36;
-  --gv-ink-3: #7a6b5d;
-  --gv-bg: #fbf8f3;
-  --panel: #ebe4d8;
-  --border: #e0d4c4;
-  --input: #e0d4c4;
-  --app-border: rgba(160, 140, 110, 0.38);
-  --app-border-strong: #c4b39a;
-  --app-elevated-muted: #f3eee5;
-  --app-surface: #fffcf7;
-  --app-elevated: #fffcf7;
-  --card: #fffcf7;
-  --background: #fbf8f3;
-  --foreground: #1a1410;
-  --muted: #f0e9dc;
-  --muted-foreground: #7a6b5d;
-  --secondary: #f8f1e6;
-  --secondary-foreground: #1a1410;
-  --accent: #f8f1e6;
-  --accent-foreground: #1a1410;
-  --sidebar: #f8f1e6;
-  --sidebar-border: #e0d4c4;
-  --brand-soft: #f8ebe6;
-  --brand-border: #e8c4b8;
-  --gv-primary-soft: #f8ebe6;
-  --gv-primary-border: #e8c4b8;
-  --bg-tint-a: rgba(138, 90, 10, 0.06);
-  --bg-tint-b: rgba(161, 29, 46, 0.04);
-  --bg-tint-c: rgba(138, 90, 10, 0.05);
-  --ambient-violet: rgba(138, 90, 10, 0.04);
-  --ambient-blue: rgba(161, 29, 46, 0.05);
-  --ambient-indigo: rgba(138, 90, 10, 0.04);
-  --glass-1: rgba(255, 252, 247, 0.78);
-  --glass-2: rgba(255, 252, 247, 0.9);
-  --glass-3: rgba(255, 252, 247, 0.96);
-  --glass-sidebar: rgba(248, 241, 230, 0.92);
-  --glass-input: rgba(255, 252, 247, 0.55);
-  --glass-border: rgba(255, 252, 247, 0.85);
-  --glass-border-subtle: rgba(180, 155, 120, 0.28);
-  --glass-shadow: 0 4px 24px rgba(40, 28, 16, 0.06), 0 1px 4px rgba(40, 28, 16, 0.04);
-  --glass-shadow-lg: 0 12px 40px rgba(40, 28, 16, 0.08), 0 2px 8px rgba(40, 28, 16, 0.04);
-  --shadow-md: 0 4px 24px rgba(40, 28, 16, 0.06), 0 1px 4px rgba(40, 28, 16, 0.04);
-  --shadow-lg: 0 12px 40px rgba(40, 28, 16, 0.08), 0 2px 8px rgba(40, 28, 16, 0.04);
-  --shadow-brand-sm: 0 2px 10px rgba(161, 29, 46, 0.12);
-  --shadow-brand-md: 0 4px 16px rgba(161, 29, 46, 0.16);
-  --shadow-brand-lg: 0 8px 28px rgba(161, 29, 46, 0.18);
-  --menu-item-hover: rgba(161, 29, 46, 0.06);
-  --menu-item-border: rgba(161, 29, 46, 0.16);
-  --btn-ghost-border: rgba(160, 140, 110, 0.4);
-  --btn-ghost-hover: rgba(161, 29, 46, 0.06);
-  --card-radius: 10px;
+  /* ── Layout ─────────────────────────────────────────────────────── */
+  --sidebar-width: 258px;
+  --sidebar-inset: 12px;
+  --content-max-width: 1240px;
+  --page-gap: 28px;
+  --section-gap: 24px;
+
+  /* ── Radius scale (spec §29) ────────────────────────────────────── */
+  --radius-sm: 8px;
+  --radius-md: 11px;
+  --radius-lg: 15px;
+  --radius-xl: 18px;
+  --card-radius: 15px;
+
+  /* ── Light palette: white / soft lavender-grey (spec §1–5) ──────── */
+  --nav-bg: rgba(255, 255, 255, 0.82);
+  --bg: #f4f3f8;
+  --ink: #130f2a;
+  --ink-2: #4a4660;
+  --ink-3: #7a7690;
+  --gv-ink: #130f2a;
+  --gv-ink-2: #4a4660;
+  --gv-ink-3: #7a7690;
+  --gv-bg: #f4f3f8;
+  --panel: #ebe8f2;
+  --border: #cdc6dc;
+  --input: #cdc6dc;
+  --app-border: rgba(205, 198, 220, 0.42);
+  --app-border-strong: #b8b0c8;
+  --app-elevated-muted: #eeecf4;
+  --app-surface: #ffffff;
+  --app-elevated: #ffffff;
+  --card: #ffffff;
+  --background: #f4f3f8;
+  --foreground: #130f2a;
+  --muted: #eeecf4;
+  --muted-foreground: #7a7690;
+  --secondary: #f0eef6;
+  --secondary-foreground: #130f2a;
+  --accent: #f0eef6;
+  --accent-foreground: #130f2a;
+  --sidebar: rgba(255, 255, 255, 0.82);
+  --sidebar-border: rgba(205, 198, 220, 0.4);
+  --brand-soft: rgba(220, 38, 38, 0.10);
+  --brand-border: rgba(220, 38, 38, 0.16);
+  --gv-primary-soft: rgba(220, 38, 38, 0.10);
+  --gv-primary-border: rgba(220, 38, 38, 0.16);
+
+  /* Ambient tints (spec §3) */
+  --bg-tint-a: rgba(99, 102, 241, 0.05);
+  --bg-tint-b: rgba(220, 38, 38, 0.04);
+  --bg-tint-c: rgba(99, 102, 241, 0.03);
+  --ambient-violet: rgba(99, 102, 241, 0.05);
+  --ambient-blue: rgba(220, 38, 38, 0.04);
+  --ambient-indigo: rgba(99, 102, 241, 0.04);
+
+  /* Glass tiers (spec §4) — opacity ≥0.55, blur 12–20px */
+  --glass-1: rgba(255, 255, 255, 0.72);
+  --glass-2: rgba(255, 255, 255, 0.58);
+  --glass-3: rgba(255, 255, 255, 0.86);
+  --glass-sidebar: rgba(255, 255, 255, 0.82);
+  --glass-input: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.72);
+  --glass-border-subtle: rgba(205, 198, 220, 0.42);
+  --glass-blur: blur(18px) saturate(120%);
+  --glass-blur-sm: blur(14px) saturate(120%);
+  --glass-inner-glow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+
+  /* Shadow scale (spec §30) */
+  --shadow-1:
+    0 1px 2px rgba(19, 15, 42, 0.035),
+    0 4px 12px rgba(19, 15, 42, 0.025);
+  --shadow-2:
+    0 2px 4px rgba(19, 15, 42, 0.035),
+    0 10px 28px rgba(19, 15, 42, 0.05);
+  --shadow-3:
+    0 4px 8px rgba(19, 15, 42, 0.04),
+    0 18px 44px rgba(19, 15, 42, 0.065);
+  --glass-shadow:
+    0 1px 2px rgba(19, 15, 42, 0.04),
+    0 10px 30px rgba(19, 15, 42, 0.05);
+  --glass-shadow-lg:
+    0 4px 8px rgba(19, 15, 42, 0.04),
+    0 18px 44px rgba(19, 15, 42, 0.065);
+  --shadow-md: var(--shadow-2);
+  --shadow-lg: var(--shadow-3);
+  --shadow-brand-sm: 0 2px 10px rgba(220, 38, 38, 0.12);
+  --shadow-brand-md: 0 5px 14px rgba(220, 38, 38, 0.15);
+  --shadow-brand-lg: 0 8px 28px rgba(220, 38, 38, 0.16);
+  --menu-item-hover: rgba(19, 15, 42, 0.035);
+  --menu-item-border: rgba(220, 38, 38, 0.16);
+  --btn-ghost-border: rgba(205, 198, 220, 0.52);
+  --btn-ghost-hover: rgba(19, 15, 42, 0.035);
 
   /* ── Semantic danger (three-way separation: warn / brand / danger) ─
      Brand stays pure red (hue ~0, #DC2626 from tokens).
      Warn stays amber (hue ~34, #A36009 from tokens).
      Danger sits on the OPPOSITE side of red from amber — deep crimson
-     / burgundy (hue ~350), NOT orange (that collides with warn).
-
-     HSL light:  brand H0° · warn H34° · danger H350°
-     Mutual luminance contrast (WCAG):
-       brand↔danger 2.24:1  (was 1.59 original / 1.94 rust-orange)
-       danger↔warn  2.18:1  (was 1.55 original / 1.89 rust-orange)
-       danger on --bg  #fbf8f3 = 10.22:1
-       danger on --card #fffcf7 = 10.58:1
-     Re-check all three pairs if you retune any of brand/warn/danger. */
+     / burgundy (hue ~350), NOT orange (that collides with warn). */
   --gv-danger: #761928;
   --gv-danger-soft: #f9e4ea;
   --destructive: #761928;
   --destructive-foreground: #ffffff;
 }
 
-/* ── Dark mode — warm court-ink identity ────────────────────────────
-   tokens.css :root.dark uses cool charcoal/lavender greys. Because
-   :root.dark is more specific than plain :root, light-mode system
-   overrides never win in dark. This block re-applies the parchment
-   family inverted for night reading (warm near-black + cream ink).
-
-   WCAG AA floors (verified, relative luminance):
-     --ink   #f5efe6 on --bg #14110f = 16.45:1
-     --ink-2 #c4b5a4 on --bg         =  9.40:1
-     --ink-3 #a89884 on --bg         =  6.71:1
-     --ink-3 on --card #1c1814       =  6.29:1
-
-   Danger (dark) — rose-crimson hue ~345, opposite side from amber warn.
-   HSL dark: brand H0° · warn H43° · danger H345°
-   Mutual luminance contrast (WCAG):
-     brand↔danger 1.50:1  (was 1.40 original / 1.84 orange — see note)
-     danger↔warn  1.50:1  (was 1.61 original / 1.22 orange)
-     danger on --bg/#card ≥ 7:1 AA
-   Note: dark brand (L~60%) and warn (L~56%) sit near each other in
-   luminance; AA text on dark bg forces danger Y ≳ 0.20. Achieving
-   brand↔danger ≥1.8 AND danger↔warn ≥1.61 at once is physically
-   impossible under those constraints — 1.50/1.50 is the max balanced
-   min-pair. Hue separation still holds three-way (warn 43° / brand 0° /
-   danger 345°). */
+/* ── Dark mode — cool lavender-ink counterpart of the light system ──
+   Spec is light-first; dark keeps glass legible and red-accented. */
 :root.dark {
-  --nav-bg: #14110f;
-  --bg: #14110f;
-  --card: #1c1814;
-  --ink: #f5efe6;
-  --ink-2: #c4b5a4;
-  --ink-3: #a89884;
-  --gv-ink: #f5efe6;
-  --gv-ink-2: #c4b5a4;
-  --gv-ink-3: #a89884;
-  --gv-bg: #14110f;
-  --panel: #221c18;
-  --border: #3a322a;
-  --input: #3a322a;
-  --app-border: rgba(180, 155, 120, 0.22);
-  --app-border-strong: #4a4036;
-  --app-elevated-muted: #1a1612;
-  --app-surface: #1c1814;
-  --app-elevated: #1c1814;
-  --background: #14110f;
-  --foreground: #f5efe6;
-  --muted: #221c18;
-  --muted-foreground: #a89884;
-  --secondary: #1f1a15;
-  --secondary-foreground: #f5efe6;
-  --accent: #1f1a15;
-  --accent-foreground: #f5efe6;
-  --sidebar: #18140f;
-  --sidebar-border: #3a322a;
-  --sidebar-foreground: #f5efe6;
-  --card-foreground: #f5efe6;
-  --popover: #1c1814;
-  --popover-foreground: #f5efe6;
+  --nav-bg: rgba(18, 16, 28, 0.92);
+  --bg: #12101c;
+  --card: #1a1828;
+  --ink: #f2f0f8;
+  --ink-2: #b8b4cc;
+  --ink-3: #8a869e;
+  --gv-ink: #f2f0f8;
+  --gv-ink-2: #b8b4cc;
+  --gv-ink-3: #8a869e;
+  --gv-bg: #12101c;
+  --panel: #221f32;
+  --border: #3a3650;
+  --input: #3a3650;
+  --app-border: rgba(180, 170, 210, 0.18);
+  --app-border-strong: #4a4660;
+  --app-elevated-muted: #161422;
+  --app-surface: #1a1828;
+  --app-elevated: #1a1828;
+  --background: #12101c;
+  --foreground: #f2f0f8;
+  --muted: #221f32;
+  --muted-foreground: #8a869e;
+  --secondary: #1e1c2c;
+  --secondary-foreground: #f2f0f8;
+  --accent: #1e1c2c;
+  --accent-foreground: #f2f0f8;
+  --sidebar: rgba(18, 16, 28, 0.94);
+  --sidebar-border: rgba(180, 170, 210, 0.14);
+  --sidebar-foreground: #f2f0f8;
+  --card-foreground: #f2f0f8;
+  --popover: #1a1828;
+  --popover-foreground: #f2f0f8;
 
-  /* Warm soft brand surfaces (keep brand hue from tokens, warm tint) */
   --brand-soft: rgba(239, 68, 68, 0.14);
   --brand-border: rgba(239, 68, 68, 0.28);
   --gv-primary-soft: rgba(239, 68, 68, 0.14);
   --gv-primary-border: rgba(239, 68, 68, 0.28);
 
-  /* Danger — rose-crimson alert (not amber/orange; keeps warn distinct) */
   --gv-danger: #f67e9c;
   --gv-danger-soft: rgba(246, 126, 156, 0.14);
   --destructive: #f67e9c;
-  --destructive-foreground: #14110f;
+  --destructive-foreground: #12101c;
 
-  /* Warm ambient / glass (no cool blue/violet tints) */
-  --bg-tint-a: rgba(138, 90, 10, 0.08);
-  --bg-tint-b: rgba(124, 45, 18, 0.06);
-  --bg-tint-c: rgba(138, 90, 10, 0.05);
-  --ambient-violet: rgba(138, 90, 10, 0.05);
-  --ambient-blue: rgba(124, 45, 18, 0.06);
-  --ambient-indigo: rgba(138, 90, 10, 0.04);
-  /* Warm glass fills (~#14110f / #1c1814 family, near-opaque for text AA) */
-  --glass-1: rgba(28, 24, 20, 0.92);
-  --glass-2: rgba(28, 24, 20, 0.95);
-  --glass-3: rgba(34, 28, 24, 0.97);
-  --glass-sidebar: rgba(20, 17, 15, 0.96);
-  --glass-input: rgba(28, 24, 20, 0.8);
-  --glass-border: rgba(245, 239, 230, 0.08);
-  --glass-border-subtle: rgba(180, 155, 120, 0.12);
-  --glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.55), 0 1px 4px rgba(0, 0, 0, 0.35);
-  --glass-shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.4);
-  --glass-inner-glow: inset 0 1px 0 rgba(245, 239, 230, 0.05);
-  --shadow-md: 0 4px 24px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.35);
+  --bg-tint-a: rgba(99, 102, 241, 0.08);
+  --bg-tint-b: rgba(220, 38, 38, 0.06);
+  --bg-tint-c: rgba(99, 102, 241, 0.05);
+  --ambient-violet: rgba(99, 102, 241, 0.06);
+  --ambient-blue: rgba(220, 38, 38, 0.05);
+  --ambient-indigo: rgba(99, 102, 241, 0.04);
+
+  /* Near-opaque glass for AA text on dark */
+  --glass-1: rgba(26, 24, 40, 0.88);
+  --glass-2: rgba(26, 24, 40, 0.92);
+  --glass-3: rgba(30, 28, 44, 0.96);
+  --glass-sidebar: rgba(18, 16, 28, 0.94);
+  --glass-input: rgba(26, 24, 40, 0.8);
+  --glass-border: rgba(242, 240, 248, 0.08);
+  --glass-border-subtle: rgba(180, 170, 210, 0.14);
+  --glass-inner-glow: inset 0 1px 0 rgba(242, 240, 248, 0.05);
+
+  --shadow-1:
+    0 1px 2px rgba(0, 0, 0, 0.35),
+    0 4px 12px rgba(0, 0, 0, 0.25);
+  --shadow-2:
+    0 2px 4px rgba(0, 0, 0, 0.35),
+    0 10px 28px rgba(0, 0, 0, 0.45);
+  --shadow-3:
+    0 4px 8px rgba(0, 0, 0, 0.4),
+    0 18px 44px rgba(0, 0, 0, 0.55);
+  --glass-shadow: var(--shadow-2);
+  --glass-shadow-lg: var(--shadow-3);
+  --shadow-md: var(--shadow-2);
+  --shadow-lg: var(--shadow-3);
   --shadow-brand-sm: 0 2px 10px rgba(239, 68, 68, 0.18);
   --shadow-brand-md: 0 4px 16px rgba(239, 68, 68, 0.22);
   --shadow-brand-lg: 0 8px 28px rgba(239, 68, 68, 0.26);
-  --menu-item-hover: rgba(255, 159, 67, 0.08);
-  --menu-item-border: rgba(180, 155, 120, 0.16);
-  --btn-ghost-border: rgba(180, 155, 120, 0.28);
-  --btn-ghost-hover: rgba(255, 159, 67, 0.08);
+  --menu-item-hover: rgba(242, 240, 248, 0.05);
+  --menu-item-border: rgba(180, 170, 210, 0.16);
+  --btn-ghost-border: rgba(180, 170, 210, 0.22);
+  --btn-ghost-hover: rgba(242, 240, 248, 0.06);
 }
 
 /* ── Editorial utilities (consume tokens only) ────────────────────── */
 .label-law {
   font-family: var(--type-label);
   font-size: var(--text-label);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: var(--ink-3);
@@ -231,7 +246,46 @@
 
 .heading-law {
   font-family: var(--type-display);
-  font-weight: 700;
-  letter-spacing: -0.015em;
+  font-weight: 500;
+  letter-spacing: -0.025em;
   color: var(--ink);
+}
+
+.page-title {
+  font-family: var(--font-editorial);
+  font-size: clamp(42px, 4.2vw, 62px);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.featured-title {
+  font-family: var(--font-editorial);
+  font-size: clamp(27px, 2.4vw, 38px);
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+}
+
+.section-title {
+  font-family: var(--font-editorial);
+  font-size: 22px;
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.body-large {
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+.body {
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.caption {
+  font-size: 12px;
+  line-height: 1.4;
 }
