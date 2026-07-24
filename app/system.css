@@ -99,11 +99,105 @@
   --btn-ghost-border: rgba(160, 140, 110, 0.4);
   --btn-ghost-hover: rgba(161, 29, 46, 0.06);
   --card-radius: 10px;
+
+  /* ── Semantic danger (Stoplight Conflict fix) ──────────────────────
+     Brand stays crimson (#DC2626 from tokens). Danger shifts to a
+     warmer burnt-rust orange so CTAs and error/Hard states don't
+     read as the same hue family.
+     Verified (WCAG relative luminance):
+       brand #DC2626 vs danger #7C2D12 = 1.94:1 (was 1.59:1 vs #A11D2E)
+       danger on --bg  #fbf8f3 = 8.85:1
+       danger on --card #fffcf7 = 9.16:1
+     Do not re-align danger toward brand without re-running contrast. */
+  --gv-danger: #7c2d12;
+  --gv-danger-soft: #f8e9e1;
+  --destructive: #7c2d12;
+  --destructive-foreground: #ffffff;
 }
 
-/* Dark nav lift — co-located with theme system */
+/* ── Dark mode — warm court-ink identity ────────────────────────────
+   tokens.css :root.dark uses cool charcoal/lavender greys. Because
+   :root.dark is more specific than plain :root, light-mode system
+   overrides never win in dark. This block re-applies the parchment
+   family inverted for night reading (warm near-black + cream ink).
+
+   WCAG AA floors (verified, relative luminance):
+     --ink   #f5efe6 on --bg #14110f = 16.45:1
+     --ink-2 #c4b5a4 on --bg         =  9.40:1
+     --ink-3 #a89884 on --bg         =  6.71:1
+     --ink-3 on --card #1c1814       =  6.29:1
+   Danger (dark): #ff9f43 orange-alert vs brand #EF4444 = 1.84:1
+   (was 1.40:1 vs #FB7185); danger on bg/card ≥ 8.6:1. */
 :root.dark {
   --nav-bg: #14110f;
+  --bg: #14110f;
+  --card: #1c1814;
+  --ink: #f5efe6;
+  --ink-2: #c4b5a4;
+  --ink-3: #a89884;
+  --gv-ink: #f5efe6;
+  --gv-ink-2: #c4b5a4;
+  --gv-ink-3: #a89884;
+  --gv-bg: #14110f;
+  --panel: #221c18;
+  --border: #3a322a;
+  --input: #3a322a;
+  --app-border: rgba(180, 155, 120, 0.22);
+  --app-border-strong: #4a4036;
+  --app-elevated-muted: #1a1612;
+  --app-surface: #1c1814;
+  --app-elevated: #1c1814;
+  --background: #14110f;
+  --foreground: #f5efe6;
+  --muted: #221c18;
+  --muted-foreground: #a89884;
+  --secondary: #1f1a15;
+  --secondary-foreground: #f5efe6;
+  --accent: #1f1a15;
+  --accent-foreground: #f5efe6;
+  --sidebar: #18140f;
+  --sidebar-border: #3a322a;
+  --sidebar-foreground: #f5efe6;
+  --card-foreground: #f5efe6;
+  --popover: #1c1814;
+  --popover-foreground: #f5efe6;
+
+  /* Warm soft brand surfaces (keep brand hue from tokens, warm tint) */
+  --brand-soft: rgba(239, 68, 68, 0.14);
+  --brand-border: rgba(239, 68, 68, 0.28);
+  --gv-primary-soft: rgba(239, 68, 68, 0.14);
+  --gv-primary-border: rgba(239, 68, 68, 0.28);
+
+  /* Danger — orange-leaning alert, separated from brand crimson */
+  --gv-danger: #ff9f43;
+  --gv-danger-soft: rgba(255, 159, 67, 0.14);
+  --destructive: #ff9f43;
+  --destructive-foreground: #14110f;
+
+  /* Warm ambient / glass (no cool blue/violet tints) */
+  --bg-tint-a: rgba(138, 90, 10, 0.08);
+  --bg-tint-b: rgba(124, 45, 18, 0.06);
+  --bg-tint-c: rgba(138, 90, 10, 0.05);
+  --ambient-violet: rgba(138, 90, 10, 0.05);
+  --ambient-blue: rgba(124, 45, 18, 0.06);
+  --ambient-indigo: rgba(138, 90, 10, 0.04);
+  --glass-1: rgba(28, 24, 20, 0.92);
+  --glass-2: rgba(28, 24, 20, 0.95);
+  --glass-3: rgba(34, 28, 24, 0.97);
+  --glass-sidebar: rgba(20, 17, 15, 0.96);
+  --glass-border: rgba(245, 239, 230, 0.08);
+  --glass-border-subtle: rgba(180, 155, 120, 0.12);
+  --glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.55), 0 1px 4px rgba(0, 0, 0, 0.35);
+  --glass-shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 24px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-brand-sm: 0 2px 10px rgba(239, 68, 68, 0.18);
+  --shadow-brand-md: 0 4px 16px rgba(239, 68, 68, 0.22);
+  --shadow-brand-lg: 0 8px 28px rgba(239, 68, 68, 0.26);
+  --menu-item-hover: rgba(255, 159, 67, 0.08);
+  --menu-item-border: rgba(180, 155, 120, 0.16);
+  --btn-ghost-border: rgba(180, 155, 120, 0.28);
+  --btn-ghost-hover: rgba(255, 159, 67, 0.08);
 }
 
 /* ── Editorial utilities (consume tokens only) ────────────────────── */
