@@ -84,6 +84,8 @@ None yet.
 | 260723-pos | Redesign per-story OG image into a newspaper-masthead layout (masthead bar, brand panel + headline row, dark footer bar) | 2026-07-23 | (pending) | [260723-pos-redesign-per-story-og-image-into-a-newsp](./quick/260723-pos-redesign-per-story-og-image-into-a-newsp/) |
 | 260723-ua1 | Give the nav a distinctive legal-editorial identity: brand-blend masthead rule, docket-index nav markers, § serif-italic section labels, left-rule active state | 2026-07-23 | ad2f4e9 | [260723-ua1-make-the-nav-bar-ui-look-better-and-more](./quick/260723-ua1-make-the-nav-bar-ui-look-better-and-more/) |
 | 260723-vk1 | Fix PYQSidebar: render markdown in question/options/explanation text, and replace inline accordion with a full-screen modal on question click | 2026-07-23 | f1fc2e3, bd266d9 | [260723-vk1-fix-pyqsidebar-render-markdown-in-questi](./quick/260723-vk1-fix-pyqsidebar-render-markdown-in-questi/) |
+| 260724-daz | Redesign sign-in page so Google sign-in CTA is visible above the fold on desktop (premium two-column layout) | 2026-07-24 | 1aad1d0 | [260724-daz-redesign-sign-in-page-so-google-sign-in-](./quick/260724-daz-redesign-sign-in-page-so-google-sign-in-/) |
+| 260724-typ | Replace Inter/Libre/IBM Plex with Source legal stack; centralize type + theme tokens in app/system.css | 2026-07-24 | (pending) | [260724-typ-legal-font-system-source-of-truth](./quick/260724-typ-legal-font-system-source-of-truth/) |
 
 ## Deferred Items
 
@@ -99,4 +101,4 @@ Last session: 2026-07-22
 Stopped at: ROADMAP.md and STATE.md created; REQUIREMENTS.md traceability confirmed
 Resume file: None
 
-Last activity: 2026-07-23 - Completed quick task 260723-vk1: Fix PYQSidebar markdown rendering and replace inline accordion with a full-screen question-detail modal
+Last activity: 2026-07-24 - Completed quick task 260724-daz: Redesign sign-in page into a two-column layout so the Google sign-in CTA is visible above the fold on desktop
