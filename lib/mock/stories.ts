@@ -604,10 +604,23 @@ export const MOCK_STORIES: PublishedStory[] = [
     ],
     sources: [],
     sourcesV2: {
-      primary: "Supreme Court of India judgment (public domain report)",
+      primary: {
+        name: "LiveLaw — Supreme Court obscenity ruling",
+        url: "https://www.livelaw.in/top-stories/section-294b-obscenity",
+        type: "legal_website",
+      },
       secondary: [
-        "Indian Penal Code Section 294(b)",
-        "Bharatiya Nyaya Sanhita (corresponding public-obscenity provision)",
+        {
+          name: "Bar & Bench — community standard analysis",
+          url: "https://www.barandbench.com/news/section-294b",
+          type: "legal_website",
+        },
+        {
+          // print source with no URL — exercises empty-url path
+          name: "The Hindu (print, Delhi edition, 20 July 2026, pp.1, 3)",
+          url: "",
+          type: "newspaper",
+        },
       ],
     },
     pyqKeyword: "obscenity Section 294 free speech",

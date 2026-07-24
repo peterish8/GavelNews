@@ -177,10 +177,10 @@ export interface OneLineRevision {
   line?: string;
 }
 
-/** v2 sources shape — object with primary + secondary list (not Source[]). */
+/** v2 sources shape — primary + optional secondary list of full Source citations. */
 export interface SourcesV2 {
-  primary: string;
-  secondary?: string[];
+  primary: Source;
+  secondary?: Source[];
 }
 
 export interface PublishedStory {

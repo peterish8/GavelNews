@@ -74,55 +74,62 @@ export async function generateMetadata({
   };
 }
 
+function SourceItem({
+  src,
+  badge,
+}: {
+  src: { name: string; url: string; type: string };
+  badge?: string;
+}) {
+  const label = badge ?? src.type.replace("_", " ");
+  const nameEl =
+    src.url && src.url.trim() !== "" ? (
+      <a
+        href={src.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-[15px] leading-snug"
+      >
+        {src.name}
+      </a>
+    ) : (
+      <span className="text-[15px] leading-snug text-ink-2">{src.name}</span>
+    );
+
+  return (
+    <li className="!mb-3 flex items-start gap-3">
+      <span className="mt-0.5 inline-flex shrink-0 rounded-full border border-border-app bg-elevated-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-ink-3">
+        {label}
+      </span>
+      {nameEl}
+    </li>
+  );
+}
+
 function SourcesSection({ story }: { story: PublishedStory }) {
   const hasV1 = story.sources.length > 0;
   const hasV2 =
-    Boolean(story.sourcesV2?.primary) ||
+    Boolean(story.sourcesV2?.primary?.name) ||
     (story.sourcesV2?.secondary?.length ?? 0) > 0;
   if (!hasV1 && !hasV2) return null;
 
   return (
     <section>
       <h2>Sources</h2>
-      {hasV2 && story.sourcesV2 && (
-        <ul className="!list-none !pl-0">
-          <li className="!mb-3 flex items-start gap-3">
-            <span className="mt-0.5 inline-flex shrink-0 rounded-full border border-border-app bg-elevated-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-ink-3">
-              primary
-            </span>
-            <span className="text-[15px] leading-snug text-ink-2">
-              {story.sourcesV2.primary}
-            </span>
-          </li>
-          {(story.sourcesV2.secondary ?? []).map((src, i) => (
-            <li key={i} className="!mb-3 flex items-start gap-3">
-              <span className="mt-0.5 inline-flex shrink-0 rounded-full border border-border-app bg-elevated-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-ink-3">
-                secondary
-              </span>
-              <span className="text-[15px] leading-snug text-ink-2">{src}</span>
-            </li>
+      <ul className="!list-none !pl-0">
+        {hasV2 && story.sourcesV2 && (
+          <>
+            <SourceItem src={story.sourcesV2.primary} />
+            {(story.sourcesV2.secondary ?? []).map((src, i) => (
+              <SourceItem key={i} src={src} />
+            ))}
+          </>
+        )}
+        {hasV1 &&
+          story.sources.map((src, i) => (
+            <SourceItem key={i} src={src} />
           ))}
-        </ul>
-      )}
-      {hasV1 && (
-        <ul className="!list-none !pl-0">
-          {story.sources.map((src, i) => (
-            <li key={i} className="!mb-3 flex items-start gap-3">
-              <span className="mt-0.5 inline-flex shrink-0 rounded-full border border-border-app bg-elevated-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-ink-3">
-                {src.type.replace("_", " ")}
-              </span>
-              <a
-                href={src.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[15px] leading-snug"
-              >
-                {src.name}
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
+      </ul>
     </section>
   );
 }

@@ -104,8 +104,8 @@ export const mockDataSource: DataSource = {
         ...s.examTags,
         ...(s.keyPoints ?? []).map((k) => k.text),
         ...s.sources.map((src) => src.name),
-        s.sourcesV2?.primary ?? "",
-        ...(s.sourcesV2?.secondary ?? []),
+        s.sourcesV2?.primary?.name ?? "",
+        ...(s.sourcesV2?.secondary ?? []).map((src) => src.name),
       ]
         .join(" ")
         .toLowerCase();

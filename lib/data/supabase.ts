@@ -163,24 +163,57 @@ function mapOneLineRevision(o: Row | null | undefined): OneLineRevision | undefi
   };
 }
 
+/**
+ * Coerce a citation entry into a Source object.
+ * Accepts a full Source-like object, or a bare string (fallback path).
+ * Never returns a raw non-Source value that could crash React when rendered.
+ */
+function coerceSource(entry: unknown): Source | null {
+  if (entry == null || entry === "") return null;
+  if (typeof entry === "string") {
+    return { name: entry, url: "", type: "official" };
+  }
+  if (typeof entry === "object") {
+    const r = entry as Row;
+    const name = typeof r.name === "string" ? r.name : "";
+    if (!name) return null;
+    const url = typeof r.url === "string" ? r.url : "";
+    const type: Source["type"] =
+      r.type === "newspaper" ||
+      r.type === "official" ||
+      r.type === "legal_website" ||
+      r.type === "statute"
+        ? r.type
+        : "official";
+    return { name, url, type };
+  }
+  return null;
+}
+
 /** Engine ships v1 Source[] or v2 {primary, secondary} under the same column. */
 function mapSources(raw: unknown): { sources: Source[]; sourcesV2?: SourcesV2 } {
   if (Array.isArray(raw)) {
-    return { sources: raw as Source[] };
+    return {
+      sources: raw
+        .map(coerceSource)
+        .filter((s): s is Source => s !== null),
+    };
   }
   if (raw && typeof raw === "object") {
     const r = raw as Row;
+    const primary = coerceSource(r.primary);
+    if (!primary) return { sources: [] };
     const secondary = Array.isArray(r.secondary)
-      ? (r.secondary as string[])
+      ? r.secondary.map(coerceSource).filter((s): s is Source => s !== null)
       : r.secondary
-        ? [String(r.secondary)]
+        ? (() => {
+            const one = coerceSource(r.secondary);
+            return one ? [one] : [];
+          })()
         : [];
     return {
       sources: [],
-      sourcesV2: {
-        primary: r.primary ?? "",
-        secondary,
-      },
+      sourcesV2: { primary, secondary },
     };
   }
   return { sources: [] };
