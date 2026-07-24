@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getDataSource } from "@/lib/data";
 import { getCurrentUser } from "@/lib/auth";
-import { CATEGORY_META } from "@/lib/types";
+import { CATEGORY_META, type PublishedStory } from "@/lib/types";
 import { formatDate, formatReadingTime } from "@/lib/format";
 import { SITE_URL } from "@/lib/site";
 import { FavoriteButton } from "@/components/FavoriteButton";
@@ -18,9 +18,27 @@ import { LegalMentorSection } from "@/components/LegalMentorSection";
 import { ExamLensSection } from "@/components/ExamLensSection";
 import { QuizSection } from "@/components/QuizSection";
 import { BeforeYouLeaveSection } from "@/components/BeforeYouLeaveSection";
+import { LawDecodeSection } from "@/components/LawDecodeSection";
+import { ExamRadarSection } from "@/components/ExamRadarSection";
+import { ChallengeSection } from "@/components/ChallengeSection";
+import { OneLineRevisionSection } from "@/components/OneLineRevisionSection";
+import { VisualMemoryCard } from "@/components/VisualMemoryCard";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
+}
+
+/** Prefer explicit schemaVersion; fall back to presence of v2 nested blocks. */
+function isSchemaV2(story: PublishedStory): boolean {
+  if (story.schemaVersion === 2) return true;
+  if (story.schemaVersion === 1) return false;
+  return Boolean(
+    story.lawDecode ||
+      story.examRadar ||
+      story.challenge ||
+      story.story?.summary ||
+      story.visualMemoryCard,
+  );
 }
 
 export async function generateMetadata({
@@ -30,7 +48,11 @@ export async function generateMetadata({
   const data = getDataSource();
   const story = await data.getStory(slug);
   if (!story) return { title: "Story not found — Gavel News" };
-  const description = story.summary ?? story.whatHappened.slice(0, 160);
+  const description =
+    story.summary ??
+    story.story?.summary?.slice(0, 160) ??
+    story.whatHappened?.slice(0, 160) ??
+    story.title;
   const url = `${SITE_URL}/story/${story.slug}`;
   return {
     title: `${story.title} — Gavel News`,
@@ -52,6 +74,180 @@ export async function generateMetadata({
   };
 }
 
+function SourcesSection({ story }: { story: PublishedStory }) {
+  const hasV1 = story.sources.length > 0;
+  const hasV2 =
+    Boolean(story.sourcesV2?.primary) ||
+    (story.sourcesV2?.secondary?.length ?? 0) > 0;
+  if (!hasV1 && !hasV2) return null;
+
+  return (
+    <section>
+      <h2>Sources</h2>
+      {hasV2 && story.sourcesV2 && (
+        <ul className="!list-none !pl-0">
+          <li className="!mb-3 flex items-start gap-3">
+            <span className="mt-0.5 inline-flex shrink-0 rounded-full border border-border-app bg-elevated-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-ink-3">
+              primary
+            </span>
+            <span className="text-[15px] leading-snug text-ink-2">
+              {story.sourcesV2.primary}
+            </span>
+          </li>
+          {(story.sourcesV2.secondary ?? []).map((src, i) => (
+            <li key={i} className="!mb-3 flex items-start gap-3">
+              <span className="mt-0.5 inline-flex shrink-0 rounded-full border border-border-app bg-elevated-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-ink-3">
+                secondary
+              </span>
+              <span className="text-[15px] leading-snug text-ink-2">{src}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+      {hasV1 && (
+        <ul className="!list-none !pl-0">
+          {story.sources.map((src, i) => (
+            <li key={i} className="!mb-3 flex items-start gap-3">
+              <span className="mt-0.5 inline-flex shrink-0 rounded-full border border-border-app bg-elevated-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-ink-3">
+                {src.type.replace("_", " ")}
+              </span>
+              <a
+                href={src.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[15px] leading-snug"
+              >
+                {src.name}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+function V2PublicBody({ story }: { story: PublishedStory }) {
+  const block = story.story;
+  return (
+    <>
+      {(block?.summary || story.whatHappened) && (
+        <section className="mb-10">
+          <h2>{block?.heading || "What happened"}</h2>
+          <Markdown>{block?.summary || story.whatHappened || ""}</Markdown>
+        </section>
+      )}
+
+      {block?.takeaway && (
+        <section className="surface-emphasis mb-10 p-5 md:p-6">
+          <h2 className="!mt-0">Takeaway</h2>
+          <p className="!mb-0 text-[15px] leading-relaxed text-ink-2">
+            {block.takeaway}
+          </p>
+        </section>
+      )}
+
+      {!block?.summary && story.background && (
+        <section className="mb-10">
+          <h2>Background</h2>
+          <Markdown>{story.background}</Markdown>
+        </section>
+      )}
+    </>
+  );
+}
+
+function V2GatedBody({ story }: { story: PublishedStory }) {
+  return (
+    <>
+      <LawDecodeSection lawDecode={story.lawDecode} />
+      <ExamRadarSection examRadar={story.examRadar} />
+      <ChallengeSection challenge={story.challenge} />
+      <OneLineRevisionSection oneLineRevision={story.oneLineRevision} />
+      <VisualMemoryCard visualMemoryCard={story.visualMemoryCard} />
+    </>
+  );
+}
+
+function V1Body({
+  story,
+  signedIn,
+}: {
+  story: PublishedStory;
+  signedIn: boolean;
+}) {
+  return (
+    <>
+      {story.whatHappened && (
+        <section className="mb-10">
+          <h2>What happened</h2>
+          <Markdown>{story.whatHappened}</Markdown>
+        </section>
+      )}
+
+      {story.background && (
+        <section className="mb-10">
+          <h2>Background</h2>
+          <Markdown>{story.background}</Markdown>
+        </section>
+      )}
+
+      {signedIn ? (
+        <>
+          {story.whatCourtHeld && (
+            <section className="mb-10">
+              <h2>What the court held</h2>
+              <Markdown>{story.whatCourtHeld}</Markdown>
+            </section>
+          )}
+
+          {story.whyItMatters && (
+            <section className="surface-emphasis mb-10 p-5 md:p-6">
+              <h2 className="!mt-0 !text-[var(--gv-warn)]">
+                Why it matters for CLAT
+              </h2>
+              <div className="[&>p:last-child]:!mb-0">
+                <Markdown>{story.whyItMatters}</Markdown>
+              </div>
+            </section>
+          )}
+
+          {story.keyPoints && story.keyPoints.length > 0 && (
+            <section className="mb-10">
+              <h2>Key points</h2>
+              <ul>
+                {story.keyPoints.map((kp, i) => (
+                  <li key={i}>
+                    <Markdown inline>{kp.text}</Markdown>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          <LegalMentorSection
+            whatActuallyHappening={story.whatActuallyHappening}
+            whyDidThisHappen={story.whyDidThisHappen}
+            importantTerms={story.importantTerms}
+            lawBehindIt={story.lawBehindIt}
+            analogy={story.analogy}
+            friendExplanation={story.friendExplanation}
+            commonConfusions={story.commonConfusions}
+          />
+
+          <ExamLensSection examLens={story.examLens} />
+
+          <QuizSection quiz={story.quiz} />
+
+          <div className="mb-10">
+            <BeforeYouLeaveSection beforeYouLeave={story.beforeYouLeave} />
+          </div>
+        </>
+      ) : null}
+    </>
+  );
+}
+
 export default async function StoryPage({ params }: PageProps) {
   const { slug } = await params;
   const data = getDataSource();
@@ -61,6 +257,7 @@ export default async function StoryPage({ params }: PageProps) {
 
   const related = await data.getRelatedStories(story.id);
   const meta = CATEGORY_META[story.category];
+  const v2 = isSchemaV2(story);
 
   const showSidebar =
     user.signedIn &&
@@ -145,66 +342,14 @@ export default async function StoryPage({ params }: PageProps) {
             : "grid gap-10"
         }
       >
-        {/* Story body + TTS (Gavelogy JudgmentReaderPill / useNoteTTS) */}
         <StoryReader title={story.title}>
           <div className="prose-article max-w-none">
-            <section className="mb-10">
-              <h2>What happened</h2>
-              <Markdown>{story.whatHappened}</Markdown>
-            </section>
-
-            <section className="mb-10">
-              <h2>Background</h2>
-              <Markdown>{story.background}</Markdown>
-            </section>
+            {v2 ? <V2PublicBody story={story} /> : <V1Body story={story} signedIn={user.signedIn} />}
 
             {user.signedIn ? (
-              <>
-                {story.whatCourtHeld && (
-                  <section className="mb-10">
-                    <h2>What the court held</h2>
-                    <Markdown>{story.whatCourtHeld}</Markdown>
-                  </section>
-                )}
-
-                <section className="surface-emphasis mb-10 p-5 md:p-6">
-                  <h2 className="!mt-0 !text-[var(--gv-warn)]">
-                    Why it matters for CLAT
-                  </h2>
-                  <div className="[&>p:last-child]:!mb-0">
-                    <Markdown>{story.whyItMatters}</Markdown>
-                  </div>
-                </section>
-
-                <section className="mb-10">
-                  <h2>Key points</h2>
-                  <ul>
-                    {story.keyPoints.map((kp, i) => (
-                      <li key={i}>
-                        <Markdown inline>{kp.text}</Markdown>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-
-                <LegalMentorSection
-                  whatActuallyHappening={story.whatActuallyHappening}
-                  whyDidThisHappen={story.whyDidThisHappen}
-                  importantTerms={story.importantTerms}
-                  lawBehindIt={story.lawBehindIt}
-                  analogy={story.analogy}
-                  friendExplanation={story.friendExplanation}
-                  commonConfusions={story.commonConfusions}
-                />
-
-                <ExamLensSection examLens={story.examLens} />
-
-                <QuizSection quiz={story.quiz} />
-
-                <div className="mb-10">
-                  <BeforeYouLeaveSection beforeYouLeave={story.beforeYouLeave} />
-                </div>
-              </>
+              v2 ? (
+                <V2GatedBody story={story} />
+              ) : null
             ) : (
               <SignInGate
                 benefit={
@@ -217,34 +362,12 @@ export default async function StoryPage({ params }: PageProps) {
               />
             )}
 
-            {story.sources.length > 0 && (
-              <section>
-                <h2>Sources</h2>
-                <ul className="!list-none !pl-0">
-                  {story.sources.map((src, i) => (
-                    <li key={i} className="!mb-3 flex items-start gap-3">
-                      <span className="mt-0.5 inline-flex shrink-0 rounded-full border border-border-app bg-elevated-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-ink-3">
-                        {src.type.replace("_", " ")}
-                      </span>
-                      <a
-                        href={src.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[15px] leading-snug"
-                      >
-                        {src.name}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )}
+            <SourcesSection story={story} />
           </div>
         </StoryReader>
 
         {showSidebar && (
           <aside className="flex flex-col gap-6">
-            {/* Mobile: PYQ first, related at end. Desktop: related then PYQ. */}
             {(story.pyqQuestions?.length ?? 0) > 0 && (
               <div className="order-1 md:order-2">
                 <PYQSidebar questions={story.pyqQuestions!} />

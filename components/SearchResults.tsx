@@ -122,7 +122,10 @@ export function SearchResults({
                 const isFav = favIds.has(s.id);
                 const isDone = doneIds.has(s.id);
                 const teaser =
-                  s.summary?.trim() || s.whatHappened.trim().slice(0, 120);
+                  s.summary?.trim() ||
+                  s.story?.summary?.trim() ||
+                  s.whatHappened?.trim().slice(0, 120) ||
+                  "";
                 return (
                   <li key={s.id}>
                     <Link

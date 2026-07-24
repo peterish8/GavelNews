@@ -16,9 +16,13 @@ export async function GET(req: Request) {
   const stories = await data.searchStories(q);
 
   const hits: SearchHit[] = stories.slice(0, limit).map((s) => {
+    const body =
+      s.summary?.trim() ||
+      s.story?.summary?.trim() ||
+      s.whatHappened?.trim() ||
+      "";
     const teaser =
-      (s.summary?.trim() || s.whatHappened.trim()).slice(0, 120) +
-      ((s.summary?.trim() || s.whatHappened.trim()).length > 120 ? "…" : "");
+      body.slice(0, 120) + (body.length > 120 ? "…" : "");
     return {
       id: s.id,
       slug: s.slug,
