@@ -70,6 +70,8 @@ Use these entry points:
 - `/gsd-execute-phase` for planned phase work
 
 Do not make direct repo edits outside a GSD workflow unless the user explicitly asks to bypass it.
+
+**No worktrees.** Do not isolate work in a git worktree (`.claude/worktrees/…` or otherwise) — `.planning/config.json`'s `workflow.use_worktrees` is set to `false` for this repo. Work directly on the local checkout. If a change is large or risky enough to want isolation, create a normal feature branch off `main` and merge/PR it the ordinary way instead — never a worktree. A past worktree-based quick task left an uncommitted, broken sign-in page redesign (duplicate `</form>` tag) sitting unmerged in the working tree for an entire session before it got caught — that's the failure mode this rule exists to prevent.
 <!-- GSD:workflow-end -->
 
 <!-- GSD:profile-start -->
