@@ -19,7 +19,6 @@ export function LawDecodeSection({ lawDecode }: LawDecodeSectionProps) {
     legalTests,
     importantCases,
     constitutionalLink,
-    staticConnections,
     bnsMapping,
     dontConfuse,
     memoryTrick,
@@ -31,7 +30,6 @@ export function LawDecodeSection({ lawDecode }: LawDecodeSectionProps) {
     (legalTests && legalTests.length > 0) ||
     (importantCases && importantCases.length > 0) ||
     (constitutionalLink && constitutionalLink.length > 0) ||
-    (staticConnections && staticConnections.length > 0) ||
     (bnsMapping && (bnsMapping.ipc || bnsMapping.bns)) ||
     (dontConfuse && dontConfuse.length > 0) ||
     memoryTrick;
@@ -141,21 +139,6 @@ export function LawDecodeSection({ lawDecode }: LawDecodeSectionProps) {
                   {c.article}
                 </p>
                 <p className="!mb-0 text-sm leading-relaxed text-ink-2">{c.why}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {staticConnections && staticConnections.length > 0 && (
-        <div className="mb-5">
-          <h3 className="mb-2 text-sm font-semibold text-ink-2">
-            Static connections
-          </h3>
-          <ul className="list-disc pl-5">
-            {staticConnections.map((s, i) => (
-              <li key={i} className="mb-1 text-[15px] leading-relaxed text-ink-2">
-                {s.item}
               </li>
             ))}
           </ul>

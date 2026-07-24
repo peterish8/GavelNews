@@ -690,10 +690,6 @@ export const MOCK_STORIES: PublishedStory[] = [
           why: "The restriction clause that lets the State sustain obscenity offences against free-speech challenges.",
         },
       ],
-      staticConnections: [
-        { item: "Art. 19 free speech vs reasonable restrictions" },
-        { item: "IPC → BNS renumbering of public-obscenity offences" },
-      ],
       bnsMapping: {
         ipc: "Section 294(b) IPC",
         bns: "Corresponding BNS public-obscenity provision",
@@ -712,11 +708,6 @@ export const MOCK_STORIES: PublishedStory[] = [
       heading: "Exam Radar",
       whyExam:
         "Obscenity + Art. 19 is a staple free-speech pair on CLAT UG/PG; the IPC/BNS map and the community-standard test are both tested.",
-      likelyQuestions: [
-        "Distinguish Section 292 and Section 294(b)",
-        "State the community standards test for obscenity",
-        "Link Art. 19(2) decency/morality to obscenity offences",
-      ],
       examinerFocus: [
         "Community standard vs Victorian morals",
         "Public place + annoyance elements of 294(b)",

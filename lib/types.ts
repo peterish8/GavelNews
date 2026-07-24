@@ -137,7 +137,6 @@ export interface LawDecode {
   legalTests?: { name: string; rule: string }[];
   importantCases?: { case: string; principle: string }[];
   constitutionalLink?: { article: string; why: string }[];
-  staticConnections?: { item: string }[];
   bnsMapping?: { ipc?: string; bns?: string };
   dontConfuse?: { confusion: string; reality: string }[];
   memoryTrick?: string;
@@ -152,7 +151,6 @@ export type ExamRadarDifficulty =
 export interface ExamRadar {
   heading?: string;
   whyExam?: string;
-  likelyQuestions?: string[];
   examinerFocus?: string[];
   pyqConnection?: string;
   probability?: number; // 1-5

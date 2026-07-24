@@ -34,7 +34,6 @@ export function ExamRadarSection({ examRadar }: ExamRadarSectionProps) {
   const {
     heading,
     whyExam,
-    likelyQuestions,
     examinerFocus,
     pyqConnection,
     probability,
@@ -43,7 +42,6 @@ export function ExamRadarSection({ examRadar }: ExamRadarSectionProps) {
 
   const hasContent =
     whyExam ||
-    (likelyQuestions && likelyQuestions.length > 0) ||
     (examinerFocus && examinerFocus.length > 0) ||
     pyqConnection ||
     typeof probability === "number" ||
@@ -63,21 +61,6 @@ export function ExamRadarSection({ examRadar }: ExamRadarSectionProps) {
             Why this is exam-relevant
           </h3>
           <p className="text-[15px] leading-relaxed text-ink-2">{whyExam}</p>
-        </div>
-      )}
-
-      {likelyQuestions && likelyQuestions.length > 0 && (
-        <div className="mb-5">
-          <h3 className="mb-2 text-sm font-semibold text-ink-2">
-            Likely questions
-          </h3>
-          <ul className="list-disc pl-5">
-            {likelyQuestions.map((q, i) => (
-              <li key={i} className="mb-1.5 text-[15px] leading-relaxed text-ink-2">
-                {q}
-              </li>
-            ))}
-          </ul>
         </div>
       )}
 

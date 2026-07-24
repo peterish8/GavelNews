@@ -115,7 +115,6 @@ function mapLawDecode(l: Row | null | undefined): LawDecode | undefined {
     legalTests: r.legal_tests ?? undefined,
     importantCases: r.important_cases ?? undefined,
     constitutionalLink: r.constitutional_link ?? undefined,
-    staticConnections: r.static_connections ?? undefined,
     bnsMapping: r.bns_mapping && !emptyObject(r.bns_mapping) ? r.bns_mapping : undefined,
     dontConfuse: r.dont_confuse ?? undefined,
     memoryTrick: r.memory_trick || undefined,
@@ -128,7 +127,6 @@ function mapExamRadar(e: Row | null | undefined): ExamRadar | undefined {
   return {
     heading: r.heading || undefined,
     whyExam: r.why_exam || undefined,
-    likelyQuestions: r.likely_questions ?? undefined,
     examinerFocus: r.examiner_focus ?? undefined,
     pyqConnection: r.pyq_connection || undefined,
     probability: r.probability ?? undefined,
