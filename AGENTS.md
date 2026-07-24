@@ -49,6 +49,7 @@ Recent additions worth knowing about: `components/ShareButton.tsx` (Web Share AP
 
 ## Don't
 
+- Don't use git worktrees for isolation — work directly on the local checkout. If a change needs isolation, use a normal feature branch off `main` instead, never a worktree. (A worktree-isolated background task once left a broken, uncommitted page sitting unmerged for a full session before anyone noticed.)
 - Don't add a Prisma/Drizzle ORM layer — use `supabase-js` + CLI-generated types.
 - Don't add ads, a quiz/mastery feature, revision/planner/analytics, or UG/PG split content — explicitly out of scope for v1.
 - Don't prefix the service_role key with `NEXT_PUBLIC_`, and don't import `lib/supabase/serviceRole.ts` from a `"use client"` component or anything it transitively imports.
