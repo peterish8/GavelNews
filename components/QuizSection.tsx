@@ -40,7 +40,7 @@ function QuizCard({ index, question }: { index: number; question: QuizQuestion }
   const answered = selected !== null;
 
   return (
-    <div className="rounded-md border border-border-app p-4 md:p-5">
+    <div className="surface-standard p-4 md:p-5">
       <div className="mb-3 flex items-start justify-between gap-3">
         <p className="font-serif text-[15px] font-semibold leading-snug text-ink">
           {index + 1}. {question.question}

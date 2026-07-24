@@ -188,7 +188,7 @@ export function NavSearch({
       title="Search all stories (⌘K)"
       aria-expanded={open}
       aria-controls={panelId}
-      className="icon-btn inline-flex h-8 items-center gap-2 rounded-full border border-border-app bg-elevated/80 px-2.5 text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand sm:h-9 sm:px-3"
+      className="icon-btn glass-input inline-flex h-8 items-center gap-2 rounded-full px-2.5 text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand sm:h-9 sm:px-3"
     >
       <SearchIcon />
       <span className="hidden text-[12px] font-medium sm:inline">Search</span>
@@ -211,7 +211,7 @@ export function NavSearch({
               if (e.target === e.currentTarget) setOpen(false);
             }}
           >
-            <div className="flex max-h-[min(78vh,560px)] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-border-app bg-elevated shadow-[var(--shadow-lg,0_16px_48px_rgba(0,0,0,0.18))]">
+            <div className="glass-panel flex max-h-[min(78vh,560px)] w-full max-w-lg flex-col overflow-hidden rounded-2xl">
               <form
                 className="flex shrink-0 items-center gap-2 border-b border-border-app px-3 py-2.5"
                 onSubmit={(e) => {

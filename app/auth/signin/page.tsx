@@ -71,7 +71,7 @@ export default async function SignInPage({ searchParams }: PageProps) {
       <div className="max-w-4xl mx-auto">
         <div className="grid md:grid-cols-2 gap-6">
           {/* Without Sign In Box */}
-          <div className="rounded-xl border-2 border-border-app bg-elevated/50 p-6 opacity-90">
+          <div className="surface-muted p-6 opacity-90">
             <div className="text-center mb-6">
               <p className="label-law mb-2 text-ink-3">Without Sign In</p>
               <h3 className="heading-law text-xl text-ink">Free Reading</h3>
@@ -113,7 +113,7 @@ export default async function SignInPage({ searchParams }: PageProps) {
           </div>
 
           {/* With Free Account Box */}
-          <div className="rounded-xl border-2 border-brand-border bg-brand-soft/30 p-6 shadow-lg relative">
+          <div className="surface-gate relative p-6">
             <div className="absolute -top-3 left-1/2 -translate-x-1/2">
               <span className="inline-block px-4 py-1 bg-brand text-on-accent text-sm font-semibold rounded-full">
                 Most Popular

@@ -52,7 +52,7 @@ export function SettingsForm() {
   return (
     <div className="space-y-8">
       {/* Exam + Year */}
-      <section className="rounded-2xl border border-border-app bg-elevated p-5 md:p-6">
+      <section className="surface-standard p-5 md:p-6">
         <h2 className="mb-1 font-ui text-sm font-semibold uppercase tracking-wider text-ink-3">
           Exam target
         </h2>
@@ -102,7 +102,7 @@ export function SettingsForm() {
       </section>
 
       {/* Appearance */}
-      <section className="rounded-2xl border border-border-app bg-elevated p-5 md:p-6">
+      <section className="surface-standard p-5 md:p-6">
         <h2 className="mb-1 font-ui text-sm font-semibold uppercase tracking-wider text-ink-3">
           Appearance
         </h2>

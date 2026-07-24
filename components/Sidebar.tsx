@@ -87,8 +87,8 @@ export function Sidebar({
         data-collapsed={collapsed ? "true" : "false"}
         data-mobile-open={mobileOpen ? "true" : "false"}
         className={[
-          "mobile-nav-drawer flex h-dvh max-h-dvh shrink-0 flex-col overflow-hidden border-r border-border-app",
-          "bg-nav-bg dark:bg-[color-mix(in_srgb,var(--bg)_98%,#000)]",
+          // glass-sidebar = full-height chrome (token --glass-sidebar); not a card elevation
+          "mobile-nav-drawer glass-sidebar flex h-dvh max-h-dvh shrink-0 flex-col overflow-hidden border-r",
           // Mobile: smooth slide-in. Desktop: width collapse only.
           "fixed inset-y-0 left-0 z-[80] w-[min(16.5rem,88vw)] shadow-2xl will-change-transform",
           "transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
