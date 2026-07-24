@@ -4,9 +4,10 @@
   "private": true,
   "description": "Student-facing site for Gavel News — CLAT current-affairs, daily edition reader. Lives next to the editorial engine at /engine.",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --port 3100",
+    "dev:clean": "node -e \"try{require('fs').rmSync('.next',{recursive:true,force:true})}catch(e){}\" && next dev --port 3100",
     "build": "next build",
-    "start": "next start",
+    "start": "next start --port 3100",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
