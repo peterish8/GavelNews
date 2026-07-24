@@ -43,17 +43,17 @@ export default async function SignInPage({ searchParams }: PageProps) {
   if (user.signedIn) redirect(next);
 
   return (
-    <div className="mx-auto max-w-3xl lg:max-w-6xl px-5 py-10 md:py-14">
-      <div className="mb-8 text-center">
+    <div className="mx-auto max-w-3xl lg:max-w-6xl px-5 py-6 md:py-8">
+      <div className="mb-6 text-center">
         <p className="label-law mb-2">
           {cameFromProtected ? "Sign in required" : "Free account"}
         </p>
-        <h1 className="heading-law text-3xl md:text-4xl">
+        <h1 className="heading-law text-2xl md:text-3xl">
           {cameFromProtected
             ? `Unlock ${destinationLabel(next)}`
             : "Sign in to unlock the exam layer"}
         </h1>
-        <p className="mx-auto mt-2 max-w-lg font-serif text-sm leading-relaxed text-ink-2 md:text-base">
+        <p className="mx-auto mt-1.5 max-w-lg font-serif text-sm leading-relaxed text-ink-2">
           {cameFromProtected ? (
             <>
               <strong className="font-semibold text-ink">
@@ -76,8 +76,8 @@ export default async function SignInPage({ searchParams }: PageProps) {
       </div>
 
       <div className="lg:grid lg:grid-cols-[26rem_1fr] lg:items-start lg:gap-12">
-        <div className="surface-hero mx-auto max-w-md p-6 sm:p-8 lg:sticky lg:top-16 lg:mx-0 lg:max-w-none lg:p-9">
-          <p className="mb-5 text-center text-[15px] font-semibold text-ink">
+        <div className="surface-hero mx-auto max-w-md p-7 sm:p-9 lg:sticky lg:top-16 lg:mx-0 lg:max-w-none lg:p-10">
+          <p className="mb-6 text-center text-[15px] font-semibold text-ink">
             {cameFromProtected
               ? `Sign in to open ${destinationLabel(next)}`
               : "Ready? Sign in takes a second"}
@@ -92,7 +92,7 @@ export default async function SignInPage({ searchParams }: PageProps) {
             </p>
           )}
 
-          <form action={signInWithGoogle} className="mb-3">
+          <form action={signInWithGoogle} className="mb-4">
             <input type="hidden" name="next" value={next} />
             <button
               type="submit"
@@ -111,7 +111,7 @@ export default async function SignInPage({ searchParams }: PageProps) {
 
           {process.env.NODE_ENV !== "production" && (
             <>
-              <div className="my-4 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-ink-3">
+              <div className="my-6 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-ink-3">
                 <span className="h-px flex-1 bg-border-app" />
                 Local dev only
                 <span className="h-px flex-1 bg-border-app" />

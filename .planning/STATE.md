@@ -86,6 +86,7 @@ None yet.
 | 260723-vk1 | Fix PYQSidebar: render markdown in question/options/explanation text, and replace inline accordion with a full-screen modal on question click | 2026-07-23 | f1fc2e3, bd266d9 | [260723-vk1-fix-pyqsidebar-render-markdown-in-questi](./quick/260723-vk1-fix-pyqsidebar-render-markdown-in-questi/) |
 | 260724-daz | Redesign sign-in page so Google sign-in CTA is visible above the fold on desktop (premium two-column layout) | 2026-07-24 | 1aad1d0 | [260724-daz-redesign-sign-in-page-so-google-sign-in-](./quick/260724-daz-redesign-sign-in-page-so-google-sign-in-/) |
 | 260724-typ | Replace Inter/Libre/IBM Plex with Source legal stack; centralize type + theme tokens in app/system.css | 2026-07-24 | (pending) | [260724-typ-legal-font-system-source-of-truth](./quick/260724-typ-legal-font-system-source-of-truth/) |
+| 260724-dpf | Polish sign-in page: shrink header footprint, add breathing room to sign-in card spacing | 2026-07-24 | (pending) | [260724-dpf-polish-sign-in-page-shrink-header-footpr](./quick/260724-dpf-polish-sign-in-page-shrink-header-footpr/) |
 
 ## Deferred Items
 
@@ -101,4 +102,4 @@ Last session: 2026-07-22
 Stopped at: ROADMAP.md and STATE.md created; REQUIREMENTS.md traceability confirmed
 Resume file: None
 
-Last activity: 2026-07-24 - Completed quick task 260724-daz: Redesign sign-in page into a two-column layout so the Google sign-in CTA is visible above the fold on desktop
+Last activity: 2026-07-24 - Completed quick task 260724-dpf: Polish sign-in page — shrunk header footprint and widened sign-in card spacing per "congested" UI feedback
