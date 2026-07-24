@@ -20,7 +20,7 @@ Check `package.json` for exact versions — it is the source of truth, not this 
 
 ## Current State
 
-The app currently runs entirely on mock data (`DATA_SOURCE=mock`, see `lib/data/index.ts`) — there is no live Supabase querying yet. A real Supabase project ("GavelNews") is linked via the CLI, with anon URL/key in local `.env.local` (gitignored). Schema/RLS/seed data have not shipped (`.planning/ROADMAP.md` Phase 1). Don't assume any Supabase table exists.
+The app is configured to use Supabase (`DATA_SOURCE=supabase` in `.env.local`) but currently falls back to mock data when Supabase tables don't exist. A real Supabase project ("GavelNews") is linked via the CLI, with anon URL/key in local `.env.local` (gitignored). Schema/RLS/seed data have not shipped (`.planning/ROADMAP.md` Phase 1). Don't assume any Supabase table exists.
 
 ## Commands
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { SearchIcon, CloseIcon } from "./icons";
 
 interface SearchInputProps {
   value: string;
@@ -22,7 +23,7 @@ export function SearchInput({ value, onChange, onSubmit }: SearchInputProps) {
           : ""
       }`}
     >
-      <SearchIcon focused={focused} />
+      <SearchIcon focused={focused} className="" />
       <input
         type="search"
         value={value}
@@ -47,31 +48,3 @@ export function SearchInput({ value, onChange, onSubmit }: SearchInputProps) {
   );
 }
 
-function SearchIcon({ focused }: { focused: boolean }) {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden
-      className={focused ? "text-brand transition-colors" : "text-ink-3 transition-colors"}
-    >
-      <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.7" />
-      <path d="m20 20-3.5-3.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function CloseIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M6 6l12 12M18 6L6 18"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}

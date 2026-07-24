@@ -126,6 +126,7 @@ export interface PublishedStory {
   pyqQuestions?: PYQQuestion[]; // resolved by the DataSource at read time
   decision: "must_cover" | "maybe"; // admin-set
   publishedAt: string; // ISO datetime
+  status: "published"; // publication status, matches database schema
 
   // Legal Mentor deep-dive (gated behind sign-in in the story page)
   whatActuallyHappening?: string;

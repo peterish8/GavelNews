@@ -7,7 +7,7 @@ const DEFAULTS: Profile = {
   id: "local",
   displayName: "",
   exam: "UG",
-  attemptYear: 2026,
+  attemptYear: 2026, // Base year, will be updated to current year in component
   theme: "system",
   fontSize: "medium",
   marketingOptIn: false,
@@ -18,11 +18,21 @@ const KEY = "gavel-profile";
 export function SettingsForm() {
   const [profile, setProfile] = useState<Profile>(DEFAULTS);
   const [saved, setSaved] = useState(false);
+  
+  // Generate attempt years dynamically starting from current year
+  const currentYear = new Date().getFullYear();
+  const attemptYears = Array.from({ length: 5 }, (_, i) => currentYear + i);
 
   useEffect(() => {
     try {
       const raw = localStorage.getItem(KEY);
-      if (raw) setProfile({ ...DEFAULTS, ...JSON.parse(raw) });
+      if (raw) {
+        setProfile({ ...DEFAULTS, ...JSON.parse(raw) });
+      } else {
+        // If no saved profile, initialize with current year
+        const currentYear = new Date().getFullYear();
+        setProfile({ ...DEFAULTS, attemptYear: currentYear });
+      }
     } catch {}
   }, []);
 
@@ -81,7 +91,7 @@ export function SettingsForm() {
               onChange={(e) => update("attemptYear", Number(e.target.value))}
               className="w-full rounded-xl border border-border-app bg-elevated px-3.5 py-2.5 text-sm text-ink transition-colors hover:border-brand-border focus:border-brand focus:outline-none"
             >
-              {[2026, 2027, 2028, 2029, 2030].map((y) => (
+              {attemptYears.map((y) => (
                 <option key={y} value={y}>
                   {y}
                 </option>
@@ -110,7 +120,31 @@ export function SettingsForm() {
                   <button
                     key={opt}
                     type="button"
-                    onClick={() => update("theme", opt)}
+                    onClick={() => {
+                      update("theme", opt);
+                      // Apply immediately via the same gavel-theme key ThemeToggle/layout use
+                      try {
+                        if (opt === "dark") {
+                          document.documentElement.classList.add("dark");
+                          localStorage.setItem("gavel-theme", "dark");
+                        } else if (opt === "light") {
+                          document.documentElement.classList.remove("dark");
+                          localStorage.setItem("gavel-theme", "light");
+                        } else {
+                          // system
+                          localStorage.removeItem("gavel-theme");
+                          const prefersDark = window.matchMedia(
+                            "(prefers-color-scheme: dark)",
+                          ).matches;
+                          document.documentElement.classList.toggle(
+                            "dark",
+                            prefersDark,
+                          );
+                        }
+                      } catch {
+                        /* ignore */
+                      }
+                    }}
                     className={`flex-1 rounded-xl border px-4 py-2.5 text-sm font-medium capitalize transition-all duration-[200ms] ease-out active:scale-[0.97] ${
                       active
                         ? "border-brand bg-brand text-on-accent"

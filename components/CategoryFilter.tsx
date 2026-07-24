@@ -1,5 +1,6 @@
 import type { Category } from "@/lib/types";
 import { ALL_CATEGORIES, CATEGORY_META } from "@/lib/types";
+import { CheckIcon } from "./icons";
 
 interface CategoryFilterProps {
   selected: Category[];
@@ -32,16 +33,3 @@ export function CategoryFilter({ selected, onToggle }: CategoryFilterProps) {
   );
 }
 
-function CheckIcon() {
-  return (
-    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M5 12.5l4 4 10-10"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}

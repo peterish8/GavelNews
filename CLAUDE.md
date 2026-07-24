@@ -26,13 +26,13 @@ Versions below are what's actually pinned in `package.json` — check there befo
 | Styling | Tailwind CSS 4.x, CSS-first config (`@import "tailwindcss"` in `app/globals.css`, tokens in `app/tokens.css`) | No `tailwind.config.js` — don't add one |
 | Backend | Supabase (Postgres + Auth + RLS) via `@supabase/supabase-js` 2.49.4 + `@supabase/ssr` 0.5.2 | No live app wiring yet — see Current State below |
 | Package manager | pnpm | Use `pnpm`, not `npm`/`yarn` (`pnpm-lock.yaml` is the lockfile) |
-| Client state / misc | zustand, framer-motion, date-fns, clsx | zustand is installed but not yet used by any component — verify before assuming a store exists |
+| Client state / misc | framer-motion | No global state library currently; user data (favorites, settings) uses localStorage with Supabase sync planned |
 | Testing | Vitest — `pnpm test` | |
 | Lint | ESLint + `eslint-config-next` (`next/core-web-vitals`) | |
 
 **Not installed**, despite appearing in earlier drafts of this doc: `zod`, `next-themes`, `lucide-react`, shadcn/ui. Check `package.json` before importing any of these.
 
-**Current state:** the app runs entirely on `DATA_SOURCE=mock` (`lib/data/index.ts`, 12 mock stories) — no live Supabase queries yet. A real Supabase project ("GavelNews", ref `fewdjzjkdblnvzvtjzgz`) now exists and is linked via the CLI, with the anon URL/key written to local `.env.local` (gitignored, not committed). Per `.planning/ROADMAP.md` Phase 1, schema/RLS/seed data still have not shipped — don't assume any table exists.
+**Current state:** the app is configured to use Supabase (`DATA_SOURCE=supabase` in `.env.local`) but currently falls back to mock data when Supabase tables don't exist. A real Supabase project ("GavelNews", ref `fewdjzjkdblnvzvtjzgz`) now exists and is linked via the CLI, with the anon URL/key written to local `.env.local` (gitignored, not committed). Per `.planning/ROADMAP.md` Phase 1, schema/RLS/seed data still have not shipped — don't assume any table exists.
 <!-- GSD:stack-end -->
 
 <!-- GSD:conventions-start source:CONVENTIONS.md -->
@@ -73,6 +73,10 @@ Do not make direct repo edits outside a GSD workflow unless the user explicitly 
 
 **No worktrees.** Do not isolate work in a git worktree (`.claude/worktrees/…` or otherwise) — `.planning/config.json`'s `workflow.use_worktrees` is set to `false` for this repo. Work directly on the local checkout. If a change is large or risky enough to want isolation, create a normal feature branch off `main` and merge/PR it the ordinary way instead — never a worktree. A past worktree-based quick task left an uncommitted, broken sign-in page redesign (duplicate `</form>` tag) sitting unmerged in the working tree for an entire session before it got caught — that's the failure mode this rule exists to prevent.
 <!-- GSD:workflow-end -->
+
+## Task Delegation
+
+To hand a task/bug off to an external CLI coding agent (Grok CLI or Codex CLI) instead of doing it in this session, use the global `cli-delegate` skill (`~/.claude/skills/cli-delegate/`, not project-local). It writes a GSD-quick-style plan, runs the task either headlessly in the background or live — preferring the `agent-summoner` MCP bridge (opens the worker in a real terminal tab inside the editor), falling back to a standalone terminal window, then the `shared-terminals` skill's tmux session in WSL as a last resort — and independently verifies the result before reporting back. See `cli-delegate`'s SKILL.md for the full tier order and setup notes.
 
 <!-- GSD:profile-start -->
 ## Developer Profile

@@ -11,6 +11,7 @@ import {
 import type { ArchiveMonth, Edition } from "@/lib/types";
 import { CATEGORY_META } from "@/lib/types";
 import { formatDate, formatReadingTime } from "@/lib/format";
+import { ArrowIcon } from "./icons";
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
 
@@ -372,16 +373,4 @@ function Chevron({ dir }: { dir: "left" | "right" }) {
   );
 }
 
-function ArrowIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M5 12h14M13 6l6 6-6 6"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
+

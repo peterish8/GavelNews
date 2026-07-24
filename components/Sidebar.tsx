@@ -6,6 +6,7 @@ import { ThemeToggle } from "./ThemeToggle";
 import { NAV_ITEMS, SECTION_LABELS, signInHref, type NavItem } from "@/lib/nav";
 import { formatDate } from "@/lib/format";
 import { signOut } from "@/lib/auth-actions";
+import { PanelLeftIcon, LockIcon, CloseIcon, Logo } from "./icons";
 
 type SidebarProps = {
   signedIn: boolean;
@@ -68,7 +69,7 @@ export function Sidebar({
           collapsed ? "lg:w-0 lg:border-r-0 lg:pointer-events-none" : "lg:w-[16.5rem]",
         ].join(" ")}
         aria-label="Main navigation"
-        aria-hidden={collapsed ? true : undefined}
+        aria-hidden={collapsed && !mobileOpen ? true : undefined}
       >
         {/* Header: brand + edition dateline + INSIDE opener (only while open) */}
         <div className="shrink-0 border-b border-border-app">
@@ -246,111 +247,6 @@ function SidebarLink({
   );
 }
 
-/** Panel-left icon — Gavelogy-style sidebar toggle */
-function PanelLeftIcon({ flipped = false }: { flipped?: boolean }) {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden
-      className={flipped ? "rotate-180" : undefined}
-    >
-      {/* Sidebar panel outline */}
-      <rect
-        x="3"
-        y="4"
-        width="18"
-        height="16"
-        rx="2"
-        stroke="currentColor"
-        strokeWidth="1.7"
-      />
-      {/* Left rail */}
-      <path d="M9 4v16" stroke="currentColor" strokeWidth="1.7" />
-    </svg>
-  );
-}
 
-function LockIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg
-      width="11"
-      height="11"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden
-      className={className}
-    >
-      <rect
-        x="5"
-        y="11"
-        width="14"
-        height="10"
-        rx="2"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      <path
-        d="M8 11V8a4 4 0 0 1 8 0v3"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function Logo() {
-  return (
-    <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-brand-border bg-brand-soft text-brand">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-        <path
-          d="M12 2L4 6v6c0 5 3.4 9.4 8 10 4.6-.6 8-5 8-10V6l-8-4z"
-          stroke="currentColor"
-          strokeWidth="1.6"
-          strokeLinejoin="round"
-          fill="currentColor"
-          fillOpacity="0.12"
-        />
-        <path
-          d="M9.5 12.5l1.8 1.8 3.5-3.6"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </span>
-  );
-}
-
-function CloseIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M6 6l12 12M18 6L6 18"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function UserIcon() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.7" />
-      <path
-        d="M5 19c1.5-3 4-4.5 7-4.5s5.5 1.5 7 4.5"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
 
 export { PanelLeftIcon };

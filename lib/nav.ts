@@ -27,7 +27,6 @@ export const NAV_ITEMS: NavItem[] = [
     description: "Browse editions by date",
     match: (p) =>
       p.startsWith("/calendar") ||
-      p.startsWith("/archive") ||
       p.startsWith("/edition"),
     section: "read",
   },

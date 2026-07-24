@@ -48,6 +48,61 @@ export const MOCK_STORIES: PublishedStory[] = [
     pyqKeyword: "Governor Article 200",
     decision: "must_cover",
     publishedAt: "2026-07-22T07:30:00Z",
+    status: "published",
+    // Gated content for UI testing
+    whatActuallyHappening: "Governors were simply sitting on Bills indefinitely, effectively vetoing them without saying no. The Supreme Court stepped in to say this silent approach is unconstitutional.",
+    whyDidThisHappen: "Several state governments complained about Governors blocking legislation through inaction, creating tension between the executive and legislative branches at the state level.",
+    importantTerms: [
+      {
+        term: "Pocket Veto",
+        whatIsIt: "A constitutional functionary's refusal to act on a bill, neither assenting nor rejecting it",
+        whyItMatters: "Undermines legislative process and is now ruled unconstitutional in this context"
+      },
+      {
+        term: "Deemed Assent",
+        whatIsIt: "When a bill is considered approved automatically after a specified time period",
+        whyItMatters: "Prevents constitutional functionaries from blocking legislation through inaction"
+      }
+    ],
+    lawBehindIt: "Article 200 of the Constitution of India",
+    analogy: "Like a referee who never blows the whistle - the game can't proceed and everyone is stuck waiting indefinitely.",
+    friendExplanation: "Think of it as your professor promising to grade your paper but never doing it. You can't move forward, and they never actually said no, but you're still stuck.",
+    commonConfusions: [
+      {
+        a: "Governor's pocket veto",
+        b: "President's pocket veto",
+        explanation: "Article 200 (Governor) vs Article 111 (President) - different time limits and procedures apply"
+      }
+    ],
+    examLens: {
+      fiveThings: ["Article 200", "Governor's powers", "Deemed assent", "Pocket veto", "Constitutional limits"],
+      pyqConnection: "Directly tested in 2022 PG CLAT paper on Governor's powers",
+      staticLawConnection: "Article 200, Article 111, Centre-State relations",
+      expectedQuestionAreas: "Constitutional law, executive powers, legislative process",
+      difficulty: "Medium",
+      examProbability: 4
+    },
+    quiz: [
+      {
+        question: "What is the time limit set by the Supreme Court for Governor's action on a re-passed Bill?",
+        type: "conceptual",
+        options: ["15 days", "1 month", "3 months", "6 months"],
+        correctIndex: 1,
+        explanation: "The Court set a one-month outer limit for ordinary cases and three months when the Bill is reserved for the President's consideration."
+      },
+      {
+        question: "Which constitutional principle did the Court apply to limit Governor's inaction?",
+        type: "static_law",
+        options: ["Doctrine of pith and substance", "Doctrine of constitutional silence", "Doctrine of colourable legislation", "Doctrine of eclipse"],
+        correctIndex: 1,
+        explanation: "The Court applied the doctrine of constitutional silence, reasoning that the Constitution enumerates what the Governor must do, and silence cannot enlarge that."
+      }
+    ],
+    beforeYouLeave: {
+      oneLiner: "Governor's silence is not a constitutional option - Article 200 now has a reasonable time limit.",
+      threeBullets: ["1 month limit for ordinary Bills", "3 months if reserved for President", "Deemed assent if no action taken"],
+      examTip: "Remember: Article 200 vs Article 111 - different procedures and time limits apply to Governor vs President."
+    }
   },
   {
     id: "s-002",
@@ -87,6 +142,61 @@ export const MOCK_STORIES: PublishedStory[] = [
     pyqKeyword: "Section 302 IPC murder",
     decision: "must_cover",
     publishedAt: "2026-07-22T07:30:00Z",
+    status: "published",
+    // Gated content for UI testing
+    whatActuallyHappening: "NCRB data shows murder conviction rates are dropping while trial times are increasing, indicating systemic issues in the criminal justice system.",
+    whyDidThisHappen: "Multiple factors contribute: witness protection issues, judicial vacancies, procedural delays, and inadequate investigation quality. The pandemic also exacerbated existing backlogs.",
+    importantTerms: [
+      {
+        term: "Conviction Rate",
+        whatIsIt: "Percentage of cases resulting in conviction out of total cases decided",
+        whyItMatters: "Key metric for criminal justice system effectiveness - low rates suggest investigation or prosecution problems"
+      },
+      {
+        term: "Section 302 IPC",
+        whatIsIt: "Legal provision defining murder and prescribing death penalty or life imprisonment",
+        whyItMatters: "Most serious offence in IPC - conviction rates here indicate system's ability to handle major crimes"
+      }
+    ],
+    lawBehindIt: "Section 302 IPC, Code of Criminal Procedure",
+    analogy: "Like a factory with declining quality output and increasing production time - the system is struggling to process cases efficiently.",
+    friendExplanation: "Think of it as the criminal justice system's report card - getting worse grades in processing murder cases over time.",
+    commonConfusions: [
+      {
+        a: "Conviction rate",
+        b: "Acquittal rate",
+        explanation: "Conviction rate is convictions/total decided cases; acquittal rate is acquittals/total decided cases - they are complements"
+      }
+    ],
+    examLens: {
+      fiveThings: ["Section 302 IPC", "NCRB reports", "Criminal justice metrics", "Trial duration", "Systemic delays"],
+      pyqConnection: "Often tested through data interpretation questions in GK section",
+      staticLawConnection: "IPC Sections 299-304, CrPC provisions on trial procedures",
+      expectedQuestionAreas: "Criminal law, statistical interpretation, criminal justice policy",
+      difficulty: "Easy",
+      examProbability: 3
+    },
+    quiz: [
+      {
+        question: "What is the conviction rate for murder as per NCRB 2025 data?",
+        type: "application",
+        options: ["44.1%", "38.7%", "56%", "42.3%"],
+        correctIndex: 1,
+        explanation: "The conviction rate for murder (Section 302 IPC) declined to 38.7% in 2025 from 44.1% in 2020."
+      },
+      {
+        question: "What is the average trial duration in murder cases according to the data?",
+        type: "conceptual",
+        options: ["5.8 years", "7.2 years", "6.5 years", "8.1 years"],
+        correctIndex: 1,
+        explanation: "The average time from FIR to conviction in murder trials is now 7.2 years, up from 5.8 years five years ago."
+      }
+    ],
+    beforeYouLeave: {
+      oneLiner: "Murder conviction rates are dropping while trial times increase - indicating systemic criminal justice challenges.",
+      threeBullets: ["38.7% conviction rate for murder", "7.2 years average trial duration", "5 crore pending cases overall"],
+      examTip: "Remember NCRB data for GK questions - trends in conviction rates and pendency are frequently tested."
+    }
   },
   {
     id: "s-003",
@@ -126,6 +236,7 @@ export const MOCK_STORIES: PublishedStory[] = [
     pyqKeyword: "DPDPA Data Protection Board",
     decision: "must_cover",
     publishedAt: "2026-07-22T07:30:00Z",
+    status: "published",
   },
   {
     id: "s-004",
@@ -165,6 +276,7 @@ export const MOCK_STORIES: PublishedStory[] = [
     pyqKeyword: "Consumer Protection Act jurisdiction",
     decision: "must_cover",
     publishedAt: "2026-07-22T07:30:00Z",
+    status: "published",
   },
 
   // ── Edition 2: 21 July 2026 ──
@@ -207,6 +319,7 @@ export const MOCK_STORIES: PublishedStory[] = [
     pyqKeyword: "Section 152 BNS sedition",
     decision: "must_cover",
     publishedAt: "2026-07-21T07:30:00Z",
+    status: "published",
   },
   {
     id: "s-006",
@@ -242,6 +355,7 @@ export const MOCK_STORIES: PublishedStory[] = [
     pyqKeyword: "Section 27 Evidence Act discovery",
     decision: "must_cover",
     publishedAt: "2026-07-21T07:30:00Z",
+    status: "published",
   },
   {
     id: "s-007",
@@ -276,6 +390,7 @@ export const MOCK_STORIES: PublishedStory[] = [
     pyqKeyword: "PMLA FIU crypto",
     decision: "maybe",
     publishedAt: "2026-07-21T07:30:00Z",
+    status: "published",
   },
   {
     id: "s-008",
@@ -310,6 +425,7 @@ export const MOCK_STORIES: PublishedStory[] = [
     pyqKeyword: "Section 103 BNS murder",
     decision: "must_cover",
     publishedAt: "2026-07-21T07:30:00Z",
+    status: "published",
   },
 
   // ── Edition 3: 20 July 2026 ──
@@ -347,6 +463,7 @@ export const MOCK_STORIES: PublishedStory[] = [
     pyqKeyword: "Article 21 privacy Puttaswamy",
     decision: "maybe",
     publishedAt: "2026-07-20T07:30:00Z",
+    status: "published",
   },
   {
     id: "s-010",
@@ -382,6 +499,7 @@ export const MOCK_STORIES: PublishedStory[] = [
     pyqKeyword: "anticipatory bail Section 438",
     decision: "must_cover",
     publishedAt: "2026-07-20T07:30:00Z",
+    status: "published",
   },
   {
     id: "s-011",
@@ -421,6 +539,7 @@ export const MOCK_STORIES: PublishedStory[] = [
     pyqKeyword: "All India Judicial Service Article 312",
     decision: "maybe",
     publishedAt: "2026-07-20T07:30:00Z",
+    status: "published",
   },
   {
     id: "s-012",
@@ -455,5 +574,6 @@ export const MOCK_STORIES: PublishedStory[] = [
     pyqKeyword: "Section 141 IPC unlawful assembly",
     decision: "maybe",
     publishedAt: "2026-07-20T07:30:00Z",
+    status: "published",
   },
 ];

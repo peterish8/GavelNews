@@ -128,6 +128,7 @@ export default async function StoryPage({ params }: PageProps) {
               benefit="Save stories · Mark complete · Track reading"
               context="actions"
               variant="compact"
+              nextPath={`/story/${story.slug}`}
             />
           )}
           <ShareButton
@@ -212,6 +213,7 @@ export default async function StoryPage({ params }: PageProps) {
                     : "Exam layer: why it matters + key points"
                 }
                 context="exam-layer"
+                nextPath={`/story/${story.slug}`}
               />
             )}
 

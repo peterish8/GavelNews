@@ -25,7 +25,6 @@ learners/
 │   ├── layout.tsx          # Root layout + theme bootstrap
 │   └── page.tsx            # Home — today's edition
 ├── components/             # Shared UI
-│   ├── TopNav.tsx
 │   ├── Footer.tsx
 │   └── ThemeToggle.tsx
 ├── lib/                    # data, types, formatters (Phase 2)

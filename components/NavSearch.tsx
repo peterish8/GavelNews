@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { formatDate, formatReadingTime } from "@/lib/format";
 import type { SearchHit } from "@/lib/search";
+import { SearchIcon } from "./icons";
 
 const FAV_KEY = "gavel-favorites";
 const DONE_KEY = "gavel-completed";
@@ -278,7 +279,7 @@ export function NavSearch({
                 )}
 
                 {hits.length > 0 && (
-                  <ul className="space-y-0.5" role="listbox">
+                  <ul className="space-y-0.5">
                     {hits.map((hit) => {
                       const isFav = favIds.has(hit.id);
                       const isDone = doneIds.has(hit.id);
@@ -286,7 +287,6 @@ export function NavSearch({
                         <li key={hit.id}>
                           <button
                             type="button"
-                            role="option"
                             onClick={() => goToStory(hit)}
                             className="flex w-full flex-col gap-1 rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-brand-soft/70 focus-visible:bg-brand-soft focus-visible:outline-none"
                           >
@@ -384,23 +384,4 @@ export function NavSearch({
   );
 }
 
-function SearchIcon({ className = "text-current" }: { className?: string }) {
-  return (
-    <svg
-      width="15"
-      height="15"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden
-      className={className}
-    >
-      <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.7" />
-      <path
-        d="m20 20-3.5-3.5"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
+

@@ -141,6 +141,7 @@ function rowToStory(row: Row): PublishedStory {
     pyqQuestionIds: row.pyq_question_ids ?? undefined,
     decision: row.decision ?? "must_cover",
     publishedAt: row.published_at ?? row.created_at,
+    status: "published",
 
     whatActuallyHappening: row.what_actually_happening || undefined,
     whyDidThisHappen: row.why_did_this_happen || undefined,

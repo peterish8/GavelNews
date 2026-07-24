@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { PublishedStory } from "@/lib/types";
 import { CATEGORY_META } from "@/lib/types";
 import { formatDate, formatReadingTime } from "@/lib/format";
+import { ArrowIcon } from "./icons";
 
 interface StoryCardProps {
   story: PublishedStory;
@@ -165,23 +166,4 @@ export function StoryCard({
   );
 }
 
-function ArrowIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      className={className}
-      aria-hidden
-    >
-      <path
-        d="M5 12h14M13 6l6 6-6 6"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
+

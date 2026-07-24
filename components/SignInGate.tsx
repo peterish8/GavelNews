@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { ArrowIconRight } from "./icons";
+import { signInHref } from "@/lib/nav";
 
 interface SignInGateProps {
   /** What the user gets when they sign in. Used as the panel's pitch. */
@@ -12,6 +14,8 @@ interface SignInGateProps {
     | "exam-layer";
   /** compact = inline bar (actions); default = full conversion panel */
   variant?: "default" | "compact";
+  /** Where sign-in should return after auth */
+  nextPath?: string;
 }
 
 const CONTEXT_COPY: Record<
@@ -44,8 +48,10 @@ export function SignInGate({
   benefit,
   context,
   variant = "default",
+  nextPath = "/",
 }: SignInGateProps) {
   const copy = CONTEXT_COPY[context];
+  const href = signInHref(nextPath);
 
   if (variant === "compact") {
     return (
@@ -55,7 +61,7 @@ export function SignInGate({
           <span className="text-ink-3"> — {benefit}</span>
         </p>
         <Link
-          href="/auth/signin?next=%2F"
+          href={href}
           className="btn-press shrink-0 rounded-md bg-brand px-3.5 py-1.5 text-xs font-semibold text-on-accent hover:bg-brand-hover"
         >
           Sign in
@@ -77,11 +83,11 @@ export function SignInGate({
         <p className="mb-5 font-serif text-xs italic text-brand">{benefit}</p>
         <div className="flex flex-wrap gap-2">
           <Link
-            href="/auth/signin?next=%2F"
+            href={href}
             className="btn-press inline-flex items-center gap-2 rounded-md bg-brand px-4 py-2.5 text-sm font-semibold text-on-accent hover:bg-brand-hover"
           >
             Sign in — see what you unlock
-            <ArrowIcon />
+            <ArrowIconRight />
           </Link>
         </div>
       </div>
@@ -89,38 +95,4 @@ export function SignInGate({
   );
 }
 
-function LockIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <rect
-        x="4"
-        y="11"
-        width="16"
-        height="10"
-        rx="2"
-        stroke="currentColor"
-        strokeWidth="1.8"
-      />
-      <path
-        d="M8 11V8a4 4 0 0 1 8 0v3"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
 
-function ArrowIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M5 12h14m-6-6 6 6-6 6"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
