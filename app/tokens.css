@@ -187,10 +187,11 @@
   --arena-cta-gradient:       linear-gradient(180deg, #ef4444 0%, #dc2626 55%, #b91c1c 100%);
   --arena-cta-gradient-hover: linear-gradient(180deg, #f87171 0%, #ef4444 55%, #dc2626 100%);
 
-  /* ── Typography ── */
-  --display-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
-  --font-ui:        "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
-  --font-serif:     "Source Serif 4", Georgia, serif;
+  /* ── Typography (defaults only — Gavel News overrides in system.css) ──
+     Do not load Plus Jakarta / Inter here. Real stack: app/system.css. */
+  --display-family: Georgia, "Times New Roman", serif;
+  --font-ui:        system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif:     Georgia, "Times New Roman", serif;
   --blur:           22px;
   --card-radius:    14px;
   --on-accent:      #ffffff;

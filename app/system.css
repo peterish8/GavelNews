@@ -1,0 +1,124 @@
+/* ═══════════════════════════════════════════════════════════════════
+   GAVEL NEWS — Design system (single source of truth)
+   ───────────────────────────────────────────────────────────────────
+   Own: typography, Gavel News theme overrides, editorial utilities.
+   Do not redefine fonts or brand surfaces in globals.css or components.
+
+   Stack order (see globals.css):
+     1. Tailwind + tokens.css (shared Gavelogy base palette)
+     2. this file (Gavel News law-editorial overrides + type)
+     3. @theme bridge in globals.css (maps --type-* → font-* utilities)
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Fonts — one legal-editorial family stack ───────────────────────
+   UI / labels / buttons: Source Sans 3  (neat, quiet, high legibility)
+   Headlines / body / brand: Source Serif 4  (court / journal reading)
+   Code only: Source Code Pro
+   Removed: Inter, Libre Baskerville, IBM Plex Mono, Plus Jakarta Sans
+   Font files are @import'd at the top of globals.css (CSS import order). */
+
+:root {
+  /* ── Type tokens (THE only place font families are named) ─────────
+     Prefixed --type-* so @theme can map to --font-* without cycles. */
+  --type-ui: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --type-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --type-mono: "Source Code Pro", ui-monospace, "Cascadia Code", monospace;
+  --type-label: var(--type-ui);
+  --type-display: var(--type-serif);
+
+  /* Legacy aliases used by body / prose / components (read-only mirrors) */
+  --font-ui: var(--type-ui);
+  --font-sans: var(--type-ui);
+  --font-serif: var(--type-serif);
+  --font-mono: var(--type-mono);
+  --font-label: var(--type-label);
+  --display-family: var(--type-display);
+
+  /* ── Type scale ─────────────────────────────────────────────────── */
+  --text-label: 0.6875rem;   /* 11px */
+  --text-meta: 0.75rem;      /* 12px */
+  --text-body: 1.0625rem;    /* 17px article */
+  --leading-body: 1.75;
+  --tracking-label: 0.12em;
+
+  /* ── Law-editorial surfaces (warm parchment, court ink) ───────────
+     Overrides shared tokens.css SaaS/glass defaults. */
+  --nav-bg: #fffcf8;
+  --bg: #fbf8f3;
+  --ink: #1a1410;
+  --ink-2: #4a3f36;
+  --ink-3: #7a6b5d;
+  --gv-ink: #1a1410;
+  --gv-ink-2: #4a3f36;
+  --gv-ink-3: #7a6b5d;
+  --gv-bg: #fbf8f3;
+  --panel: #ebe4d8;
+  --border: #e0d4c4;
+  --input: #e0d4c4;
+  --app-border: rgba(160, 140, 110, 0.38);
+  --app-border-strong: #c4b39a;
+  --app-elevated-muted: #f3eee5;
+  --app-surface: #fffcf7;
+  --app-elevated: #fffcf7;
+  --card: #fffcf7;
+  --background: #fbf8f3;
+  --foreground: #1a1410;
+  --muted: #f0e9dc;
+  --muted-foreground: #7a6b5d;
+  --secondary: #f8f1e6;
+  --secondary-foreground: #1a1410;
+  --accent: #f8f1e6;
+  --accent-foreground: #1a1410;
+  --sidebar: #f8f1e6;
+  --sidebar-border: #e0d4c4;
+  --brand-soft: #f8ebe6;
+  --brand-border: #e8c4b8;
+  --gv-primary-soft: #f8ebe6;
+  --gv-primary-border: #e8c4b8;
+  --bg-tint-a: rgba(138, 90, 10, 0.06);
+  --bg-tint-b: rgba(161, 29, 46, 0.04);
+  --bg-tint-c: rgba(138, 90, 10, 0.05);
+  --ambient-violet: rgba(138, 90, 10, 0.04);
+  --ambient-blue: rgba(161, 29, 46, 0.05);
+  --ambient-indigo: rgba(138, 90, 10, 0.04);
+  --glass-1: rgba(255, 252, 247, 0.78);
+  --glass-2: rgba(255, 252, 247, 0.9);
+  --glass-3: rgba(255, 252, 247, 0.96);
+  --glass-sidebar: rgba(248, 241, 230, 0.92);
+  --glass-border: rgba(255, 252, 247, 0.85);
+  --glass-border-subtle: rgba(180, 155, 120, 0.28);
+  --glass-shadow: 0 4px 24px rgba(40, 28, 16, 0.06), 0 1px 4px rgba(40, 28, 16, 0.04);
+  --glass-shadow-lg: 0 12px 40px rgba(40, 28, 16, 0.08), 0 2px 8px rgba(40, 28, 16, 0.04);
+  --shadow-md: 0 4px 24px rgba(40, 28, 16, 0.06), 0 1px 4px rgba(40, 28, 16, 0.04);
+  --shadow-lg: 0 12px 40px rgba(40, 28, 16, 0.08), 0 2px 8px rgba(40, 28, 16, 0.04);
+  --shadow-brand-sm: 0 2px 10px rgba(161, 29, 46, 0.12);
+  --shadow-brand-md: 0 4px 16px rgba(161, 29, 46, 0.16);
+  --shadow-brand-lg: 0 8px 28px rgba(161, 29, 46, 0.18);
+  --menu-item-hover: rgba(161, 29, 46, 0.06);
+  --menu-item-border: rgba(161, 29, 46, 0.16);
+  --btn-ghost-border: rgba(160, 140, 110, 0.4);
+  --btn-ghost-hover: rgba(161, 29, 46, 0.06);
+  --card-radius: 10px;
+}
+
+/* Dark nav lift — co-located with theme system */
+:root.dark {
+  --nav-bg: #14110f;
+}
+
+/* ── Editorial utilities (consume tokens only) ────────────────────── */
+.label-law {
+  font-family: var(--type-label);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.heading-law {
+  font-family: var(--type-display);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}

@@ -44,7 +44,8 @@ Recent additions worth knowing about: `components/ShareButton.tsx` (Web Share AP
 
 - All data access goes through `lib/data/index.ts`'s `getDataSource()` — don't fetch data ad-hoc in components.
 - Server Components by default; `"use client"` only on interactive leaf components. Public story/feed pages must stay server-rendered (SEO is a stated requirement).
-- `app/tokens.css` is a generated copy of shared design tokens — don't hand-edit.
+- `app/tokens.css` is a generated copy of shared design tokens — don't hand-edit font/brand families there.
+- `app/system.css` is the Gavel News design-system source of truth (fonts via `--type-*`, law-editorial surface overrides). Change typefaces only there + the Google Fonts import at the top of `app/globals.css`.
 
 ## Don't
 

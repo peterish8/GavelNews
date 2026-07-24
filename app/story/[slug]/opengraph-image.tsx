@@ -87,9 +87,10 @@ export default async function Image({
   ).toUpperCase();
   const domain = SITE_URL.replace(/^https?:\/\//, "");
 
-  // Subset text for each face — keeps the Google Fonts response small/correct
+  // Subset text for each face — keeps the Google Fonts response small/correct.
+  // Matches app/system.css: Source Serif 4 (display) + Source Sans 3 (labels).
   const serifText = `${title}${dek ?? ""}Gavel News…`;
-  const monoText = [
+  const sansText = [
     "DAILY LEGAL BRIEF",
     "Daily CLAT Current Affairs",
     "Constitutional Law",
@@ -108,9 +109,9 @@ export default async function Image({
   };
   let fonts: OgFont[] | undefined;
   try {
-    const [serifData, monoData] = await Promise.all([
+    const [serifData, sansData] = await Promise.all([
       loadGoogleFont("Source Serif 4", 700, serifText),
-      loadGoogleFont("IBM Plex Mono", 500, monoText),
+      loadGoogleFont("Source Sans 3", 500, sansText),
     ]);
     fonts = [
       {
@@ -120,8 +121,8 @@ export default async function Image({
         style: "normal" as const,
       },
       {
-        name: "IBM Plex Mono",
-        data: monoData,
+        name: "Source Sans 3",
+        data: sansData,
         weight: 500 as const,
         style: "normal" as const,
       },
@@ -131,8 +132,8 @@ export default async function Image({
     fonts = undefined;
   }
 
-  const serifFamily = fonts ? "Source Serif 4" : "sans-serif";
-  const monoFamily = fonts ? "IBM Plex Mono" : "sans-serif";
+  const serifFamily = fonts ? "Source Serif 4" : "serif";
+  const monoFamily = fonts ? "Source Sans 3" : "sans-serif";
 
   return new ImageResponse(
     (

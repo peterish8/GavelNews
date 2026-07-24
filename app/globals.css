@@ -1,91 +1,25 @@
 /* ═══════════════════════════════════════════════════════════════════
-   GAVEL NEWS LEARNERS — Global stylesheet.
-   Pattern matches Gavelogy learner-web globals setup:
-   fonts → Tailwind v4 (CSS-first) → tokens → theme bridge → base
-   + glass surface system + premium interaction system.
-   Tokens live only in tokens.css (byte-identical to Gavelogy).
+   GAVEL NEWS — Global stylesheet (wiring only)
+   ───────────────────────────────────────────────────────────────────
+   Import order:
+     1. Google Fonts   — families named in system.css (--type-*)
+     2. Tailwind v4 (CSS-first)
+     3. tokens.css     — shared Gavelogy base palette (generated copy)
+     4. system.css     — Gavel News design system: type + theme overrides
+                         (SINGLE source of truth for type + law surfaces)
+     5. @theme bridge  — maps CSS vars → Tailwind utilities only
+     6. base / components / prose below — consume tokens, never re-name fonts
    ═══════════════════════════════════════════════════════════════════ */
 
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap");
+/* Font files only — family assignment lives in system.css */
+@import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600&family=Source+Sans+3:ital,wght@0,300..700;1,300..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap");
 
 /* Pure Tailwind v4 — no tailwindcss-animate / no JS config.
    Reference hybrid ships animate for shadcn accordion; we don't use those yet. */
 @import "tailwindcss" source(none);
 @source "../**/*.{ts,tsx,js,jsx,mdx}";
 @import "./tokens.css";
-
-/* ── Gavel News law-editorial overrides (keep tokens.css shared-source clean) ──
-   Warm parchment paper, court-ink type, seal-red brand. Not SaaS/tech glass.
-
-   Hierarchy (light mode):
-   - --nav-bg  = near-white for top bar + sidebar chrome
-   - --bg      = soft warm page canvas (slightly more parchment than the header)
-   Cards/elevated stay cream so content still lifts off the page. */
-:root {
-  --display-family: "Libre Baskerville", "Source Serif 4", Georgia, "Times New Roman", serif;
-  --font-ui: "Inter", "Source Serif 4", system-ui, sans-serif;
-  --font-serif: "Source Serif 4", "Libre Baskerville", Georgia, serif;
-  /* Header / sidebar chrome — near white */
-  --nav-bg: #fffcf8;
-  /* Page canvas — same warm family, a touch more parchment than the header */
-  --bg: #fbf8f3;
-  --ink: #1a1410;
-  --ink-2: #4a3f36;
-  --ink-3: #7a6b5d;
-  --gv-ink: #1a1410;
-  --gv-ink-2: #4a3f36;
-  --gv-ink-3: #7a6b5d;
-  --gv-bg: #fbf8f3;
-  --panel: #ebe4d8;
-  --border: #e0d4c4;
-  --input: #e0d4c4;
-  --app-border: rgba(160, 140, 110, 0.38);
-  --app-border-strong: #c4b39a;
-  --app-elevated-muted: #f3eee5;
-  --app-surface: #fffcf7;
-  --app-elevated: #fffcf7;
-  --card: #fffcf7;
-  --background: #fbf8f3;
-  --foreground: #1a1410;
-  --muted: #f0e9dc;
-  --muted-foreground: #7a6b5d;
-  --secondary: #f8f1e6;
-  --secondary-foreground: #1a1410;
-  --accent: #f8f1e6;
-  --accent-foreground: #1a1410;
-  --sidebar: #f8f1e6;
-  --sidebar-border: #e0d4c4;
-  --brand-soft: #f8ebe6;
-  --brand-border: #e8c4b8;
-  --gv-primary-soft: #f8ebe6;
-  --gv-primary-border: #e8c4b8;
-  --bg-tint-a: rgba(138, 90, 10, 0.06);
-  --bg-tint-b: rgba(161, 29, 46, 0.04);
-  --bg-tint-c: rgba(138, 90, 10, 0.05);
-  --ambient-violet: rgba(138, 90, 10, 0.04);
-  --ambient-blue: rgba(161, 29, 46, 0.05);
-  --ambient-indigo: rgba(138, 90, 10, 0.04);
-  --glass-1: rgba(255, 252, 247, 0.78);
-  --glass-2: rgba(255, 252, 247, 0.9);
-  --glass-3: rgba(255, 252, 247, 0.96);
-  --glass-sidebar: rgba(248, 241, 230, 0.92);
-  --glass-border: rgba(255, 252, 247, 0.85);
-  --glass-border-subtle: rgba(180, 155, 120, 0.28);
-  --glass-shadow: 0 4px 24px rgba(40, 28, 16, 0.06), 0 1px 4px rgba(40, 28, 16, 0.04);
-  --glass-shadow-lg: 0 12px 40px rgba(40, 28, 16, 0.08), 0 2px 8px rgba(40, 28, 16, 0.04);
-  --shadow-md: 0 4px 24px rgba(40, 28, 16, 0.06), 0 1px 4px rgba(40, 28, 16, 0.04);
-  --shadow-lg: 0 12px 40px rgba(40, 28, 16, 0.08), 0 2px 8px rgba(40, 28, 16, 0.04);
-  --shadow-brand-sm: 0 2px 10px rgba(161, 29, 46, 0.12);
-  --shadow-brand-md: 0 4px 16px rgba(161, 29, 46, 0.16);
-  --shadow-brand-lg: 0 8px 28px rgba(161, 29, 46, 0.18);
-  --menu-item-hover: rgba(161, 29, 46, 0.06);
-  --menu-item-border: rgba(161, 29, 46, 0.16);
-  --btn-ghost-border: rgba(160, 140, 110, 0.4);
-  --btn-ghost-hover: rgba(161, 29, 46, 0.06);
-  --card-radius: 10px;
-}
+@import "./system.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -135,12 +69,13 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
-  /* Fonts — law editorial: serif display, quiet Inter UI */
-  --font-sans: "Inter", "Source Serif 4", -apple-system, system-ui, sans-serif;
-  --font-ui: var(--font-ui);
-  --font-display: var(--display-family);
-  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
-  --font-serif: var(--font-serif);
+  /* Fonts — families named only in system.css (--type-*); bridge maps utilities */
+  --font-sans: var(--type-ui);
+  --font-ui: var(--type-ui);
+  --font-display: var(--type-display);
+  --font-mono: var(--type-mono);
+  --font-serif: var(--type-serif);
+  --font-label: var(--type-label);
 
   /* Gavelogy brand / ink utilities used across this app */
   --color-bg: var(--bg);
@@ -250,23 +185,6 @@ body {
   background-attachment: fixed;
 }
 
-/* Editorial section labels — small-caps serif, not mono tech */
-.label-law {
-  font-family: var(--font-serif);
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-}
-
-.heading-law {
-  font-family: var(--display-family);
-  font-weight: 700;
-  letter-spacing: -0.015em;
-  color: var(--ink);
-}
-
 /* Clamp long card teasers cleanly */
 .line-clamp-3 {
   display: -webkit-box;
@@ -276,11 +194,6 @@ body {
 }
 
 /* ── Dark mode body — deep ink with warm seal glow ── */
-:root.dark {
-  /* Nav chrome slightly lifted off pure black page so the band still reads */
-  --nav-bg: #14110f;
-}
-
 :root.dark body {
   background:
     radial-gradient(ellipse 70% 42% at 50% 108%, rgba(161, 29, 46, 0.08) 0%, transparent 58%),
