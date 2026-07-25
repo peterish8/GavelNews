@@ -90,13 +90,13 @@ export function StoryCard({
           <span className="inline-flex h-[29px] items-center rounded-[8px] bg-brand px-3 font-sans text-[11px] font-bold tracking-[0.025em] text-on-accent">
             LEAD · MUST COVER
           </span>
-          <span className="inline-flex h-[29px] items-center rounded-[8px] border border-[rgba(205,198,220,0.42)] bg-[rgba(255,255,255,0.58)] px-[11px] font-medium text-ink-2">
+          <span className="inline-flex h-[29px] items-center rounded-[8px] border border-[rgba(205,198,220,0.42)] bg-[rgba(255,255,255,0.58)] px-[11px] font-medium text-ink-2 dark:border-[rgba(180,170,210,0.16)] dark:bg-[rgba(26,24,40,0.55)]">
             {meta.shortLabel}
           </span>
           {story.examTags.slice(0, 3).map((t) => (
             <span
               key={t}
-              className="inline-flex h-[29px] items-center rounded-[8px] border border-[rgba(205,198,220,0.42)] bg-[rgba(255,255,255,0.58)] px-[11px] text-ink-3"
+              className="inline-flex h-[29px] items-center rounded-[8px] border border-[rgba(205,198,220,0.42)] bg-[rgba(255,255,255,0.58)] px-[11px] text-ink-3 dark:border-[rgba(180,170,210,0.16)] dark:bg-[rgba(26,24,40,0.55)]"
             >
               {t}
             </span>
