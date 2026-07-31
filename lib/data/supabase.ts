@@ -33,6 +33,14 @@ import { createServiceRoleClient } from "@/lib/supabase/serviceRole";
 // swapping DATA_SOURCE never requires touching a component.
 // ────────────────────────────────────────────────────────────────────
 
+// Intentional, contained `any` boundary: Supabase/Postgres rows arrive
+// untyped (no generated types yet — see CLAUDE.md), and every mapper below
+// exists specifically to translate that untyped shape into the typed
+// PublishedStory sub-interfaces. Switching this to Record<string, unknown>
+// would require an explicit cast/narrow at each of the ~80 property
+// accesses across the mapXxx functions below with no behavior change to
+// show for it, so the `any` stays contained to this one alias per the
+// style guide's interop-boundary carve-out.
 type Row = Record<string, any>;
 
 function mapImportantTerm(t: Row): ImportantTerm {
@@ -395,8 +403,12 @@ export const supabaseDataSource: DataSource = {
     const stories = (data ?? []).map(rowToStory);
     const editionMap = new Map<string, PublishedStory[]>();
     for (const s of stories) {
-      if (!editionMap.has(s.editionDate)) editionMap.set(s.editionDate, []);
-      editionMap.get(s.editionDate)!.push(s);
+      const list = editionMap.get(s.editionDate);
+      if (list) {
+        list.push(s);
+      } else {
+        editionMap.set(s.editionDate, [s]);
+      }
     }
     const editions: Edition[] = Array.from(editionMap.entries())
       .map(([edDate, list]) => ({ date: edDate, stories: sortByDateDesc(list) }))
@@ -408,8 +420,12 @@ export const supabaseDataSource: DataSource = {
       const key = `${year}-${month}`;
       const dateObj = new Date(`${edition.date}T00:00:00Z`);
       const label = dateObj.toLocaleDateString("en-US", { month: "long", year: "numeric", timeZone: "UTC" });
-      if (!monthMap.has(key)) monthMap.set(key, { label, editions: [] });
-      monthMap.get(key)!.editions.push(edition);
+      const existing = monthMap.get(key);
+      if (existing) {
+        existing.editions.push(edition);
+      } else {
+        monthMap.set(key, { label, editions: [edition] });
+      }
     }
     return Array.from(monthMap.entries())
       .map(([month, val]) => ({ month, label: val.label, editions: val.editions }))

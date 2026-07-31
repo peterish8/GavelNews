@@ -25,8 +25,12 @@ function sortByDateDesc(stories: PublishedStory[]): PublishedStory[] {
 function groupByEdition(stories: PublishedStory[]): Edition[] {
   const map = new Map<string, PublishedStory[]>();
   for (const s of stories) {
-    if (!map.has(s.editionDate)) map.set(s.editionDate, []);
-    map.get(s.editionDate)!.push(s);
+    const list = map.get(s.editionDate);
+    if (list) {
+      list.push(s);
+    } else {
+      map.set(s.editionDate, [s]);
+    }
   }
   return Array.from(map.entries())
     .map(([date, list]) => ({ date, stories: sortByDateDesc(list) }))
@@ -66,8 +70,12 @@ export const mockDataSource: DataSource = {
       const key = `${year}-${month}`;
       const date = new Date(`${edition.date}T00:00:00Z`);
       const label = date.toLocaleDateString("en-US", { month: "long", year: "numeric", timeZone: "UTC" });
-      if (!monthMap.has(key)) monthMap.set(key, { label, editions: [] });
-      monthMap.get(key)!.editions.push(edition);
+      const existing = monthMap.get(key);
+      if (existing) {
+        existing.editions.push(edition);
+      } else {
+        monthMap.set(key, { label, editions: [edition] });
+      }
     }
     return Array.from(monthMap.entries())
       .map(([month, val]) => ({ month, label: val.label, editions: val.editions }))
@@ -82,7 +90,8 @@ export const mockDataSource: DataSource = {
     let candidates = sortByDateDesc(MOCK_STORIES);
     if (opts?.category) candidates = candidates.filter((s) => s.category === opts.category);
     if (opts?.exam) {
-      candidates = candidates.filter((s) => s.examTags.includes(opts.exam!));
+      const exam = opts.exam;
+      candidates = candidates.filter((s) => s.examTags.includes(exam));
     }
     if (!q) return candidates;
 

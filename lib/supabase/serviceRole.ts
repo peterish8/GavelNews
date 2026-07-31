@@ -13,13 +13,19 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js";
  * job (not the database's) to decide who gets to see the result.
  */
 export function createServiceRoleClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url) {
+    throw new Error(
+      "NEXT_PUBLIC_SUPABASE_URL is not set - required to read gated story content server-side.",
+    );
+  }
   if (!key) {
     throw new Error(
       "SUPABASE_SERVICE_ROLE_KEY is not set - required to read gated story content server-side.",
     );
   }
-  return createSupabaseClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, key, {
+  return createSupabaseClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 }
