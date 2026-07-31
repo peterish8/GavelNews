@@ -41,7 +41,7 @@
   /* App uses "accent" as brand-2 (magenta) for favorites etc.
      shadcn's soft blue accent remains available as --accent CSS var. */
   --color-accent: var(--gv-accent);
-  --color-accent-foreground: #ffffff;
+  --color-accent-foreground: #fff;
   --color-accent-hover: var(--gv-accent-hover);
   --color-accent-soft: var(--gv-accent-soft);
   --color-accent-border: var(--gv-accent-border);
@@ -576,6 +576,9 @@ body {
   }
 
   .page-title {
+    /* !important required: overrides the h1's Tailwind
+       text-[clamp(40px,4.2vw,58px)] arbitrary-value utility class
+       (components/FeedView.tsx) at this breakpoint. */
     font-size: clamp(40px, 10vw, 44px) !important;
   }
 }
