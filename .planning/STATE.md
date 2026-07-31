@@ -1,3 +1,15 @@
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: planning
+stopped_at: "Completed quick task 260731-j0g: audit gavel-news-web TS/TSX/JS/CSS against Google style guides, zero new tsc/vitest failures"
+last_updated: "2026-07-31T08:49:10.948Z"
+last_activity: 2026-07-22 — Roadmap created from requirements and research; ready to plan Phase 1
+progress:
+  percent: 0
+---
+
 # Project State
 
 ## Project Reference
@@ -19,6 +31,7 @@ Progress: [░░░░░░░░░░] 0%
 ## Performance Metrics
 
 **Velocity:**
+
 - Total plans completed: 0
 - Average duration: - min
 - Total execution time: 0 hours
@@ -30,6 +43,7 @@ Progress: [░░░░░░░░░░] 0%
 | - | - | - | - |
 
 **Recent Trend:**
+
 - Last 5 plans: none yet
 - Trend: N/A
 
@@ -47,6 +61,7 @@ Recent decisions affecting current work:
 - [Pre-Phase 1]: Privacy Policy/Terms + explicit DPDP-compliant consent copy is a Phase 2 (v1) deliverable, not post-launch polish.
 - [2026-07-23, Pre-Phase 1]: Folded the GavelNews Content Architecture (Legal Mentor deep-dive, Exam Lens, fixed pre-authored quiz) into Phase 1 (schema) and Phase 3 (rendering) rather than opening a new milestone — v1.0 hadn't started executing yet, so there was nothing shipped to avoid disrupting. Added CONTENT-09/10/11 to REQUIREMENTS.md and a Phase 1 success criterion for the matching schema fields. Moved the "five-question mastery quiz" Out-of-Scope entry in PROJECT.md to Active — the deferral was about a dynamic/scored/tracked quiz specifically; this fixed, stateless, pre-authored version isn't that build. Scored/tracked quiz attempts and revision-queue features remain deferred.
 - [2026-07-23]: The sibling `gavel-news` engine repo's `editorial.py`/`db.py`/`mcp_server.py`/`supabase_sync.py`/`CLAUDE.md`/admin-preview were updated to produce and store the new fields (verified via the engine's own smoke test + a manual round-trip check). Phase 1's `published_stories` schema must match those exact snake_case field names.
+- [Phase quick-260731-j0g]: Kept lib/data/supabase.ts's Row = Record<string, any> as a documented interop-boundary exception rather than narrowing to unknown — ~80 property accesses across 10+ mapper functions would each need an individual cast for zero behavior change, not a mechanical narrow per the audit plan's own guidance
 
 ### Pending Todos
 
@@ -87,6 +102,7 @@ None yet.
 | 260724-daz | Redesign sign-in page so Google sign-in CTA is visible above the fold on desktop (premium two-column layout) | 2026-07-24 | 1aad1d0 | [260724-daz-redesign-sign-in-page-so-google-sign-in-](./quick/260724-daz-redesign-sign-in-page-so-google-sign-in-/) |
 | 260724-typ | Replace Inter/Libre/IBM Plex with Source legal stack; centralize type + theme tokens in app/system.css | 2026-07-24 | f3febc6 | [260724-typ-legal-font-system-source-of-truth](./quick/260724-typ-legal-font-system-source-of-truth/) |
 | 260724-dpf | Polish sign-in page: shrink header footprint, add breathing room to sign-in card spacing | 2026-07-24 | 93f1075 | [260724-dpf-polish-sign-in-page-shrink-header-footpr](./quick/260724-dpf-polish-sign-in-page-shrink-header-footpr/) |
+| 260731-j0g | Audit gavel-news-web TS/TSX/JS/CSS for bugs & readability per Google style guides; fix in place | 2026-07-31 | 8c1910a, 5fe7a16, 5ede3bb, c7d1395, 7efe5a4, 52d4cae | [260731-j0g-audit-gavel-news-web-typescript-tsx-js-a](./quick/260731-j0g-audit-gavel-news-web-typescript-tsx-js-a/) |
 
 ## Deferred Items
 
@@ -98,8 +114,8 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-22
-Stopped at: ROADMAP.md and STATE.md created; REQUIREMENTS.md traceability confirmed
+Last session: 2026-07-31T08:45:08.960Z
+Stopped at: Completed quick task 260731-j0g: audit gavel-news-web TS/TSX/JS/CSS against Google style guides, zero new tsc/vitest failures
 Resume file: None
 
-Last activity: 2026-07-24 - Completed quick task 260724-dpf: Polish sign-in page — shrunk header footprint and widened sign-in card spacing per "congested" UI feedback
+Last activity: 2026-07-31 - Completed quick task 260731-j0g: audited app/, components/, lib/ (TS/TSX) and app/globals.css, app/system.css against the Google TypeScript/JavaScript/HTML-CSS style guides; fixed 5 non-null assertions, 2 env-var assertions, 1 shadowed variable, 2 silent catches, 1 a11y gap, 2 shortenable hex colors — zero new tsc/vitest failures
