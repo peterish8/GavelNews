@@ -6,6 +6,15 @@ interface LawDecodeSectionProps {
 }
 
 /**
+ * Invisible in the reading UI and ignored by assistive technology, but kept
+ * in the text stream used by StoryReader. This gives browser TTS a real
+ * sentence boundary wherever one law card or category ends.
+ */
+function TtsBreak() {
+  return <span aria-hidden="true" className="sr-only">. </span>;
+}
+
+/**
  * Signed-in-only Law Decode block (schema v2). Degrades gracefully: any
  * missing sub-field just doesn't render.
  */
@@ -39,10 +48,12 @@ export function LawDecodeSection({ lawDecode }: LawDecodeSectionProps) {
   return (
     <section className="mb-10">
       <h2>{heading || "Law Decode"}</h2>
+      <TtsBreak />
 
       {sections && sections.length > 0 && (
         <div className="mb-5">
           <h3 className="mb-2 text-sm font-semibold text-ink-2">Provisions</h3>
+          <TtsBreak />
           <dl className="flex flex-col gap-3">
             {sections.map((s, i) => (
               <div
@@ -58,12 +69,14 @@ export function LawDecodeSection({ lawDecode }: LawDecodeSectionProps) {
               </div>
             ))}
           </dl>
+          <TtsBreak />
         </div>
       )}
 
       {doctrines && doctrines.length > 0 && (
         <div className="mb-5">
           <h3 className="mb-2 text-sm font-semibold text-ink-2">Doctrines</h3>
+          <TtsBreak />
           <dl className="flex flex-col gap-3">
             {doctrines.map((d, i) => (
               <div
@@ -79,12 +92,14 @@ export function LawDecodeSection({ lawDecode }: LawDecodeSectionProps) {
               </div>
             ))}
           </dl>
+          <TtsBreak />
         </div>
       )}
 
       {legalTests && legalTests.length > 0 && (
         <div className="mb-5">
           <h3 className="mb-2 text-sm font-semibold text-ink-2">Legal tests</h3>
+          <TtsBreak />
           <ul className="!list-none !pl-0">
             {legalTests.map((t, i) => (
               <li
@@ -98,6 +113,7 @@ export function LawDecodeSection({ lawDecode }: LawDecodeSectionProps) {
               </li>
             ))}
           </ul>
+          <TtsBreak />
         </div>
       )}
 
@@ -106,6 +122,7 @@ export function LawDecodeSection({ lawDecode }: LawDecodeSectionProps) {
           <h3 className="mb-2 text-sm font-semibold text-ink-2">
             Important cases
           </h3>
+          <TtsBreak />
           <ul className="!list-none !pl-0">
             {importantCases.map((c, i) => (
               <li
@@ -121,6 +138,7 @@ export function LawDecodeSection({ lawDecode }: LawDecodeSectionProps) {
               </li>
             ))}
           </ul>
+          <TtsBreak />
         </div>
       )}
 
@@ -129,6 +147,7 @@ export function LawDecodeSection({ lawDecode }: LawDecodeSectionProps) {
           <h3 className="mb-2 text-sm font-semibold text-ink-2">
             Constitutional link
           </h3>
+          <TtsBreak />
           <ul className="!list-none !pl-0">
             {constitutionalLink.map((c, i) => (
               <li
@@ -142,12 +161,14 @@ export function LawDecodeSection({ lawDecode }: LawDecodeSectionProps) {
               </li>
             ))}
           </ul>
+          <TtsBreak />
         </div>
       )}
 
       {bnsMapping && (bnsMapping.ipc || bnsMapping.bns) && (
         <div className="mb-5">
           <h3 className="mb-1 text-sm font-semibold text-ink-2">BNS mapping</h3>
+          <TtsBreak />
           <p className="text-[15px] leading-relaxed text-ink-2">
             {bnsMapping.ipc && <span>IPC: {bnsMapping.ipc}</span>}
             {bnsMapping.ipc && bnsMapping.bns && (
@@ -155,6 +176,7 @@ export function LawDecodeSection({ lawDecode }: LawDecodeSectionProps) {
             )}
             {bnsMapping.bns && <span>BNS: {bnsMapping.bns}</span>}
           </p>
+          <TtsBreak />
         </div>
       )}
 
@@ -163,6 +185,7 @@ export function LawDecodeSection({ lawDecode }: LawDecodeSectionProps) {
           <h3 className="mb-2 text-sm font-semibold text-ink-2">
             Don&apos;t confuse these
           </h3>
+          <TtsBreak />
           <ul className="!list-none !pl-0">
             {dontConfuse.map((c, i) => (
               <li
@@ -178,6 +201,7 @@ export function LawDecodeSection({ lawDecode }: LawDecodeSectionProps) {
               </li>
             ))}
           </ul>
+          <TtsBreak />
         </div>
       )}
 
@@ -186,6 +210,7 @@ export function LawDecodeSection({ lawDecode }: LawDecodeSectionProps) {
           <h3 className="!mt-0 mb-1 text-sm font-semibold text-ink-2">
             Memory trick
           </h3>
+          <TtsBreak />
           <p className="!mb-0 text-[15px] leading-relaxed text-ink-2">
             {memoryTrick}
           </p>

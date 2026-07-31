@@ -107,14 +107,11 @@ function PYQGroupCard({
   startIndex: number;
   onSelectQuestion: (id: string) => void;
 }) {
-  const [passageOpen, setPassageOpen] = useState(false);
   const first = group.questions[0];
-  const passage = group.passage;
-  const hasPassage = Boolean(passage?.text);
 
   return (
-    <div className="rounded-xl border border-border-app/70 bg-elevated/70">
-      <div className="flex items-center justify-between gap-2 px-3.5 pt-3.5">
+    <section>
+      <div className="flex items-center justify-between gap-2 px-1 pb-2">
         <span className="rounded-full bg-elevated-muted px-2 py-0.5 font-sans text-[10px] font-semibold text-ink-3">
           {first.exam} {first.year}
         </span>
@@ -125,26 +122,7 @@ function PYQGroupCard({
         )}
       </div>
 
-      {hasPassage && (
-        <div className="px-3.5 pt-2">
-          <button
-            type="button"
-            onClick={() => setPassageOpen((v) => !v)}
-            className="flex items-center gap-1.5 py-1 text-[12px] font-medium text-brand"
-            aria-expanded={passageOpen}
-          >
-            <ChevronIcon open={passageOpen} />
-            {passageOpen ? "Hide the passage" : "Read the passage"}
-          </button>
-          {passageOpen && passage && (
-            <blockquote className="mb-1 rounded-md border-l-2 border-brand-border bg-elevated-muted/60 p-3 text-[12.5px] leading-relaxed text-ink-3 italic">
-              <Markdown>{passage.text}</Markdown>
-            </blockquote>
-          )}
-        </div>
-      )}
-
-      <ol className="flex flex-col gap-2 p-3.5 pt-2">
+      <ol className="flex flex-col gap-2">
         {group.questions.map((q, i) => (
           <PYQQuestionRow
             key={q.id}
@@ -154,7 +132,7 @@ function PYQGroupCard({
           />
         ))}
       </ol>
-    </div>
+    </section>
   );
 }
 
@@ -223,7 +201,7 @@ function PYQQuestionModal({
       <div
         role="dialog"
         aria-modal="true"
-        className="surface-hero relative max-h-[90vh] w-full max-w-2xl overflow-y-auto p-6"
+        className="surface-hero theme-scrollbar relative max-h-[90vh] w-full max-w-2xl overflow-y-auto overscroll-contain p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <button

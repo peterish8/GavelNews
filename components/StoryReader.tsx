@@ -49,7 +49,7 @@ function ensureHighlightStyles() {
   style.id = HIGHLIGHT_STYLE_ID;
   style.textContent = `::highlight(${HIGHLIGHT_NAME}) {
   background-color: #fef08a;
-  color: inherit;
+  color: #1c1917;
 }`;
   document.head.appendChild(style);
 }
@@ -202,6 +202,12 @@ function highlightWordAtOffset(
   while (start > 0 && !/\s/.test(full[start - 1]!)) start--;
   let end = start;
   while (end < full.length && !/\s/.test(full[end]!)) end++;
+  const requestedEnd = Math.min(full.length, start + Math.max(1, wordLen));
+  // A date/reference can intentionally span a label plus its number. Normal
+  // words still stop at their first whitespace exactly as before.
+  if (requestedEnd > end && /\d/.test(full.slice(start, requestedEnd))) {
+    end = requestedEnd;
+  }
   if (end <= start) {
     end = Math.min(full.length, start + Math.max(1, wordLen));
   }
@@ -278,6 +284,28 @@ function snapToWordStart(text: string, offset: number): number {
     while (i < text.length && /\s/.test(text[i] ?? "")) i++;
   }
   return i;
+}
+
+/**
+ * Chromium often reports a date or legal reference as one boundary (for
+ * example "June 28" or "Article 21"). Keep those compact spoken units
+ * highlighted together so their number is never visually skipped.
+ */
+function highlightLengthForSpeech(
+  text: string,
+  wordStart: number,
+  boundaryLength: number,
+): number {
+  const wordLength = text.slice(wordStart).match(/^\S+/)?.[0].length ?? 1;
+  const dateOrReference = text
+    .slice(wordStart)
+    .match(/^[A-Za-z]+\s+\d+(?:[./-]\d+)?(?=\s|[,.):;!?]|$)/)?.[0];
+
+  if (dateOrReference) return dateOrReference.length;
+
+  const reported = Math.max(wordLength, boundaryLength || 0);
+  const reportedText = text.slice(wordStart, wordStart + reported);
+  return /\d/.test(reportedText) ? reported : wordLength;
 }
 
 function estimateDurationMs(charCount: number, rate: number): number {
@@ -644,8 +672,6 @@ export function StoryReader({
   // fire sparse or sentence-level boundaries — without this, the highlight
   // would freeze at the clicked word for the whole utterance whenever that
   // happens, instead of advancing word by word.
-  const lastBoundaryOffsetRef = useRef(0);
-  const lastBoundaryTimeRef = useRef(0);
   const lastHighlightedWordStartRef = useRef(-1);
   const totalDurationRef = useRef(0);
   const sessionStartMsRef = useRef(0); // Date.now when utterance started
@@ -776,31 +802,13 @@ export function StoryReader({
       // always wins on arrival (it resets lastBoundaryOffsetRef/TimeRef),
       // so this is a fallback/smoothing layer, not a replacement — it only
       // ever advances forward from the last known-correct position.
-      const root = articleRef.current;
-      const full = fullTextRef.current;
-      if (root && full) {
-        const charsPerMs = (WPM * 5) / 60_000; // chars/ms at rate 1
-        const elapsed = Date.now() - lastBoundaryTimeRef.current;
-        const estimated =
-          lastBoundaryOffsetRef.current + elapsed * charsPerMs * rateRef.current;
-        const clamped = Math.min(full.length - 1, Math.max(0, Math.floor(estimated)));
-        const wordStart = snapToWordStart(full, clamped);
-        if (wordStart > lastHighlightedWordStartRef.current) {
-          lastHighlightedWordStartRef.current = wordStart;
-          cursorPlainRef.current = Math.max(cursorPlainRef.current, wordStart);
-          const wordLen = full.slice(wordStart).match(/^\S+/)?.[0]?.length ?? 1;
-          highlightWordAtOffset(root, wordStart, wordLen);
-          updateActiveBlock(root, wordStart);
-        }
-      }
-
       // Only mirror elapsed from the last real cursor (boundaries). Do not
       // wall-clock-estimate past the spoken position — that desynced UI.
       syncProgressFromCursor();
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
-  }, [stopRaf, syncProgressFromCursor, updateActiveBlock]);
+  }, [stopRaf, syncProgressFromCursor]);
 
   const speakFromOffset = useCallback(
     (plainOffset: number) => {
@@ -835,8 +843,6 @@ export function StoryReader({
       const firstWord = remaining.match(/^\S+/)?.[0] ?? remaining.slice(0, 1);
       highlightWordAtOffset(root, start, firstWord.length);
       updateActiveBlock(root, start);
-      lastBoundaryOffsetRef.current = start;
-      lastBoundaryTimeRef.current = Date.now();
       lastHighlightedWordStartRef.current = start;
 
       // Round 2: speak `remaining` as a chain of short chunks (see
@@ -876,25 +882,29 @@ export function StoryReader({
           if (sessionIdRef.current !== mySession) return;
           if (pausedRef.current) return;
           // charIndex is relative to this chunk's own text
-          if (e.name !== "word" && e.name !== "sentence") return;
+          if (e.name !== "word") return;
           lastSpeechActivityRef.current = Date.now();
-          const abs = thisChunkAbsStart + (e.charIndex ?? 0);
-          cursorPlainRef.current = abs;
+          const relativeOffset = Math.max(0, Math.min(chunkText.length, e.charIndex ?? 0));
+          const abs = thisChunkAbsStart + relativeOffset;
           const fullNow = fullTextRef.current;
-          const len =
-            e.charLength && e.charLength > 0
-              ? e.charLength
-              : (fullNow.slice(abs).match(/^\S+/)?.[0].length ?? 1);
+          const wordStart = snapToWordStart(fullNow, abs);
+
+          if (wordStart <= lastHighlightedWordStartRef.current) return;
+
+          cursorPlainRef.current = wordStart;
+          const len = highlightLengthForSpeech(
+            fullNow,
+            wordStart,
+            e.charLength ?? 0,
+          );
           if (articleRef.current) {
-            highlightWordAtOffset(articleRef.current, abs, len);
-            updateActiveBlock(articleRef.current, abs);
+            highlightWordAtOffset(articleRef.current, wordStart, len);
+            updateActiveBlock(articleRef.current, wordStart);
           }
           // A real boundary event is authoritative — resync the estimate's
           // anchor to it so the fallback advance in startProgressRaf keeps
           // counting forward from here, not from a stale earlier point.
-          lastBoundaryOffsetRef.current = abs;
-          lastBoundaryTimeRef.current = Date.now();
-          lastHighlightedWordStartRef.current = snapToWordStart(fullNow, abs);
+          lastHighlightedWordStartRef.current = wordStart;
           syncProgressFromCursor();
         };
 
@@ -904,8 +914,6 @@ export function StoryReader({
           // Anchor the estimate at this chunk's start too, in case its
           // first onboundary is delayed or never arrives at all (some
           // voices only fire boundaries sparsely, or not per-chunk).
-          lastBoundaryOffsetRef.current = thisChunkAbsStart;
-          lastBoundaryTimeRef.current = Date.now();
           playingRef.current = true;
           pausedRef.current = false;
           isPlayingRef.current = true;
@@ -1052,7 +1060,7 @@ export function StoryReader({
       const target = e.target as HTMLElement;
       if (target.closest("a, button, input, [data-no-tts]")) return;
 
-      const block = target.closest("p, li, h1, h2, h3") as HTMLElement | null;
+      const block = target.closest("p, li, dt, dd, h1, h2, h3") as HTMLElement | null;
       if (!block || !root.contains(block)) return;
 
       // Second click on the paragraph currently being spoken (whether

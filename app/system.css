@@ -59,69 +59,63 @@
   --card-radius: 15px;
 
   /* ── Light palette: white / soft lavender-grey (spec §1–5) ──────── */
-  --nav-bg: rgba(255, 255, 255, 0.82);
-  --bg: #f4f3f8;
-  --ink: #130f2a;
-  --ink-2: #4a4660;
-  --ink-3: #7a7690;
-  --gv-ink: #130f2a;
-  --gv-ink-2: #4a4660;
-  --gv-ink-3: #7a7690;
-  --gv-bg: #f4f3f8;
-  --panel: #ebe8f2;
-  --border: #cdc6dc;
-  --input: #cdc6dc;
-  --app-border: rgba(205, 198, 220, 0.42);
-  --app-border-strong: #b8b0c8;
-  --app-elevated-muted: #eeecf4;
-  --app-surface: #ffffff;
+  --nav-bg: #fbfaf7;
+  --bg: #f6f4ef;
+  --ink: #1c1a17;
+  --ink-2: #5d574e;
+  --ink-3: #81796e;
+  --gv-ink: #1c1a17;
+  --gv-ink-2: #5d574e;
+  --gv-ink-3: #81796e;
+  --gv-bg: #f6f4ef;
+  --panel: #efede6;
+  --border: #d9d3c7;
+  --input: #d9d3c7;
+  --app-border: #ded8cd;
+  --app-border-strong: #c6bdaf;
+  --app-elevated-muted: #f0ede6;
+  --app-surface: #fbfaf7;
   --app-elevated: #fff;
-  --card: #ffffff;
-  --background: #f4f3f8;
-  --foreground: #130f2a;
-  --muted: #eeecf4;
-  --muted-foreground: #7a7690;
-  --secondary: #f0eef6;
-  --secondary-foreground: #130f2a;
-  --accent: #f0eef6;
-  --accent-foreground: #130f2a;
-  --sidebar: rgba(255, 255, 255, 0.82);
-  --sidebar-border: rgba(205, 198, 220, 0.4);
+  --card: #fffefa;
+  --background: #f6f4ef;
+  --foreground: #1c1a17;
+  --muted: #f0ede6;
+  --muted-foreground: #81796e;
+  --secondary: #eeeae2;
+  --secondary-foreground: #1c1a17;
+  --accent: #eeeae2;
+  --accent-foreground: #1c1a17;
+  --sidebar: #fbfaf7;
+  --sidebar-border: #ded8cd;
   --brand-soft: rgba(220, 38, 38, 0.10);
   --brand-border: rgba(220, 38, 38, 0.16);
   --gv-primary-soft: rgba(220, 38, 38, 0.10);
   --gv-primary-border: rgba(220, 38, 38, 0.16);
 
   /* Ambient tints (spec §3) */
-  --bg-tint-a: rgba(99, 102, 241, 0.05);
-  --bg-tint-b: rgba(220, 38, 38, 0.04);
-  --bg-tint-c: rgba(99, 102, 241, 0.03);
-  --ambient-violet: rgba(99, 102, 241, 0.05);
-  --ambient-blue: rgba(220, 38, 38, 0.04);
-  --ambient-indigo: rgba(99, 102, 241, 0.04);
+  --bg-tint-a: transparent;
+  --bg-tint-b: transparent;
+  --bg-tint-c: transparent;
+  --ambient-violet: transparent;
+  --ambient-blue: transparent;
+  --ambient-indigo: transparent;
 
   /* Glass tiers (spec §4) — opacity ≥0.55, blur 12–20px */
-  --glass-1: rgba(255, 255, 255, 0.72);
-  --glass-2: rgba(255, 255, 255, 0.58);
-  --glass-3: rgba(255, 255, 255, 0.86);
-  --glass-sidebar: rgba(255, 255, 255, 0.82);
-  --glass-input: rgba(255, 255, 255, 0.72);
-  --glass-border: rgba(255, 255, 255, 0.72);
-  --glass-border-subtle: rgba(205, 198, 220, 0.42);
-  --glass-blur: blur(18px) saturate(120%);
-  --glass-blur-sm: blur(14px) saturate(120%);
-  --glass-inner-glow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  --glass-1: #fffefa;
+  --glass-2: #fbfaf7;
+  --glass-3: #fbfaf7;
+  --glass-sidebar: #fbfaf7;
+  --glass-input: #fffefa;
+  --glass-border: #ded8cd;
+  --glass-border-subtle: #ded8cd;
+  --glass-blur: none;
+  --glass-blur-sm: none;
+  --glass-inner-glow: none;
 
   /* Shadow scale (spec §30) */
-  --shadow-1:
-    0 1px 2px rgba(19, 15, 42, 0.035),
-    0 4px 12px rgba(19, 15, 42, 0.025);
-  --shadow-2:
-    0 2px 4px rgba(19, 15, 42, 0.035),
-    0 10px 28px rgba(19, 15, 42, 0.05);
-  --shadow-3:
-    0 4px 8px rgba(19, 15, 42, 0.04),
-    0 18px 44px rgba(19, 15, 42, 0.065);
+  --shadow-1: 0 1px 1px rgba(30, 26, 20, 0.03);
+  --shadow-2: 0 5px 14px rgba(30, 26, 20, 0.045);
+  --shadow-3: 0 10px 24px rgba(30, 26, 20, 0.065);
   --glass-shadow:
     0 1px 2px rgba(19, 15, 42, 0.04),
     0 10px 30px rgba(19, 15, 42, 0.05);
@@ -152,38 +146,38 @@
 /* ── Dark mode — cool lavender-ink counterpart of the light system ──
    Spec is light-first; dark keeps glass legible and red-accented. */
 :root.dark {
-  --nav-bg: rgba(18, 16, 28, 0.92);
-  --bg: #12101c;
-  --card: #1a1828;
-  --ink: #f2f0f8;
-  --ink-2: #b8b4cc;
-  --ink-3: #8a869e;
-  --gv-ink: #f2f0f8;
-  --gv-ink-2: #b8b4cc;
-  --gv-ink-3: #8a869e;
-  --gv-bg: #12101c;
-  --panel: #221f32;
-  --border: #3a3650;
-  --input: #3a3650;
-  --app-border: rgba(180, 170, 210, 0.18);
-  --app-border-strong: #4a4660;
-  --app-elevated-muted: #161422;
-  --app-surface: #1a1828;
-  --app-elevated: #1a1828;
-  --background: #12101c;
-  --foreground: #f2f0f8;
-  --muted: #221f32;
-  --muted-foreground: #8a869e;
-  --secondary: #1e1c2c;
-  --secondary-foreground: #f2f0f8;
-  --accent: #1e1c2c;
-  --accent-foreground: #f2f0f8;
-  --sidebar: rgba(18, 16, 28, 0.94);
-  --sidebar-border: rgba(180, 170, 210, 0.14);
-  --sidebar-foreground: #f2f0f8;
-  --card-foreground: #f2f0f8;
-  --popover: #1a1828;
-  --popover-foreground: #f2f0f8;
+  --nav-bg: #121212;
+  --bg: #0f0f0f;
+  --card: #181818;
+  --ink: #f5f5f5;
+  --ink-2: #c7c7c7;
+  --ink-3: #909090;
+  --gv-ink: #f5f5f5;
+  --gv-ink-2: #c7c7c7;
+  --gv-ink-3: #909090;
+  --gv-bg: #0f0f0f;
+  --panel: #202020;
+  --border: #363636;
+  --input: #363636;
+  --app-border: #303030;
+  --app-border-strong: #4a4a4a;
+  --app-elevated-muted: #202020;
+  --app-surface: #181818;
+  --app-elevated: #181818;
+  --background: #0f0f0f;
+  --foreground: #f5f5f5;
+  --muted: #202020;
+  --muted-foreground: #909090;
+  --secondary: #202020;
+  --secondary-foreground: #f5f5f5;
+  --accent: #202020;
+  --accent-foreground: #f5f5f5;
+  --sidebar: #121212;
+  --sidebar-border: #303030;
+  --sidebar-foreground: #f5f5f5;
+  --card-foreground: #f5f5f5;
+  --popover: #181818;
+  --popover-foreground: #f5f5f5;
 
   --brand-soft: rgba(239, 68, 68, 0.14);
   --brand-border: rgba(239, 68, 68, 0.28);
@@ -195,22 +189,22 @@
   --destructive: #f67e9c;
   --destructive-foreground: #12101c;
 
-  --bg-tint-a: rgba(99, 102, 241, 0.08);
-  --bg-tint-b: rgba(220, 38, 38, 0.06);
-  --bg-tint-c: rgba(99, 102, 241, 0.05);
-  --ambient-violet: rgba(99, 102, 241, 0.06);
-  --ambient-blue: rgba(220, 38, 38, 0.05);
-  --ambient-indigo: rgba(99, 102, 241, 0.04);
+  --bg-tint-a: transparent;
+  --bg-tint-b: transparent;
+  --bg-tint-c: transparent;
+  --ambient-violet: transparent;
+  --ambient-blue: transparent;
+  --ambient-indigo: transparent;
 
   /* Near-opaque glass for AA text on dark */
-  --glass-1: rgba(26, 24, 40, 0.88);
-  --glass-2: rgba(26, 24, 40, 0.92);
-  --glass-3: rgba(30, 28, 44, 0.96);
-  --glass-sidebar: rgba(18, 16, 28, 0.94);
-  --glass-input: rgba(26, 24, 40, 0.8);
-  --glass-border: rgba(242, 240, 248, 0.08);
-  --glass-border-subtle: rgba(180, 170, 210, 0.14);
-  --glass-inner-glow: inset 0 1px 0 rgba(242, 240, 248, 0.05);
+  --glass-1: #181818;
+  --glass-2: #181818;
+  --glass-3: #121212;
+  --glass-sidebar: #121212;
+  --glass-input: #181818;
+  --glass-border: #303030;
+  --glass-border-subtle: #303030;
+  --glass-inner-glow: none;
 
   --shadow-1:
     0 1px 2px rgba(0, 0, 0, 0.35),

@@ -6,9 +6,9 @@ import Link from "next/link";
 import { Sidebar, PanelLeftIcon } from "./Sidebar";
 import { Footer } from "./Footer";
 import { NavSearch } from "./NavSearch";
+import { NotificationCenter } from "./NotificationCenter";
 import { signInHref } from "@/lib/nav";
 import {
-  BellIcon,
   Logo,
   NewspaperIcon,
   CalendarIcon,
@@ -110,7 +110,7 @@ export function AppShell({
         ].join(" ")}
       >
         {/* Dashboard header (spec §11–12) */}
-        <header className="relative z-10 shrink-0 px-4 pb-0 pt-4 sm:px-7 lg:px-7">
+        <header className="app-header relative z-10 shrink-0 px-4 pb-3 pt-4 sm:px-7 lg:px-7">
           <div className="mx-auto flex w-full max-w-[1240px] items-start justify-between gap-4 sm:gap-6">
             <div className="flex min-w-0 items-start gap-2.5">
               {/* Mobile: open drawer */}
@@ -129,7 +129,7 @@ export function AppShell({
                 <button
                   type="button"
                   onClick={toggleCollapsed}
-                  className="icon-btn mt-1 hidden size-10 shrink-0 items-center justify-center rounded-[13px] border border-[rgba(205,198,220,0.42)] bg-[rgba(255,255,255,0.72)] text-ink-2 shadow-[0_6px_18px_rgba(19,15,42,0.04)] hover:border-brand-border hover:bg-brand-soft hover:text-brand lg:inline-flex"
+                  className="icon-btn mt-1 hidden size-10 shrink-0 items-center justify-center rounded-[13px] border border-border-app bg-elevated text-ink-2 shadow-none hover:border-brand-border hover:bg-brand-soft hover:text-brand lg:inline-flex"
                   aria-label="Open sidebar"
                   title="Open sidebar"
                 >
@@ -180,14 +180,7 @@ export function AppShell({
             {/* Desktop / tablet: search + notification + sign-in */}
             <div className="ml-auto hidden shrink-0 items-center gap-2.5 md:flex">
               <NavSearch />
-              <button
-                type="button"
-                className="icon-btn glass-input inline-flex size-12 items-center justify-center rounded-[13px] text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand"
-                aria-label="Notifications"
-                title="Notifications (coming soon)"
-              >
-                <BellIcon />
-              </button>
+              <NotificationCenter signedIn={signedIn} />
               {!signedIn && (
                 <Link
                   href={signInHref(pathname)}

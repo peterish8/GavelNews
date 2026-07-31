@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "./ThemeToggle";
 import { NAV_ITEMS, SECTION_LABELS, signInHref, type NavItem } from "@/lib/nav";
-import { signOut } from "@/lib/auth-actions";
 import type { ReactNode } from "react";
 import {
   PanelLeftIcon,
@@ -17,7 +16,6 @@ import {
   BookmarkIcon,
   SettingsIcon,
   InfoIcon,
-  SignOutIcon,
 } from "./icons";
 
 function navIcon(href: string): ReactNode {
@@ -175,29 +173,22 @@ export function Sidebar({
           <ThemeToggle />
 
           {signedIn ? (
-            <>
-              <div className="flex items-center gap-3 rounded-xl border border-[rgba(205,198,220,0.38)] bg-[rgba(255,255,255,0.55)] p-3 dark:border-[rgba(180,170,210,0.16)] dark:bg-[rgba(26,24,40,0.55)]">
+            <Link
+              href="/profile"
+              onClick={onMobileClose}
+              className="group flex items-center gap-3 rounded-xl border border-border-app bg-elevated p-3 transition-colors hover:border-brand-border hover:bg-panel focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45"
+              aria-label="Open your profile"
+            >
                 <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand text-sm font-semibold text-white">
                   {initial}
                 </span>
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-ink">
+                  <p className="truncate text-sm font-semibold text-ink group-hover:text-brand">
                     {displayName}
                   </p>
                   <p className="truncate text-[11px] text-ink-3">{email}</p>
                 </div>
-              </div>
-              <form action={signOut}>
-                <input type="hidden" name="next" value="/" />
-                <button
-                  type="submit"
-                  className="btn-press flex h-[46px] w-full items-center justify-center gap-2 rounded-[10px] border border-[rgba(205,198,220,0.52)] bg-[rgba(255,255,255,0.46)] text-sm font-semibold text-ink hover:border-brand-border hover:bg-brand-soft hover:text-brand dark:border-[rgba(180,170,210,0.22)] dark:bg-[rgba(26,24,40,0.5)]"
-                >
-                  <SignOutIcon className="text-brand" />
-                  Sign out
-                </button>
-              </form>
-            </>
+            </Link>
           ) : (
             <Link
               href={signInHref(pathname)}

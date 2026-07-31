@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="border-t border-border-app bg-[color-mix(in_srgb,var(--app-elevated)_82%,#f0e9dc)] dark:border-white/10 dark:bg-[color-mix(in_srgb,var(--app-elevated)_92%,#050506)]">
+    <footer className="app-footer border-t border-border-app bg-[color-mix(in_srgb,var(--app-elevated)_82%,#f0e9dc)] dark:border-white/10 dark:bg-[color-mix(in_srgb,var(--app-elevated)_92%,#050506)]">
       <div className="mx-auto grid max-w-6xl gap-6 px-5 py-8 sm:grid-cols-2 lg:grid-cols-4 md:py-9">
         <div className="sm:col-span-2 lg:col-span-1">
           <p className="font-serif text-base font-bold tracking-tight text-ink">
