@@ -79,21 +79,21 @@ export default async function SignInPage({ searchParams }: PageProps) {
             
             <ul className="space-y-3 mb-6">
               <li className="flex items-start gap-3">
-                <svg className="w-5 h-5 text-ink-3 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg className="w-5 h-5 text-ink-3 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                   <circle cx="12" cy="12" r="10"/>
                   <path d="M12 6v6l4 2"/>
                 </svg>
                 <span className="text-ink-2">Daily morning brief</span>
               </li>
               <li className="flex items-start gap-3">
-                <svg className="w-5 h-5 text-ink-3 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg className="w-5 h-5 text-ink-3 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                   <circle cx="12" cy="12" r="10"/>
                   <path d="M12 6v6l4 2"/>
                 </svg>
                 <span className="text-ink-2">Story teaser (what happened, background)</span>
               </li>
               <li className="flex items-start gap-3">
-                <svg className="w-5 h-5 text-ink-3 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg className="w-5 h-5 text-ink-3 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                   <circle cx="12" cy="12" r="10"/>
                   <path d="M12 6v6l4 2"/>
                 </svg>
@@ -127,31 +127,31 @@ export default async function SignInPage({ searchParams }: PageProps) {
             
             <ul className="space-y-3 mb-6">
               <li className="flex items-start gap-3">
-                <svg className="w-5 h-5 text-brand mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg className="w-5 h-5 text-brand mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                   <polyline points="20 6 9 17 4 12"/>
                 </svg>
                 <span className="text-ink font-medium">Everything in free reading</span>
               </li>
               <li className="flex items-start gap-3">
-                <svg className="w-5 h-5 text-brand mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg className="w-5 h-5 text-brand mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                   <polyline points="20 6 9 17 4 12"/>
                 </svg>
                 <span className="text-ink font-medium">Why it matters for CLAT</span>
               </li>
               <li className="flex items-start gap-3">
-                <svg className="w-5 h-5 text-brand mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg className="w-5 h-5 text-brand mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                   <polyline points="20 6 9 17 4 12"/>
                 </svg>
                 <span className="text-ink font-medium">Key points (revise in 60 seconds)</span>
               </li>
               <li className="flex items-start gap-3">
-                <svg className="w-5 h-5 text-brand mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg className="w-5 h-5 text-brand mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                   <polyline points="20 6 9 17 4 12"/>
                 </svg>
                 <span className="text-ink font-medium">Past CLAT questions</span>
               </li>
               <li className="flex items-start gap-3">
-                <svg className="w-5 h-5 text-brand mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg className="w-5 h-5 text-brand mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                   <polyline points="20 6 9 17 4 12"/>
                 </svg>
                 <span className="text-ink font-medium">Saved stories & progress tracking</span>
@@ -180,7 +180,7 @@ export default async function SignInPage({ searchParams }: PageProps) {
             </form>
 
             <div className="flex items-center justify-center gap-2 text-xs text-ink-3">
-              <svg className="w-3 h-3 text-brand" viewBox="0 0 24 24" fill="currentColor">
+              <svg className="w-3 h-3 text-brand" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
               </svg>
               <span>Free forever • No credit card</span>

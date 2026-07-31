@@ -375,9 +375,9 @@ export default async function StoryPage({ params }: PageProps) {
 
         {showSidebar && (
           <aside className="flex flex-col gap-6">
-            {(story.pyqQuestions?.length ?? 0) > 0 && (
+            {story.pyqQuestions && story.pyqQuestions.length > 0 && (
               <div className="order-1 md:order-2">
-                <PYQSidebar questions={story.pyqQuestions!} />
+                <PYQSidebar questions={story.pyqQuestions} />
               </div>
             )}
             <div className="order-2 md:order-1">
