@@ -47,4 +47,3 @@ export function SearchInput({ value, onChange, onSubmit }: SearchInputProps) {
     </form>
   );
 }
-

@@ -75,12 +75,14 @@ export function CalendarBrowser({ archive }: CalendarBrowserProps) {
   const canNext = monthIndex > 0; // newer
 
   const goPrevMonth = () => {
-    if (!canPrev) return;
-    setViewMonth(monthKeys[monthIndex + 1]!);
+    const prevMonth = monthKeys[monthIndex + 1];
+    if (!canPrev || !prevMonth) return;
+    setViewMonth(prevMonth);
   };
   const goNextMonth = () => {
-    if (!canNext) return;
-    setViewMonth(monthKeys[monthIndex - 1]!);
+    const nextMonth = monthKeys[monthIndex - 1];
+    if (!canNext || !nextMonth) return;
+    setViewMonth(nextMonth);
   };
 
   const monthLabel = useMemo(() => {
@@ -372,5 +374,4 @@ function Chevron({ dir }: { dir: "left" | "right" }) {
     </svg>
   );
 }
-
 

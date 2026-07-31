@@ -188,7 +188,7 @@ export function NavSearch({
       title="Search all stories (⌘K)"
       aria-expanded={open}
       aria-controls={panelId}
-      className="icon-btn glass-input inline-flex h-12 w-[min(370px,32vw)] items-center gap-2.5 rounded-[13px] px-3.5 text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand"
+      className="icon-btn glass-input inline-flex h-12 w-[min(370px,32vw)] items-center gap-2.5 rounded-full px-4 text-ink-2 hover:border-brand-border hover:bg-brand-soft hover:text-brand"
     >
       <SearchIcon className="text-current" />
       <span className="min-w-0 flex-1 truncate text-left text-[13px] font-medium text-ink-3">
@@ -385,5 +385,3 @@ export function NavSearch({
     </>
   );
 }
-
-
