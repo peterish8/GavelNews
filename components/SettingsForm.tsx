@@ -18,7 +18,7 @@ const KEY = "gavel-profile";
 export function SettingsForm() {
   const [profile, setProfile] = useState<Profile>(DEFAULTS);
   const [saved, setSaved] = useState(false);
-  
+
   // Generate attempt years dynamically starting from current year
   const currentYear = new Date().getFullYear();
   const attemptYears = Array.from({ length: 5 }, (_, i) => currentYear + i);
@@ -27,14 +27,15 @@ export function SettingsForm() {
     try {
       const raw = localStorage.getItem(KEY);
       if (raw) {
-        setProfile({ ...DEFAULTS, ...JSON.parse(raw) });
+        setProfile({ ...DEFAULTS, ...(JSON.parse(raw) as Partial<Profile>) });
       } else {
-        // If no saved profile, initialize with current year
-        const currentYear = new Date().getFullYear();
+        // No saved profile yet — seed with the current attempt year computed above.
         setProfile({ ...DEFAULTS, attemptYear: currentYear });
       }
-    } catch {}
-  }, []);
+    } catch {
+      /* localStorage unavailable or corrupt — keep defaults */
+    }
+  }, [currentYear]);
 
   const update = <K extends keyof Profile>(k: K, v: Profile[K]) => {
     setProfile((p) => ({ ...p, [k]: v }));
@@ -46,7 +47,9 @@ export function SettingsForm() {
       localStorage.setItem(KEY, JSON.stringify(profile));
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
-    } catch {}
+    } catch {
+      /* localStorage unavailable — settings won't persist this session */
+    }
   };
 
   return (

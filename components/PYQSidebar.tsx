@@ -24,8 +24,9 @@ function groupByPassage(questions: PYQQuestion[]): PYQGroup[] {
   const indexByPassageId = new Map<string, number>();
   for (const q of questions) {
     const key = q.passage?.id;
-    if (key && indexByPassageId.has(key)) {
-      groups[indexByPassageId.get(key)!].questions.push(q);
+    const existingIndex = key ? indexByPassageId.get(key) : undefined;
+    if (key && existingIndex !== undefined) {
+      groups[existingIndex].questions.push(q);
       continue;
     }
     if (key) indexByPassageId.set(key, groups.length);
@@ -108,7 +109,8 @@ function PYQGroupCard({
 }) {
   const [passageOpen, setPassageOpen] = useState(false);
   const first = group.questions[0];
-  const hasPassage = Boolean(group.passage?.text);
+  const passage = group.passage;
+  const hasPassage = Boolean(passage?.text);
 
   return (
     <div className="rounded-xl border border-border-app/70 bg-elevated/70">
@@ -134,9 +136,9 @@ function PYQGroupCard({
             <ChevronIcon open={passageOpen} />
             {passageOpen ? "Hide the passage" : "Read the passage"}
           </button>
-          {passageOpen && (
+          {passageOpen && passage && (
             <blockquote className="mb-1 rounded-md border-l-2 border-brand-border bg-elevated-muted/60 p-3 text-[12.5px] leading-relaxed text-ink-3 italic">
-              <Markdown>{group.passage!.text}</Markdown>
+              <Markdown>{passage.text}</Markdown>
             </blockquote>
           )}
         </div>
@@ -289,8 +291,6 @@ function PYQQuestionModal({
         )}
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }
-
-

@@ -480,22 +480,15 @@ function NewsReaderPill({
             onPointerDown={(e) => {
               e.preventDefault();
               const rect = e.currentTarget.getBoundingClientRect();
-              const v = Math.max(
-                0,
-                Math.min(100, ((e.clientX - rect.left) / rect.width) * 100),
-              );
-              setScrubValue(v);
+              const value = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+              setScrubValue(value);
               setIsScrubbing(true);
               e.currentTarget.setPointerCapture(e.pointerId);
             }}
             onPointerMove={(e) => {
               if (!isScrubbing) return;
               const rect = e.currentTarget.getBoundingClientRect();
-              const v = Math.max(
-                0,
-                Math.min(100, ((e.clientX - rect.left) / rect.width) * 100),
-              );
-              setScrubValue(v);
+              setScrubValue(Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)));
             }}
             onPointerUp={(e) => {
               if (!isScrubbing) return;
@@ -505,25 +498,14 @@ function NewsReaderPill({
             }}
             onPointerCancel={(e) => {
               setIsScrubbing(false);
-              try {
-                e.currentTarget.releasePointerCapture(e.pointerId);
-              } catch {
-                /* ignore */
-              }
+              try { e.currentTarget.releasePointerCapture(e.pointerId); } catch { /* ignore */ }
             }}
           >
-            {/* Track + thumb centered in tall touch target (mobile-first). */}
             <div className="absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-border-app" />
+            <div className="absolute left-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-brand" style={{ width: `${displayProgress}%` }} />
             <div
-              className="absolute left-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-brand"
-              style={{ width: `${displayProgress}%` }}
-            />
-            <div
-              className="absolute top-1/2 z-10 h-3.5 w-3.5 rounded-full border-2 border-brand bg-elevated shadow opacity-100 sm:h-3 sm:w-3"
-              style={{
-                left: `clamp(7px, ${displayProgress}%, calc(100% - 7px))`,
-                transform: "translate(-50%, -50%)",
-              }}
+              className="absolute top-1/2 z-10 h-3.5 w-3.5 rounded-full border-2 border-brand bg-elevated shadow sm:h-3 sm:w-3"
+              style={{ left: `clamp(7px, ${displayProgress}%, calc(100% - 7px))`, transform: "translate(-50%, -50%)" }}
             />
           </div>
 
@@ -706,8 +688,7 @@ export function StoryReader({
     const full = fullTextRef.current;
     const len = Math.max(1, full.length);
     const cur = cursorPlainRef.current;
-    const pct = Math.min(100, (cur / len) * 100);
-    setProgress(pct);
+    setProgress(Math.min(100, (cur / len) * 100));
     // Elapsed based on character position through full article
     const total = totalDurationRef.current || estimateDurationMs(len, rateRef.current);
     setDurationMs(total);
@@ -1032,21 +1013,13 @@ export function StoryReader({
     finishSession();
   }, [finishSession]);
 
-  const seekPct = useCallback(
-    (pct: number) => {
-      const full =
-        fullTextRef.current ||
-        (articleRef.current ? getArticleText(articleRef.current) : "");
-      if (!full) return;
-      fullTextRef.current = full;
-      const offset = snapToWordStart(
-        full,
-        Math.floor((Math.max(0, Math.min(100, pct)) / 100) * full.length),
-      );
-      playFrom(offset);
-    },
-    [playFrom],
-  );
+  const seekPct = useCallback((pct: number) => {
+    const full = fullTextRef.current || (articleRef.current ? getArticleText(articleRef.current) : "");
+    if (!full) return;
+    fullTextRef.current = full;
+    const offset = snapToWordStart(full, Math.floor((Math.max(0, Math.min(100, pct)) / 100) * full.length));
+    playFrom(offset);
+  }, [playFrom]);
 
   // External stop from another TTS source
   useEffect(() => {
@@ -1072,11 +1045,15 @@ export function StoryReader({
     if (!root) return;
 
     function onClick(e: MouseEvent) {
+      // Re-check inside the closure: `function` declarations are hoisted,
+      // so TS can't narrow the outer `root` const across this boundary
+      // even though the effect already bailed out above when it was null.
+      if (!root) return;
       const target = e.target as HTMLElement;
       if (target.closest("a, button, input, [data-no-tts]")) return;
 
       const block = target.closest("p, li, h1, h2, h3") as HTMLElement | null;
-      if (!block || !root!.contains(block)) return;
+      if (!block || !root.contains(block)) return;
 
       // Second click on the paragraph currently being spoken (whether
       // actively playing or paused) = pause/resume. activeBlockRef tracks
@@ -1089,15 +1066,15 @@ export function StoryReader({
         return;
       }
 
-      const full = getArticleText(root!);
+      const full = getArticleText(root);
       fullTextRef.current = full;
 
-      let localOffset = clickToTextOffset(root!, e.clientX, e.clientY);
+      let localOffset = clickToTextOffset(root, e.clientX, e.clientY);
       // If click mapping failed, fall back to start of the clicked block
       if (localOffset <= 0) {
         try {
           const r = document.createRange();
-          r.selectNodeContents(root!);
+          r.selectNodeContents(root);
           r.setEndBefore(block);
           localOffset = r.toString().length;
         } catch {
