@@ -75,7 +75,7 @@
   --app-border-strong: #b8b0c8;
   --app-elevated-muted: #eeecf4;
   --app-surface: #ffffff;
-  --app-elevated: #ffffff;
+  --app-elevated: #fff;
   --card: #ffffff;
   --background: #f4f3f8;
   --foreground: #130f2a;
@@ -146,7 +146,7 @@
   --gv-danger: #761928;
   --gv-danger-soft: #f9e4ea;
   --destructive: #761928;
-  --destructive-foreground: #ffffff;
+  --destructive-foreground: #fff;
 }
 
 /* ── Dark mode — cool lavender-ink counterpart of the light system ──
